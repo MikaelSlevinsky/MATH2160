@@ -1,0 +1,569 @@
+% !TEX root = ./MATH2160.tex
+\chapter{Fourier Analysis}\label{chapter:FourierAnalysis}
+
+We will discuss interpolation and approximation theory when the function or data have an underlying periodicity. Therefore, instead of living on the unit interval $\I$, we start our investigations with functions that live on the unit circle $\U$. The main result of this section is that Fourier and Laurent coefficients of periodic functions may be obtained in only $\OO(N\log N)$ operations by the fast Fourier transform (FFT). When Cooley and Tukey derived the first modern FFT~\cite{Cooley-Tukey-19-297-65} in 1965, the Americans we able to use it to determine nuclear test sites of the USSR, from seismic data, to within 15 km {\em anywhere on the globe}. Since then, it has become an indispensable algorithm and is essential in digital signal processing. Due to the special form of the Chebyshev polynomials of the first and second kinds, they also admit fast construction of interpolants. The availability of a fast transform from function values to approximate Chebyshev coefficients adds to the long list of fascinating properties that make them ubiquitous in numerical analysis.
+
+Suppose we wish to interpolate the function $f:\U\to\C$ with the Laurent polynomials:
+\begin{equation}
+f(z) = \sum_{k\in\Z} f_k z^k.
+\end{equation}
+Since the Laurent polynomials are the orthogonal polynomials on the unit circle $L^2(\U,\ud z)$, the Laurent coefficients $f_k$ may be obtained by:
+\begin{equation}
+f_k = \dfrac{1}{2\pi\i}\int_\U \dfrac{f(z)}{z^{k+1}}\ud z.
+\end{equation}
+
+\section{The Discrete Fourier Transform}
+
+Suppose we wish to interpolate the function $f:\U\to\C$ with only the Laurent modes $k=0,\ldots,N-1$:
+\begin{equation}
+f(z) \approx f_{N-1}(z) = \sum_{k=0}^{N-1} f_k z^k.
+\end{equation}
+Using the trapezoidal rule with equispaced points on $\U$:
+\begin{equation}\label{eq:ApproximateTaylorCoefficients}
+f_k \approx \hat{f}_k := \dfrac{1}{N}\sum_{j=0}^{N-1} f(e^{2\pi\i j/N})e^{-2\pi\i jk/N},\quad{\rm for}\quad k=0,\ldots,N-1.
+\end{equation}
+Let $z_j^N := e^{2\pi\i j/N}$ and let $\omega := e^{-2\pi\i/N}$. Then, the transformation from function samples $f(z_j^N)$ to approximate projections $\hat{f}_k$ can be represented as the matrix-vector product:
+\begin{equation}\label{eq:DFTa}
+\begin{bmatrix} \hat{f}_0\\ \hat{f}_1\\ \vdots\\ \hat{f}_{N-1}\\\end{bmatrix}
+=
+\dfrac{1}{N}
+\begin{bmatrix}
+1 & 1 & \cdots & 1\\
+1 & \omega & \cdots & \omega^{N-1}\\
+\vdots & \vdots & \ddots & \vdots\\
+1 & \omega^{N-1} & \cdots & \omega^{(N-1)^2}
+\end{bmatrix}
+\begin{bmatrix} f(z_0^N)\\ f(z_1^N)\\ \vdots\\ f(z_{N-1}^N)\\\end{bmatrix}.
+\end{equation}
+The matrix in~\eqref{eq:DFTa} is the so-called discrete Fourier transform (DFT) matrix:
+\begin{equation}\label{eq:DFT}
+\FF_N := \begin{bmatrix}
+1 & 1 & \cdots & 1\\
+1 & \omega & \cdots & \omega^{N-1}\\
+\vdots & \vdots & \ddots & \vdots\\
+1 & \omega^{N-1} & \cdots & \omega^{(N-1)^2}
+\end{bmatrix}.
+\end{equation}
+
+\subsection{The Inverse Discrete Fourier Transform}
+
+Now that we have the coefficients $\hat{f}_k$, it will be interesting to see what happens when we evaluate our approximation $f_{N-1}(x)$ at the equispaced points we used for their construction. In this case, we have:
+\begin{equation}
+f(e^{2\pi\i j/N}) = \sum_{k=0}^{N-1} e^{2\pi\i jk/N} \hat{f}_k,\quad{\rm for}\quad j=0,\ldots,N-1.
+\end{equation}
+Using the same definitions as earlier, let $z_j^N := e^{2\pi\i j/N}$ and let $\omega := e^{-2\pi\i/N}$. In matrix form:
+\begin{equation}\label{eq:iDFT}
+\begin{bmatrix} f(z_0^N)\\ f(z_1^N)\\ \vdots\\ f(z_{N-1}^N)\\\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 1 & \cdots & 1\\
+1 & \omega^* & \cdots & \omega^{N-1}{}^*\\
+\vdots & \vdots & \ddots & \vdots\\
+1 & \omega^{N-1}{}^* & \cdots & \omega^{(N-1)^2}{}^*
+\end{bmatrix}
+\begin{bmatrix} \hat{f}_0\\ \hat{f}_1\\ \vdots\\ \hat{f}_{N-1}\\\end{bmatrix}.
+\end{equation}
+Clearly, the inverse discrete Fourier transform (iDFT) matrix~\eqref{eq:iDFT} is the conjugate transpose of the DFT matrix~\eqref{eq:DFT}.
+\begin{theorem}
+The DFT matrix~\eqref{eq:DFT} satisfies:
+\[
+\FF_N\FF_N^* = NI_N.
+\]
+Furthermore, the matrix $\tfrac{1}{\sqrt{N}}\FF_N$ is unitary.
+\end{theorem}
+
+\subsection{The Fast Fourier Transform}
+
+Recall that if $\omega := e^{-2\pi\i/N}$, then $\omega^{kN} \equiv 1$ and $\omega^{kN/2} \equiv (-1)^k$ for every $k\in\Z$.
+
+\begin{comment}
+Suppose $N=4$ so that:
+\begin{equation}
+\FF_4 = \begin{bmatrix}
+1 & 1 & 1 & 1\\
+1 & \omega & \omega^2 & \omega^3\\
+1 & \omega^2 & \omega^4 & \omega^6\\
+1 & \omega^3 & \omega^6 & \omega^9
+\end{bmatrix}
+\end{equation}
+This matrix can then be reduced as:
+\begin{equation}
+\FF_4 = \begin{bmatrix}
+1 & 1 & 1 & 1\\
+1 & \omega & \omega^2 & \omega^3\\
+1 & \omega^2 & 1 & \omega^2\\
+1 & \omega^3 & \omega^2 & \omega
+\end{bmatrix}
+\end{equation}
+
+If we swap the second and third columns:
+\begin{equation}
+\FF_4[:,[1;3;2;4]] = \begin{bmatrix}
+1 & 1 & 1 & 1\\
+1 & \omega^2 & \omega & \omega^3\\
+1 & 1 & \omega^2 & \omega^2\\
+1 & \omega^2 & \omega^3 & \omega
+\end{bmatrix}
+\end{equation}
+and then we can write:
+\begin{equation}
+\FF_4[:,[1;3;2;4]] = \begin{bmatrix}
+1 & 0 & 1 & 0\\
+0 & 1 & 0 & \omega\\
+1 & 0 & -1 & 0\\
+0 & 1 & 0 & -\omega\\
+\end{bmatrix}
+\begin{bmatrix}
+\FF_2 & 0\\
+0 & \FF_2\\
+\end{bmatrix}.
+\end{equation}
+\end{comment}
+
+\begin{theorem}
+Let $N=2^n$, for some $n\in\N_0$. Let $p$ be the permutation $p = (1,3\ldots,N-1,2,4,\ldots,N)^\top$ and let $P_N = I_N[:,p]$ be the odd-even permutation matrix. Let $\Omega_N := \diag(1,\ldots,\omega^{N-1})$. Then:
+\begin{equation}\label{eq:Radix2Factorization}
+\FF_NP_N = \begin{bmatrix}
+I_{N/2} & \Omega_{N/2}\\
+I_{N/2} & -\Omega_{N/2}\\
+\end{bmatrix}
+\begin{bmatrix}
+\FF_{N/2} & 0\\
+0 & \FF_{N/2}\\
+\end{bmatrix}.
+\end{equation}
+\end{theorem}
+\begin{proof}
+Multiplying the blocks, we have:
+\begin{equation}
+\FF_NP_N = 
+\begin{bmatrix}
+\FF_{N/2} & \Omega_{N/2}\FF_{N/2}\\
+\FF_{N/2} & -\Omega_{N/2}\FF_{N/2}\\
+\end{bmatrix}.
+\end{equation}
+We insert the identity $I_{N/2} \equiv {\cal I}_{N/2} := \diag(1,\omega^N,\ldots,\omega^{(N/2-1)N})$ in the lower left block for column-scaling:
+\begin{align}
+\FF_NP_N & =
+\begin{bmatrix}
+\begin{bmatrix}
+1 & 1 & \cdots & 1\\
+1 & \omega^2 & \cdots & \omega^{2(N/2-1)}\\
+\vdots & \vdots & \ddots & \vdots\\
+1 & \omega^{2(N/2-1)} & \cdots & \omega^{2(N/2-1)^2}
+\end{bmatrix}
+& \Omega_{N/2}\begin{bmatrix}
+1 & 1 & \cdots & 1\\
+1 & \omega^2 & \cdots & \omega^{2(N/2-1)}\\
+\vdots & \vdots & \ddots & \vdots\\
+1 & \omega^{2(N/2-1)} & \cdots & \omega^{2(N/2-1)^2}
+\end{bmatrix}\\
+\begin{bmatrix}
+1 & 1 & \cdots & 1\\
+1 & \omega^2 & \cdots & \omega^{2(N/2-1)}\\
+\vdots & \vdots & \ddots & \vdots\\
+1 & \omega^{2(N/2-1)} & \cdots & \omega^{2(N/2-1)^2}
+\end{bmatrix}{\cal I}_{N/2}
+& -\Omega_{N/2}\begin{bmatrix}
+1 & 1 & \cdots & 1\\
+1 & \omega^2 & \cdots & \omega^{2(N/2-1)}\\
+\vdots & \vdots & \ddots & \vdots\\
+1 & \omega^{2(N/2-1)} & \cdots & \omega^{2(N/2-1)^2}
+\end{bmatrix}\\
+\end{bmatrix}.
+\end{align}
+The column scaling in the lower left block ensures that we recover the odd columns of $\FF_N$. For the even columns, if we use the fact that $-\Omega_{N/2} \equiv \diag(\omega^{N/2},\omega^{N/2+1},\ldots,\omega^{N-1})$, then all the row-scaling is correct.
+\end{proof}
+
+Now that we have a factorization of the matrix $\FF_N$ in terms of a sparse matrix requiring only $2N$ entries and two copies of the DFT matrix of half the original size. If we continue this process recursively, we can obtain a favourable complexity for applying the DFT matrix to a vector.
+\begin{theorem}
+Let $N=2^n$, for some $n\in\N_0$. The cost of the matrix-vector product with $\FF_N$ is $N(2n+1)$ or $N(2\log_2(N)+1)$.
+\end{theorem}
+\begin{proof}
+Assume permutation matrices $P_N$ can be applied for free (after all, they only amount to a different indexing). Let $C_N$ denote the cost of applying the matrix $\FF_N$. Then, from the factorization~\eqref{eq:Radix2Factorization} of the matrix $\FF_N$:
+\[
+C_N = 2N + 2C_{N/2}.
+\]
+Since there are $n$ powers of $2$ in $N$, $C_N = 2nN+NC_1$. Since $C_1=1$, we have proved the result.
+\end{proof}
+
+\begin{example}
+The first $N=16$ Taylor coefficients of $e^x$ can be computed as simply as:
+\begin{verbatim}
+N = 2^4
+z = exp(2*pi*im*(0:N-1)/N)
+[real(fft(exp(z))/N) 1./gamma(1:N)]
+\end{verbatim}
+The resulting output is shown in Table~\ref{table:TaylorExponential}.
+\begin{table}[htdp]
+\caption{The Taylor coefficients of $e^x$ computed using the FFT and the analytical result.}
+\begin{center}
+\begin{tabular}{rrr}
+\hline
+$k$ & FFT & $1/k!$\\
+\hline
+$0$ & $1.0000000000000477$ & $1.000000000000000$\\
+$1$ & $1.0000000000000027$ & $1.000000000000000$\\
+$2$ & $0.5000000000000002$ & $0.500000000000000$\\
+$3$ & $0.16666666666666674$ & $0.16666666666666666$\\
+$4$ & $0.041666666666666706$ & $0.041666666666666664$\\
+$5$ & $0.008333333333333463$ & $0.008333333333333333$\\
+$6$ & $0.001388888888888995$ & $0.001388888888888889$\\
+$7$ & $0.00019841269841280873$ & $0.0001984126984126984$\\
+$8$ & $2.480158730161497\times10^{-5}$ & $2.48015873015873\times10^{-5}$\\
+$9$ & $2.7557319223214805\times10^{-6}$ & $2.7557319223985893\times10^{-6}$\\
+$10$ & $2.7557319215443243\times10^{-7}$ & $2.755731922398589\times10^{-7}$\\
+$11$ & $2.5052108353074143\times10^{-8}$ & $2.505210838544172\times10^{-8}$\\
+$12$ & $2.087675678164036\times10^{-9}$ & $2.08767569878681\times10^{-9}$\\
+$13$ & $1.6059027718728913\times10^{-10}$ & $1.6059043836821613\times10^{-10}$\\
+$14$ & $1.1470602245822192\times10^{-11}$ & $1.1470745597729725\times10^{-11}$\\
+$15$ & $7.646105970593453\times10^{-13}$ & $7.647163731819816\times10^{-13}$\\
+\hline
+\end{tabular}
+\end{center}
+\label{table:TaylorExponential}
+\end{table}%
+Note, as this example shows, that the FFT can only give high {\em absolute} accuracy in the Taylor coefficients.
+\end{example}
+
+Since the development of Cooley and Tukey's {\em radix-2} FFT, many others have contributed to derive new algorithms that are optimal for DFTs of other lengths. Suffice it to say, these are beyond the scope of this course, but most computer implementations of the FFT are able to handle any input length. The Cooley--Tukey radix-2 FFT can be described as a {\em divide-and-conquer} algorithm due to the structure of the factorization~\eqref{eq:Radix2Factorization}.
+
+The inverse fast Fourier Transform (iFFT) can be implemented analogously to the FFT with the added complex conjugation and without the scaling by $1/N$.
+
+\begin{example}
+Suppose $N>M$. The iFFT can be used to rapidly evaluate Taylor interpolants $p_{M-1}(z)$ on an $N$-point equispaced grid on $\U$ in only $\OO(N\log N)$ operations, by padding the $M$ Taylor coefficients with zeros to degree $N-1$. This can offer significant savings over the generic Horner's rule requiring $\OO(MN)$ operations.
+\end{example}
+
+\begin{remark}
+The FFT can be extended to construct interpolants using {\em any} Laurent modes, not just Taylor modes. The FFT can also be used to construct trigonometric interpolants using either complex exponentials or sines and cosines.
+\end{remark}
+
+\subsection{Aliasing}
+
+Now that we know that the polynomial with coefficients $\hat{f}_k$ is an {\em interpolant}, it is of interest to know how close the coefficients are to the true Laurent coefficients $f_k\approx\hat{f}_k$.
+\begin{theorem}\label{theorem:Aliasing}
+For $k=0,\ldots,N-1$, the coefficients:
+\[
+\hat{f}_k = f_k + f_{k-N} + f_{k+N} + f_{k-2N} + f_{k+2N} +\cdots+.
+\]
+\end{theorem}
+\begin{proof}
+We insert $f(z) = \sum_{l\in\Z} f_l z^l$ into~\eqref{eq:ApproximateTaylorCoefficients} to obtain:
+\[
+\hat{f}_k = \dfrac{1}{N}\sum_{j=0}^{N-1} \left(\sum_{l\in\Z}f_le^{2\pi\i jl/N}\right)e^{-2\pi\i jk/N} = \dfrac{1}{N}\sum_{l\in\Z}f_l\sum_{j=0}^{N-1} e^{2\pi\i j(l-k)/N}.
+\]
+Each of the sums over complex exponentials is $0$ except when $(l-k)/N\in\Z$. In these cases, the sums over complex exponentials are all equal to $N$.
+\end{proof}
+Theorem~\ref{theorem:Aliasing} shows us that the approximate coefficients $\hat{f}_k$ are equal to the true Laurent coefficients $f_k$, with the addition of higher and lower Laurent coefficients {\em aliased} in. When the function we are approximating has decaying Laurent coefficients, it can be seen that the approximate coefficients $\hat{f}_k\to f_k$ as $N\to\infty$.
+
+\section{The Discrete Cosine Transform}
+
+Suppose we wish to interpolate the function $f:\I\to\C$ with the Chebyshev polynomials of the first kind:
+\begin{equation}
+f(x) = \sum_{k\in\N_0} f_k T_k(x).
+\end{equation}
+Since the Chebyshev polynomials are the orthogonal polynomials on the unit interval $L^2(\I,\tfrac{\ud x}{\sqrt{1-x^2}})$, and since:
+\begin{equation}
+\langle T_k, T_j\rangle = \int_\I\dfrac{T_k(x)T_j(x)}{\sqrt{1-x^2}}\ud x = \int_0^\pi \cos(k\theta)\cos(j\theta)\ud\theta = \left\{\begin{array}{ccc}\pi & \for & k = j = 0,\\
+\frac{\pi}{2} & \for & k = j > 0,\\
+0 & \for & k \ne j,
+\end{array}\right.
+\end{equation}
+the Chebyshev-$T$ coefficients $f_k$ can be obtained by:
+\begin{equation}
+f_k = \dfrac{1}{\langle T_k,T_k\rangle}\int_\I \dfrac{f(x)T_k(x)}{\sqrt{1-x^2}}\ud x = \dfrac{2-\delta_{k,0}}{\pi}\int_\I \dfrac{f(x)T_k(x)}{\sqrt{1-x^2}}\ud x.
+\end{equation}
+
+Suppose we wish to interpolate the function $f:\I\to\C$ with the first kind Chebyshev polynomials $k=0,\ldots,N-1$:
+\begin{equation}
+f(x) \approx f_{N-1}(x) = \sum_{k=0}^{N-1} f_k T_k(x).
+\end{equation}
+Let $x_j^N := \cos(\pi(j+\tfrac{1}{2})/N)$. Using Gauss--Chebyshev quadrature:
+\begin{align}
+f_k \approx \hat{f}_k & := \dfrac{2-\delta_{k,0}}{N}\sum_{j=0}^{N-1} f(x_j^N)T_k(\cos(\pi (j+\tfrac{1}{2})/N)),\quad{\rm for}\quad k=0,\ldots,N-1,\\
+& = \dfrac{2-\delta_{k,0}}{N}\sum_{j=0}^{N-1} f(x_j^N)\cos(\pi k(j+\tfrac{1}{2})/N).
+\end{align}
+Let $\DD_N$ be the matrix with entries $[\DD_N]_{k,j} = 2\cos(\pi k(j+\frac{1}{2})/N)$. This matrix is the so-called discrete cosine transform matrix of type-II (DCT-II)\footnote{The DCT-II is also known as {\em the} DCT. We adopt this commonality.}. It can be seen that the DCT can be related to the real-to-real map of a DFT with even symmetry in the input data. Thus, a DCT can be applied in $\OO(N\log N)$ operations.
+
+\subsection{The Inverse Discrete Cosine Transform}
+
+Since the operation of applying the DCT is fundamentally the same as the DFT except with assumptions on certain symmetries in the input and output, the DCT has an inverse. Clearly, the inverse discrete cosine transform (iDCT) matrix~\eqref{eq:iDCT} is the transpose of the DCT matrix $\DD_N$. In fact, if we evaluate the interpolant $f_{N-1}(x)$ at the Chebyshev points of the first kind, $x_j^N$, we get:
+\begin{equation}
+f(x_j^N) = \sum_{k=0}^{N-1} \hat{f}_k T_k(\cos(\pi(j+\tfrac{1}{2})/N)) = \sum_{k=0}^{N-1} \hat{f}_k \cos(\pi k(j+\tfrac{1}{2})/N)).
+\end{equation}
+In matrix form:
+\begin{equation}\label{eq:iDCT}
+\begin{bmatrix} f(x_0^N)\\ f(x_1^N)\\ \vdots\\ f(x_{N-1}^N)\\\end{bmatrix}
+=
+\frac{1}{2}\DD_N^\top
+\begin{bmatrix} \hat{f}_0\\ \hat{f}_1\\ \vdots\\ \hat{f}_{N-1}\\\end{bmatrix}.
+\end{equation}
+
+\begin{theorem}
+The DCT matrix $\DD_N$ satisfies:
+\[
+\DD_N\DD_N^\top = \begin{bmatrix} 4N\\ & 2N\\ &&\ddots\\&&&2N\\\end{bmatrix}.
+\]
+Furthermore, the matrix $\sqrt{\tfrac{1}{2N}}\diag(\sqrt{\tfrac{1}{2}},1,\ldots,1)\DD_N$ is orthogonal.
+\end{theorem}
+
+\begin{example}\label{Example:DCT}
+We use the DCT to calculate the Chebyshev-$T$ coefficients of $e^x$ on $\I$.
+\begin{verbatim}
+N = 2^4
+x = cospi((0.5:N-0.5)/N)
+fhatT = FFTW.r2r(exp(x),FFTW.REDFT10)/N; fhatT[1] *= 0.5;
+ftrueT = besseli(0:N-1,1); ftrueT[2:end] *= 2;
+@show [fhatT ftrueT]
+\end{verbatim}
+The resulting output is shown in Table~\ref{table:ChebyshevTExponential}.
+\begin{table}[htdp]
+\caption{The Chebyshev-$T$ coefficients of $e^x$ computed using the DCT and the analytical result (where $I_k(x)$ is a Bessel function.}
+\begin{center}
+\begin{tabular}{rrr}
+\hline
+$k$ & DCT & $(2-\delta_{k,0})I_k(1)$\\
+\hline
+$0$ & $1.2660658777520084$ & $1.2660658777520082$\\
+$1$ & $1.1303182079849703$ & $1.13031820798497$\\
+$2$ & $0.27149533953407656$ & $0.2714953395340767$\\
+$3$ & $0.04433684984866378$ & $0.04433684984866381$\\
+$4$ & $0.0054742404420936785$ & $0.005474240442093732$\\
+$5$ & $0.0005429263119138974$ & $0.0005429263119139442$\\
+$6$ & $4.497732295427654\times10^{-5}$ & $4.497732295429519\times10^{-5}$\\
+$7$ & $3.1984364625158\times10^{-6}$ & $3.1984364624019926\times10^{-6}$\\
+$8$ & $1.992124804817033\times10^{-7}$ & $1.9921248066727963\times10^{-7}$\\
+$9$ & $1.1036771896790056\times10^{-8}$ & $1.103677172551734\times10^{-8}$\\
+$10$ & $5.505896578301994\times10^{-10}$ & $5.50589607967375\times10^{-10}$\\
+$11$ & $2.4979670919635447\times10^{-11}$ & $2.4979566169849818\times10^{-11}$\\
+$12$ & $1.0391104209722668\times10^{-12}$ & $1.039152230678574\times10^{-12}$\\
+$13$ & $3.9919456629178285\times10^{-14}$ & $3.991263356414398\times10^{-14}$\\
+$14$ & $1.4363510381087963\times10^{-15}$ & $1.4237580108256627\times10^{-15}$\\
+$15$ & $6.938893903907228\times10^{-17}$ & $4.7409261025615024\times10^{-17}$\\
+\hline
+\end{tabular}
+\end{center}
+\label{table:ChebyshevTExponential}
+\end{table}%
+Note, as this example shows, that the DCT can only give high {\em absolute} accuracy in the Chebyshev-$T$ coefficients.
+\end{example}
+
+\section{The Discrete Sine Transform}
+
+Suppose we wish to interpolate the function $f:\I\to\C$ with the Chebyshev polynomials of the second kind:
+\begin{equation}
+f(x) = \sum_{k\in\N_0} f_k U_k(x).
+\end{equation}
+Since the Chebyshev polynomials are the orthogonal polynomials on the unit interval $L^2(\I,\sqrt{1-x^2}\ud x)$, and since:
+\begin{equation}
+\langle U_k, U_j\rangle = \int_\I U_k(x)U_j(x)\sqrt{1-x^2}\ud x = \int_0^\pi \sin((k+1)\theta)\sin((j+1)\theta)\ud\theta = \left\{\begin{array}{ccc} \frac{\pi}{2} & \for & k = j \ge 0,\\
+0 & \for & k \ne j,
+\end{array}\right.
+\end{equation}
+the Chebyshev-$U$ coefficients $f_k$ can be obtained by:
+\begin{equation}
+f_k = \dfrac{1}{\langle U_k,U_k\rangle}\int_\I f(x)U_k(x)\sqrt{1-x^2}\ud x = \dfrac{2}{\pi}\int_\I f(x)U_k(x)\sqrt{1-x^2}\ud x.
+\end{equation}
+
+Suppose we wish to interpolate the function $f:\I\to\C$ with the second kind Chebyshev polynomials $k=0,\ldots,N-1$:
+\begin{equation}
+f(x) \approx f_{N-1}(x) = \sum_{k=0}^{N-1} f_k U_k(x).
+\end{equation}
+Let $x_j^N := \cos(\pi(j+1)/(N+1))$ and let $\omega_j^N = \sin(\pi(j+1)/(N+1))$. Using Gauss--Chebyshev quadrature:
+\begin{align}
+f_k \approx \hat{f}_k & := \dfrac{2}{N+1}\sum_{j=0}^{N-1} w_j^Nf(x_j^N)U_k(\cos(\pi (j+1)/(N+1))),\quad{\rm for}\quad k=0,\ldots,N-1,\\
+& = \dfrac{2}{N+1}\sum_{j=0}^{N-1} \left[\omega_j^Nf(x_j^N)\right]\sin(\pi (k+1)(j+1)/(N+1)).
+\end{align}
+Let $\DD_N$ be the matrix with entries $[\DD_N]_{k,j} = 2\sin(\pi (k+1)(j+1)/(N+1))$. This matrix is the so-called discrete sine transform matrix of type-I (DST-I)\footnote{We will adopt the same commonality as the DCT-II when we call the DST-I {\em the} DST.}. It can be seen that the DST can be related to the real-to-real map of a DFT with odd symmetry in the input data. Thus, a DCT can be applied in $\OO(N\log N)$ operations.
+
+\subsection{The Inverse Discrete Sine Transform}
+
+Since the operation of applying the DST is fundamentally the same as the DFT except with assumptions on certain symmetries in the input and output, the DST has an inverse. Clearly, the inverse discrete sine transform (iDST) matrix~\eqref{eq:iDST} is the transpose of the DST matrix $\DD_N$. In fact, if we evaluate the interpolant $f_{N-1}(x)$ at the Chebyshev points of the second kind, $x_j^N$, we get:
+\begin{equation}
+f(x_j^N) = \sum_{k=0}^{N-1} \hat{f}_k U_k(\cos(\pi(j+1)/(N+1))) = \sum_{k=0}^{N-1} \hat{f}_k \dfrac{\sin(\pi (k+1)(j+1)/(N+1)))}{\omega_j^N}.
+\end{equation}
+In matrix form:
+\begin{equation}\label{eq:iDST}
+\begin{bmatrix} \omega_0^Nf(x_0^N)\\ \omega_1^Nf(x_1^N)\\ \vdots\\ \omega_{N-1}^Nf(x_{N-1}^N)\\\end{bmatrix}
+=
+\frac{1}{2}\DD_N^\top
+\begin{bmatrix} \hat{f}_0\\ \hat{f}_1\\ \vdots\\ \hat{f}_{N-1}\\\end{bmatrix}.
+\end{equation}
+
+\begin{theorem}
+The DST matrix $\DD_N$ satisfies:
+\[
+\DD_N\DD_N^\top = 2(N+1)I_N.
+\]
+Furthermore, the matrix $\dfrac{1}{\sqrt{2(N+1)}}\DD_N$ is orthogonal.
+\end{theorem}
+
+\begin{example}\label{Example:DST}
+We use the DST to calculate the Chebyshev-$U$ coefficients of $e^x$ on $\I$.
+\begin{verbatim}
+N = 2^4
+x = cospi((1:N)/(N+1))
+wr = sinpi((1:N)/(N+1))
+fhatU = FFTW.r2r(wr.*exp(x),FFTW.RODFT00)/(N+1)
+@show [fhatU ftrueU]
+\end{verbatim}
+The resulting output is shown in Table~\ref{table:ChebyshevTExponential}.
+\begin{table}[htdp]
+\caption{The Chebyshev-$U$ coefficients of $e^x$ computed using the DST and the exact result.}
+\begin{center}
+\begin{tabular}{rrr}
+\hline
+$k$ & DST & Exact\\
+\hline
+$0$ & $1.13031820798497$ & $1.1303182079849698$\\
+$1$ & $0.542990679068153$ & $0.5429906790681531$\\
+$2$ & $0.13301054954599145$ & $0.13301054954599148$\\
+$3$ & $0.02189696176837487$ & $0.021896961768374933$\\
+$4$ & $0.0027146315595697563$ & $0.0027146315595697186$\\
+$5$ & $0.00026986393772582246$ & $0.0002698639377257711$\\
+$6$ & $2.2389055236805698\times10^{-5}$ & $2.2389055236813955\times10^{-5}$\\
+$7$ & $1.5936998453884536\times10^{-6}$ & $1.5936998453382377\times10^{-6}$\\
+$8$ & $9.933094555562687\times10^{-8}$ & $9.933094552965612\times10^{-8}$\\
+$9$ & $5.5058960808261906\times10^{-9}$ & $5.505896079673745\times10^{-9}$\\
+$10$ & $2.7477525458179843\times10^{-10}$ & $2.747752278683482\times10^{-10}$\\
+$11$ & $1.2469791131048173\times10^{-11}$ & $1.2469826768142837\times10^{-11}$\\
+$12$ & $5.188349749829513\times10^{-13}$ & $5.188642363338741\times10^{-13}$\\
+$13$ & $1.9957891548555754\times10^{-14}$ & $1.9932612151559182\times10^{-14}$\\
+$14$ & $6.791952621236251\times10^{-16}$ & $7.111389153842272\times10^{-16}$\\
+$15$ & $1.0449157878825003\times10^{-16}$ & $2.3682880915332792\times10^{-17}$\\
+\hline
+\end{tabular}
+\end{center}
+\label{table:ChebyshevUExponential}
+\end{table}%
+Note, as this example shows, that the DST can only give high {\em absolute} accuracy in the Chebyshev-$U$ coefficients.
+\end{example}
+
+\section{Conversion, Differentiation, and Integration}
+
+By exploiting the structure of the discrete Fourier transform, we now have fast methods for computing DFTs, DCTs, and DSTs, and therefore fast methods of obtaining polynomial interpolants in the Taylor, Chebyshev-$T$, and Chebyshev-$U$ bases. On $\I$, we already know from \S~\ref{subsection:ChebyshevPointsAreTheBest} that interpolation in the Chebyshev points of the first kind is optimal\footnote{And interpolation in the Chebyshev points of the second kind is asymptotically optimal, up to a constant factor.}. Therefore, the Chebyshev bases are the most practical ways to store an approximation to a function $f$ on a computer. In this section, we describe the techniques of numerical differentiation and integration with Chebyshev series. Suppose we have the Chebyshev-$T$ expansion:
+\begin{equation}\label{eq:ChebyshevTExpansion}
+f(x) \approx f_{N-1}^{\rm T}(x) = \sum_{k=0}^{N-1} f_k^{\rm T} T_k(x),
+\end{equation}
+or the Chebyshev-$U$ expansion:
+\begin{equation}\label{eq:ChebyshevUExpansion}
+f(x) \approx f_{N-1}^{\rm U}(x) = \sum_{k=0}^{N-1} f_k^{\rm U} U_k(x).
+\end{equation}
+
+\subsection{Conversion}
+
+Since we have two bases, the first question that may arise is how to convert between Chebyshev-$T$ and Chebyshev-$U$ expansions? Using the facts that $T_k(\cos\theta) = \cos(k\theta)$ and $\sin\theta U_k(\cos\theta) = \sin((k+1)\theta)$ and the trigonometric identity:
+\begin{equation}
+\sin\theta\cos(k\theta) = \dfrac{1}{2}\left[\sin((k+1)\theta) - \sin((k-1)\theta)\right],
+\end{equation}
+we can describe the change of basis from $T\Rightarrow U$ by:
+\begin{align}
+T_0(x) & = U_0(x),\\
+T_1(x) & = \dfrac{U_1(x)}{2},\\
+T_k(x) & = \dfrac{U_k(x) - U_{k-2}(x)}{2},\quad{\rm for}\quad k\ge2.
+\end{align}
+In matrix form, we can represent the change of basis by the banded conversion matrix $\CC_N$:
+\begin{equation}
+\CC_N = \begin{bmatrix}
+1 & 0 & -\tfrac{1}{2}\\
+& \tfrac{1}{2} & 0 & -\tfrac{1}{2}\\
+& & \ddots & \ddots & \ddots\\
+& & & \tfrac{1}{2} & 0 & -\tfrac{1}{2}\\
+& & & & \tfrac{1}{2} & 0\\
+& & & & & \tfrac{1}{2}\\
+\end{bmatrix}.
+\end{equation}
+Then:
+\begin{equation}
+\begin{bmatrix} T_0(x) & T_1(x) & \cdots & T_{N-1}(x)\\\end{bmatrix} = \begin{bmatrix} U_0(x) & U_1(x) & \cdots & U_{N-1}(x)\\\end{bmatrix}\CC_N.
+\end{equation}
+
+\begin{example}
+Given the Chebyshev-$T$ coefficients of $e^x$ on $\I$, from Table~\ref{table:ChebyshevTExponential}, we can compute the Chebyshev-$U$ coefficients of Table~\ref{table:ChebyshevUExponential} in $\OO(N)$ operations by applying the conversion matrix:
+\begin{align}
+\begin{bmatrix} T_0(x) & T_1(x) & \cdots & T_{N-1}(x)\\\end{bmatrix}\begin{bmatrix}\hat{f}_0^{\rm T}\\\hat{f}_1^{\rm T}\\\vdots\\\hat{f}_{N-1}^{\rm T}\end{bmatrix} & = \begin{bmatrix} U_0(x) & U_1(x) & \cdots & U_{N-1}(x)\\\end{bmatrix}\CC_N\begin{bmatrix}\hat{f}_0^{\rm T}\\\hat{f}_1^{\rm T}\\\vdots\\\hat{f}_{N-1}^{\rm T}\end{bmatrix},\\
+& = \begin{bmatrix} U_0(x) & U_1(x) & \cdots & U_{N-1}(x)\\\end{bmatrix}\begin{bmatrix}\hat{f}_0^{\rm U}\\\hat{f}_1^{\rm U}\\\vdots\\\hat{f}_{N-1}^{\rm U}\end{bmatrix}.
+\end{align}
+Note that there are rounding errors on the order of machine precision.
+\end{example}
+
+\begin{remark}
+The inverse conversion matrix $\CC_N^{-1}$ can be applied in $\OO(N)$ operations using back substitution.
+\end{remark}
+
+\subsection{Differentiation}
+
+We can differentiate the expansion~\eqref{eq:ChebyshevTExpansion} term-by-term using the fact that $T_k(x) = \cos(k\cos^{-1}(x))$ and:
+\begin{align}
+\dfrac{\ud T_k(x)}{\ud x} & = -k\sin(k\cos^{-1}(x)) \dfrac{\ud \cos^{-1}(x)}{\ud x} = k\dfrac{\sin(k\cos^{-1}(x))}{\sqrt{1-x^2}},\nonumber\\
+& = k\dfrac{\sin(k\cos^{-1}(x))}{\sin(\cos^{-1}(x))} = kU_{k-1}(x).\label{eq:ChebyshevTDerivative}
+\end{align}
+This means that the derivative of the Chebyshev expansion $f_{N-1}^{\rm T}(x)$ can be computed by a {\em scaling} of the coefficients, and a {\em change} of the basis:
+\begin{equation}
+f'(x) \approx f_{N-1}^{\rm T'}(x) = \sum_{k=0}^{N-1} kf_k^{\rm T} U_{k-1}(x) = \sum_{k=0}^{N-2} (k+1)f_{k+1}^{\rm T}U_k(x).
+\end{equation}
+If we wanted to take the {\em second} derviative of $f$, then the inverse conversion matrix $\CC_{N-1}^{-1}$ must convert the coefficients to new Chebyshev-$T$ coefficients so that we can continue using the simple formula~\eqref{eq:ChebyshevTDerivative}.
+
+\subsection{Integration}
+
+Using the relation~\eqref{eq:ChebyshevTDerivative}, we can perform indefinite integration of Chebyshev-$U$ expansions:
+\begin{equation}
+\int U_k(x)\ud x = \int \dfrac{T_{k+1}'(x)}{k+1}\ud x = \dfrac{T_{k+1}(x)}{k+1}.
+\end{equation}
+This means that the indefinite integral of the Chebyshev expansion $f_{N-1}^{\rm U}(x)$ can be computed by a {\em scaling} of the coefficients, and a {\em change} of basis:
+\begin{equation}
+\int f(x)\ud x \approx \int f_{N-1}^{\rm U}(x)\ud x = \sum_{k=0}^{N-1} \dfrac{f_k^{\rm U}}{k+1} T_{k+1}(x) =  f_{-1}^{\rm U}T_0(x) + \sum_{k=1}^{N} \dfrac{f_{k-1}^{\rm U}}{k} T_k(x).
+\end{equation}
+Here, we added the indefinite integration constant $f_{-1}^{\rm U}$.
+
+\subsubsection{Clenshaw--Curtis Quadrature}
+
+Clenshaw--Curtis quadrature~\cite{Clenshaw-Curtis-2-197-60} is the result of combining the conversion matrix $\CC_N$ with the indefinite integration of Chebyshev-$U$ expansions for the purpose of definite integration of Chebyshev-$T$ expansions:
+\begin{align}
+\int_\I T_0(x)\ud x & = \int_\I U_0(x)\ud x = \left.T_1(x)\right|_{-1}^1 = 2,\\
+\int_\I T_1(x)\ud x & = \int_\I \dfrac{U_1(x)}{2}\ud x = \left.\dfrac{T_2(x)}{4}\right|_{-1}^1 = 0,\\
+\int_\I T_k(x)\ud x & = \int_\I \dfrac{U_k(x)-U_{k-2}(x)}{2}\ud x = \left.\dfrac{1}{2}\left(\dfrac{T_{k+1}(x)}{k+1}-\dfrac{T_{k-1}(x)}{k-1}\right)\right|_{-1}^1,\\
+& = \dfrac{1+(-1)^k}{2}\left(\dfrac{1}{k+1}-\dfrac{1}{k-1}\right) = \dfrac{1+(-1)^k}{2}\left(\dfrac{2}{1-k^2}\right).
+\end{align}
+Notice that odd terms integrate to zero (as we expect). With the Chebyshev-$T$ expansion~\eqref{eq:ChebyshevTExpansion}, we get the definite integration formula:
+\begin{equation}
+\int_\I f(x)\ud x \approx \int_\I f_{N-1}^{\rm T}(x)\ud x = 2f_0^{\rm T} + \sum_{k=2,2}^{N-1} \dfrac{2f_k^{\rm T}}{1-k^2}.
+\end{equation}
+
+\section{Problems}
+
+\begin{enumerate}
+%\item Dividing and conquering is a powerful way of designing new algorithms because, generally speaking, it automatically has a lower complexity than a conventional approach. Consider using a divide-and-conquer approach to polynomial evaluation in the monomial basis of degree-$(N-1)=2^n-1$, where $n\in\N_0$, that can be computed in $\OO(\log N)$ flops. Can you identify any disadvantages to the scheme? {\em Hint: use the recurrence $x^N = (x^{N/2})^2$ to build an $\OO(\log N)$ set of temporary variables storing the powers of $x$ that are powers of two.}
+
+\item Consider $\displaystyle f(z) = \sum_{k=0}^m f_k z^k$ and $\displaystyle g(z) = \sum_{k=0}^n g_k z^k$. Conventionally, the product $\displaystyle f(z)g(z) =: h(z) = \sum_{k=0}^{m+n}h_k z^k$ can be computed, where the coefficients:
+\[
+h_k=\sum_{j=\max\{0,k-n\}}^{\min\{k,m\}} f_j g_{k-j},
+\]
+are the Cauchy product of the coefficients of $f$ and $g$.
+
+Estimate the complexity of obtaining all the coefficients $h_k$ using the Cauchy product.
+
+The FFT can be used to speed up multiplication of two functions as follows:
+\begin{enumerate}
+\item Pad $f$ and $g$ with zero coefficients up to degree $m+n$ such that $\displaystyle f(z) = \sum_{k=0}^{m+n} f_k z^k$ and $\displaystyle g(z) = \sum_{k=0}^{m+n} g_k z^k$;
+\item Convert the coefficients $\{f_k\}_{k=0}^{m+n}$ and $\{g_k\}_{k=0}^{m+n}$ to samples of $f$ and $g$ at the $(m+n+1)^{\rm th}$ roots of unity using the iFFT;
+\item Use the fact that, pointwise, $h(z_j^{m+n+1}) = f(z_j^{m+n+1})g(z_j^{m+n+1})$ to get samples of $h$; and,
+\item Convert samples of $h(z_j^{m+n+1})$ to coefficients $h_k$ using the FFT.
+\end{enumerate}
+Estimate the complexity of obtaining all the coefficients $h_k$ using the FFT.
+
+\item Theorem~\ref{theorem:Aliasing} may seem benign, but it can actually be used to prove that the maximum absolute approximation error of $\displaystyle \hat{f}_{N-1}(z) = \sum_{k=0}^{N-1}\hat{f}_kz^k$ to $\displaystyle f(z) = \sum_{k=0}^\infty f_kz^k$ is at most twice that of $\displaystyle f_{N-1}(z) = \sum_{k=0}^{N-1}f_kz^k$ with the true Laurent coefficients. Give the proof.
+
+\item Let $N = YYYYMMDD$ be the integer corresponding to your birthdate and consider the function $f(x) = \abs{x}$\verb+ = abs(x)+. If $N$ is odd, calculate the first $N$ approximate Chebyshev-$T$ coefficients via the DCT by adapting the {\sc Julia} code in Example~\ref{Example:DCT}. If $N$ is even, calculate the first $N$ approximate Chebyshev-$U$ coefficients via the DST by adapting the {\sc Julia} code in Example~\ref{Example:DST}. Use the coefficients and the property $T_n(1) = 1$ or $U_n(1) = n+1$ to estimate the value of the interpolant at $x=1$. Find a classmate with opposite parity in their birthdate. Explain in your own terms whose approximation of $1$ is better and why. {\em Note: The absolute value function is merely continuous on $\I$ so we don't expect a fast decay in the coefficients, which is why using tens of millions of points is somehow acceptable.}
+
+\item In Chapter~\ref{chapter:InterpolationApproximation}, we found an explicit expression for the barycentric weights of Lagrange interpolation in equispaced points. It was a hard grind that can be avoided by interpolating at the roots of the classical orthogonal polynomials. Use the fact that $T_{n+1}(x)$ is the orthogonal polynomial whose $n+1$ roots are the Chebyshev points of the first kind to assert:
+\[
+\prod_{\substack{i=0\\i\ne k}}^n(x-x_i) = \dfrac{2^{-n}T_{n+1}(x)}{x-x_k}.
+\]
+Combine it with $T_{n+1}'(x) = (n+1)U_n(x)$ to obtain the simple expression:
+\[
+\tilde{\lambda}_k = (-1)^k\sin\left(\dfrac{k+\tfrac{1}{2}}{n+1}\pi\right),
+\]
+for the normalized barycentric weights of polynomial interpolants at the Chebyshev points of the first kind. You may now create a Lagrange interpolant through the Chebyshev points in $\OO(n)$ flops!
+
+\end{enumerate}

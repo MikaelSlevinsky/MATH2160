@@ -1,0 +1,102 @@
+\begin{thebibliography}{10}
+
+\bibitem{Suli-Mayers-03}
+E.~S\"uli and D.~Mayers.
+\newblock {\em An Introduction to Numerical Analysis}.
+\newblock Cambridge University Press, 2003.
+
+\bibitem{Gautschi-12}
+W.~Gautschi.
+\newblock {\em Numerical Analysis}.
+\newblock Birkh\"auser, second edition, 2012.
+
+\bibitem{Fletcher-80-1}
+R.~Fletcher.
+\newblock {\em Practical Methods of Optimization}, volume 1: Unconstrained
+  Optimization.
+\newblock John Wiley \& Sons, Ltd., 1980.
+
+\bibitem{Fletcher-80-2}
+R.~Fletcher.
+\newblock {\em Practical Methods of Optimization}, volume 2: Constrained
+  Optimization.
+\newblock John Wiley \& Sons, Ltd., 1980.
+
+\bibitem{Higham-02}
+N.~J. Higham.
+\newblock {\em Accuracy and Stability of Numerical Algorithms}.
+\newblock SIAM, second edition, 2002.
+
+\bibitem{Horner-109-308-19}
+W.~G. Horner.
+\newblock A new method of solving numerical equations of all orders, by
+  continuous approximation.
+\newblock {\em Phil. Trans. Roy. Soc.}, 109:308--335, 1819.
+
+\bibitem{Hestenes-Stiefel-49-409-52}
+M.~R. Hestenes and E.~Stiefel.
+\newblock Methods of conjugate gradients for solving linear systems.
+\newblock {\em J. Res. Nat. Bur. Standards}, 49:409--436, 1952.
+
+\bibitem{Stoer-Bulirsch-02}
+J.~Stoer and R.~Bulirsch.
+\newblock {\em Introduction to Numerical Analysis, Third Edition. Texts in
+  Applied Mathematics 12}.
+\newblock Springer-Verlag, New York, 2002.
+
+\bibitem{Higham-24-547-04}
+N.~J. Higham.
+\newblock The numerical stability of barycentric {L}agrange interpolation.
+\newblock {\em IMA J. Numer. Anal.}, 24:547--556, 2004.
+
+\bibitem{Runge-46-224-01}
+C.~Runge.
+\newblock {\"U}ber empirische {F}unktionen und die {I}nterpolation zwischen
+  \"aquidistanten {O}rdinaten.
+\newblock {\em Z. Math. Phys.}, 46:224--243, 1901.
+
+\bibitem{Clenshaw-9-118-55}
+C.~W. Clenshaw.
+\newblock A note on the summation of {C}hebyshev series.
+\newblock {\em Math. Comp.}, 9:118--120, 1955.
+
+\bibitem{Smith-19-33-65}
+F.~J. Smith.
+\newblock An algorithm for summing orthogonal polynomial series and their
+  derivatives with applications to curve-fitting and interpolation.
+\newblock {\em Math. Comp.}, 19:33--36, 1965.
+
+\bibitem{Nikiforov-Uvarov-88}
+A.~F. Nikiforov and V.~B. Uvarov.
+\newblock {\em Special Functions of Mathematical Physics}.
+\newblock Birkh\"auser Verlag, 1988.
+
+\bibitem{Trefethen-12}
+L.~N. Trefethen.
+\newblock {\em Approximation Theory and Approximation Practice}.
+\newblock SIAM, 2012.
+
+\bibitem{Richardson-210-459-11}
+L.~F. Richardson.
+\newblock The approximate arithmetical solution by finite differences of
+  physical problems including differential equations, with an application to
+  the stresses in a masonry dam.
+\newblock {\em Phil. Trans. of the Royal Society A}, 210:459--470, 1911.
+
+\bibitem{Cooley-Tukey-19-297-65}
+J.~W. Cooley and J.~W. Tukey.
+\newblock An algorithm for the machine calculation of complex {F}ourier series.
+\newblock {\em Math. Comp.}, 19:297--301, 1965.
+
+\bibitem{Clenshaw-Curtis-2-197-60}
+C.~W. Clenshaw and A.~R. Curtis.
+\newblock A method for numerical integration on an automatic computer.
+\newblock {\em Numer. Math.}, 2:197--205, 1960.
+
+\bibitem{Bornemann-Laurie-Wagon-Waldvogel-04}
+F.~Bornemann, D.~Laurie, S.~Wagon, and J.~Waldvogel.
+\newblock {\em The SIAM 100-Digit Challenge. A Study in High-Accuracy Numerical
+  Computing}.
+\newblock SIAM, Philadelphia, 2004.
+
+\end{thebibliography}

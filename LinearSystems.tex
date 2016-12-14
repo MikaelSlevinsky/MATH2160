@@ -1,0 +1,1053 @@
+% !TEX root = ./MATH2160.tex
+\chapter{Linear Systems of Equations}\label{chapter:LinearSystems}
+
+Given a nonsingular matrix $A\in\C^{n\times n}$ and a vector $b\in\C^n$, the goal is to find $x\in\C^n$ such that $Ax=b$. Equivalently, find $x=\pr(x_1,x_2,\ldots,x_n)^\top$ for which:
+\begin{equation}
+\begin{array}{ccc}
+A_{1,1}x_1 + A_{1,2}x_2+\cdots+A_{1,n}x_n & = & b_1,\\
+A_{2,1}x_1 + A_{2,2}x_2+\cdots+A_{2,n}x_n & = & b_2,\\
+\vdots \qquad \vdots \qquad \cdots \qquad \vdots & & \vdots \\
+A_{n,1}x_1 + A_{n,2}x_2+\cdots+A_{n,n}x_n & = & b_n.
+\end{array}
+\end{equation}
+This is without a doubt the most important problem in scientific computing; many problems in science and engineering are often restated as a linear system of equations. For instance, after discretization, a system of linear partial differential equations becomes a system of linear equations.
+
+We shall examine two classes of methods for solving linear systems. The first class of methods are direct methods, with Gaussian elimination as the poster child. Direct methods are designed to return the exact solution (modulo rounding errors) in a finite number of steps. The second class of methods are iterative methods, which are designed to converge only after an infinite number of steps. Each class of methods is useful for different classes of linear systems. In particular, iterative methods are primarily used for the solution of large (data-)sparse linear systems\footnote{Sparsity in a matrix means {\em many} of its entries are zero. Data sparsity in a matrix means that while many entries may {\em not} be zero, the entries are prescribed by a formula involving a very small number of degrees of freedom. For example, in the data-sparse outer-product $A=uv^\top$, the $mn$ entries of $A$ are all determined by only $m+n$ entries in $u$ and $v$.}.
+
+We shall also consider the solution of overdetermined systems $Ax=b$, where $A\in\C^{m\times n}$ where $m>n$ and $x\in\C^n$ and $b\in\C^m$. The so-called least squares solution of the system can be obtained by solving the square system $A^* Ax = A^* b$. While directly multiplying both sides of the equation by $A^*$ roughly doubles the inaccuracy, we will explore matrix factorizations that provide well-conditioned algorithms for least squares solutions.
+
+\section{Gaussian Elimination}
+
+Gaussian Elimination (GE) is the prototypical direct method for small to medium systems ($n<1000$). In this section, we shall start the discussion with the basic version, which does not work for all matrices. Then, the full version will be given in the following section.
+
+\subsection{Without Pivoting}
+
+\begin{example}
+Consider the system:
+\begin{align*}
+x+2y-z & = 3\\
+2x+y-2z & = 3\\
+-3x+y+z & = -6.
+\end{align*}
+In the basic version of GE, we augment the matrix with the righthand side as:
+\[
+\begin{bmatrix}
+1 & 2 & -1 & 3\\
+2 & 1 & -2 & 3\\
+-3 & 1 & 1 & -6\\
+\end{bmatrix}.
+\]
+Let $r_i$ denote the $i^{\rm th}$ row of the above augmented matrix. The notation $r_i \leftarrow r_i + ar_j$ is used to denote replacing row $i$ by row $i$ plus $a$ times row $j$. GE performs a sequence of row operations to reduce the augmented matrix to upper triangular form. For this example, performing $r_2 \leftarrow -2r_1+r_2$ and $r_3\leftarrow 3r_1+r_3$ results in:
+\[
+\begin{bmatrix}
+1 & 2 & -1 & 3\\
+0 & -3 & 0 & -3\\
+0 & 7 & -2 & 3\\
+\end{bmatrix}.
+\]
+Notice that after these operations, the first column is zero except for the first entry. Next, we perform $r_3\leftarrow \tfrac{7}{3}r_2+r_3$ and we obtain:
+\[
+\begin{bmatrix}
+1 & 2 & -1 & 3\\
+0 & -3 & 0 & -3\\
+0 & 0 & -2 & -4\\
+\end{bmatrix}.
+\]
+Note that the new matrix is now upper triangular. The solution can easily be calculated by back substitution: from the last equation, $-2z=-4$ or $z=2$; from the second equation, $-3y=-3$ or $y=1$; and, from the first equation:
+\[
+x+2y-z=3,
+\]
+or using our values for $y$ and $z$, we find $x=3$.
+\end{example}
+
+The full algorithm of Gaussian Elimination can be described in terms of overwriting the entries of the augmented matrix.
+
+\begin{algorithm}[Gaussian Elimination]~\\
+for columns $j=1,2,\ldots,n-1,$\\
+\hspace*{0.75cm} for rows $i=j+1,j+2,\ldots,n,$
+\[
+r_i \leftarrow r_i- \dfrac{A_{i,j}}{A_{j,j}}r_j,\quad{\rm and}\quad b_i \leftarrow b_i-\dfrac{A_{i,j}}{A_{j,j}}b_j.\\
+\]
+\hspace*{0.75cm} end\\
+end
+\end{algorithm}
+
+Let us calculate the complexity of GE. Since the notation $r_i \leftarrow r_i - \dfrac{A_{i,j}}{A_{j,j}}r_j$ is equivalent to:
+
+for columns $k=j+1,j+2,\ldots,n,$
+\[
+A_{i,k} \leftarrow A_{i,k} - \dfrac{A_{i,j}}{A_{j,j}}A_{j,k},
+\]
+end
+
+This is approximately $2(n-j)$ flops as the multiplier $\dfrac{A_{i,j}}{A_{j,j}}$ is calculated only once. N.B. $A_{j,j}$ is called the {\em pivot}. Overall, therefore, the complexity of GE is approximately:
+\[
+\sum_{j=1}^{n-1} 2(n-j)^2 = 2\sum_{l=1}^{n-1}l^2 = 2\dfrac{n(n-1)(2n-1)}{6} = \dfrac{2}{3}n^3+\OO(n^2),
+\]
+flops. The calculations involving the vector $b$ are:
+\[
+\sum_{j=1}^{n-1}2(n-j) = 2\sum_{l=1}^{n-1}l = 2\dfrac{n(n-1)}{2} = n^2+\OO(n),
+\]
+flops.
+
+\begin{example}\label{example:SecondGE}
+We wish to solve:
+\[
+\begin{bmatrix} 3 & -1 & 2\\ 1 & 2 & 3\\ 2 & -2 & -1\end{bmatrix}\begin{bmatrix} x_1\\x_2\\x_3\end{bmatrix} = \begin{bmatrix}12\\11\\2\end{bmatrix}:\hbox{is represented as} \begin{bmatrix} 3 & -1 & 2 & 12\\ 1 & 2 & 3 & 11\\ 2 & -2 & -1 & 2\end{bmatrix}.
+\]
+\[
+\begin{array}{c} r_2 \leftarrow r_2 - \frac{1}{3}r_1\\ r_3 \leftarrow r_3 - \frac{2}{3} r_1\end{array} \Rightarrow \begin{bmatrix} 3 & -1 & 2 & 12\\ 0 & \frac{7}{3} & \frac{7}{3} & 7\\ 0 & -\frac{4}{3} & -\frac{7}{3} & -6\end{bmatrix}
+\]
+\[
+r_3 \leftarrow r_3 + \tfrac{4}{7}r_2 \Rightarrow \begin{bmatrix} 3 & -1 & 2 & 12\\ 0 & \frac{7}{3} & \frac{7}{3} & 7\\ 0 & 0 & -1 & -2\end{bmatrix}
+\]
+We then use back substitution to obtain:
+\begin{align*}
+x_3 & = 2,\\
+x_2 & = \dfrac{3}{7}\left(7 - \frac{7}{3}\cdot2\right) = 1,\\
+x_1 & = \dfrac{1}{3}\left(12 - (-1)\cdot1-2\cdot2\right) = 3.
+\end{align*}
+\end{example}
+
+\subsection{With Partial Pivoting}
+
+Na\"ive GE does not always work! Consider the system:
+\begin{equation}\label{eq:badGE}
+\begin{bmatrix} 0 & 1\\ 1 & 0\end{bmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} = \begin{bmatrix} 1\\2\end{bmatrix},
+\end{equation}
+whose solution is clearly $x = (2,1)^\top$. If we apply the generic GE algorithm, it will fail at the first step due to division by zero. We are free, however, to re-order the equations (i.e. the rows) into any order that suits us. Clearly, a better ordering of the system~\eqref{eq:badGE} is:
+\begin{equation}\label{eq:goodGE}
+\begin{bmatrix} 1 & 0\\ 0 & 1\end{bmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} = \begin{bmatrix} 2\\1\end{bmatrix},
+\end{equation}
+
+On paper, then, it will suffice to ensure that, at every step in the GE algorithm, we re-order the remaining equations to ensure we are not pivoting with $0$. However, we can take this argument further and consider the system with a very small parameter $\epsilon\ne0$:
+\begin{equation}\label{eq:badGEeps}
+\begin{bmatrix} \epsilon & 1\\ 1 & \epsilon\end{bmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} = \begin{bmatrix} 1\\2\end{bmatrix},
+\end{equation}
+whose solution is $x = \left(\tfrac{2-\epsilon}{1-\epsilon^2},\tfrac{1-2\epsilon}{1-\epsilon^2}\right)^\top \approx (2,1)^\top$ for small $\epsilon$. If we apply the generic GE algorithm, then we find:
+\begin{equation}
+\begin{bmatrix} \epsilon & 1\\ 0 & \epsilon-\epsilon^{-1}\end{bmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} = \begin{bmatrix} 1\\2-\epsilon^{-1}\end{bmatrix}.
+\end{equation}
+In double precision, $\epsilon-\epsilon^{-1}$ is indistinguishable from $-\epsilon^{-1}$ when $\abs{\epsilon}\le 7.450580596923828\times10^{-9}$. Therefore, in this r\'egime, the matrix is numerically equivalent to:
+\begin{equation}
+\fl\left(\begin{bmatrix} \epsilon & 1\\ 0 & \epsilon-\epsilon^{-1}\end{bmatrix}\right) = \begin{bmatrix} \epsilon & 1\\ 0 & -\epsilon^{-1}\end{bmatrix}.
+\end{equation}
+The solution of the numerically equivalent system is $x_2 = 1-2\epsilon$, and $x_1 = \epsilon^{-1}(1-x_2)$. Clearly, there is no issue in computing $x_2$, and its numerical value even approaches $\tfrac{1-2\epsilon}{1-\epsilon^2}$ as $\epsilon\to0$. However, computing $x_1$ via this algorithm results in a loss of accuracy on the order of $-\log_{10}(\epsilon)$ digits, due to the subtractive cancellation involved in $1-x_2$.
+
+To mitigate the accumulation and amplification of disastrous rounding errors, we can interchange rows at every intermediate step in the GE algorithm to ensure we are pivoting with the entry with the largest magnitude at step $j$, $j_{\rm max} = \argmax_{j\le i\le n}\abs{A_{i,j}}$ and $r_j \leftrightarrow r_{j_{\rm max}}$. This will ensure that we are not multiplying/dividing by exceptionally small/large values, and thus the amplification of rounding errors is minimized.
+
+\begin{example}\label{eq:LastGE}
+Apply GE with partial pivoting to $\begin{bmatrix} 2 & 1 & 1 & 0\\ 4 & 3 & 3 & 1\\ 8 & 7 & 9 & 5\\ 6 & 7 & 9 & 8\end{bmatrix}$. First, we permute rows:
+\[
+r_3\leftrightarrow r_1 \Rightarrow \begin{bmatrix} 8 & 7 & 9 & 5\\ 4 & 3 & 3 & 1\\ 2 & 1 & 1 & 0\\ 6 & 7 & 9 & 8\end{bmatrix}.
+\]
+Then, we eliminate:
+\[
+\begin{array}{c} r_2\leftarrow r_2 - \frac{1}{2}r_1\\ r_3\leftarrow r_3-\frac{1}{4}r_1\\ r_4\leftarrow r_4-\frac{3}{4}r_1\end{array} \Rightarrow \begin{bmatrix} 8 & 7 & 9 & 5\\ 0 & -\frac{1}{2} & -\frac{3}{2} & -\frac{3}{2}\\ 0 & -\frac{3}{4} & -\frac{5}{4} & -\frac{5}{4}\\ 0 & \frac{7}{4} & \frac{9}{4} & \frac{17}{4}\end{bmatrix}.
+\]
+Again, we permute rows:
+\[
+r_2\leftrightarrow r_4 \Rightarrow  \begin{bmatrix} 8 & 7 & 9 & 5\\ 0 & \frac{7}{4} & \frac{9}{4} & \frac{17}{4}\\ 0 & -\frac{3}{4} & -\frac{5}{4} & -\frac{5}{4}\\ 0 & -\frac{1}{2} & -\frac{3}{2} & -\frac{3}{2}\end{bmatrix},
+\]
+and we eliminate:
+\[
+\begin{array}{c} r_3\leftarrow r_3 + \frac{3}{7}r_2\\ r_4 \leftarrow r_4 + \frac{2}{7}r_2\end{array} \Rightarrow  \begin{bmatrix} 8 & 7 & 9 & 5\\ 0 & \frac{7}{4} & \frac{9}{4} & \frac{17}{4}\\ 0 & 0 & -\frac{2}{7} & \frac{4}{7}\\ 0 & 0 & -\frac{6}{7} & -\frac{2}{7}\end{bmatrix}.
+\]
+Finally, we permute rows:
+\[
+r_3\leftrightarrow r_4 \Rightarrow  \begin{bmatrix} 8 & 7 & 9 & 5\\ 0 & \frac{7}{4} & \frac{9}{4} & \frac{17}{4}\\ 0 & 0 & -\frac{6}{7} & -\frac{2}{7}\\ 0 & 0 & -\frac{2}{7} & \frac{4}{7}\end{bmatrix},
+\]
+and we eliminate:
+\[
+r_4\leftarrow r_4 - \tfrac{1}{3}r_3 \Rightarrow  \begin{bmatrix} 8 & 7 & 9 & 5\\ 0 & \frac{7}{4} & \frac{9}{4} & \frac{17}{4}\\ 0 & 0 & -\frac{6}{7} & -\frac{2}{7}\\ 0 & 0 & 0 & \frac{2}{3}\end{bmatrix}.
+\]
+\end{example}
+
+In practice, GE with partial pivoting is a numerically stable algorithm, though there are academic examples where rounding errors increase exponentially quickly as a function of the number of unknowns in the linear system. Such examples, fortunately, rarely occur in practice. There is a more numerically stable algorithm, known as GE with full pivoting. In this algorithm, at the $j^{\rm th}$ pass of the process, we choose the largest entry in the $(n-j+1)\times(n-j+1)$ submatrix to be the pivot. GE with full pivoting is rarely used in practice due to the extra complexity involved in searching for the pivot, especially since partial pivoting is usually quite adequate.
+
+\section{Taking Advantage of Structure I}
+
+\subsection{Triangular Matrices}
+
+\begin{definition}
+A {\em lower (upper) triangular matrix} is a square matrix whose entries above (below) the main diagonal are all zero. If $L\in\C^{n\times n}$ is a lower triangular matrix and $U\in\C^{n\times n}$ is an upper triangular matrix:
+\[
+L = \begin{bmatrix}
+L_{1,1} & & & 0\\
+L_{2,1} & L_{2,2}\\
+\vdots & \vdots & \ddots\\
+L_{n,1} & L_{n,2} & \cdots & L_{n,n}\\
+\end{bmatrix},
+\quad{\rm and}\quad
+U = \begin{bmatrix}
+U_{1,1} & U_{1,2} & \cdots & U_{1,n}\\
+& U_{2,2} & \cdots & U_{2,n}\\
+& & \ddots & \vdots\\
+0 & & & U_{n,n}\\
+\end{bmatrix}.
+\]
+A lower (upper) triangular matrix is {\em strictly lower (upper) triangular} if the diagonal entries are zero. Any matrix that is simultaneously upper and lower triangular is {\em diagonal}.
+\end{definition}
+
+Triangular matrices have a many properties that make them convenient to work with. For example, the (conjugate) transpose of a lower (upper) triangular matrix is an upper (lower) triangular matrix. As well, recall that the determinant of a triangular matrix is the product of the diagonal entries of the matrix. Similarly, the diagonal entries of a triangular matrix are the eigenvalues of the matrix.
+
+\begin{algorithm}[Forward substitution]
+Let $L\in\C^{n\times n}$ be a lower triangular matrix, and let $y,b\in\C^n$. If $Ly = b$, then:
+\begin{enumerate}
+\item $y_1 = L_{1,1}^{-1}b_1$; and for $i=2,\ldots,n$,
+\item $\displaystyle y_i = L_{i,i}^{-1}\left(b_i - \sum_{j=1}^{i-1}L_{i,j}y_j\right)$.
+\end{enumerate}
+\end{algorithm}
+
+\begin{algorithm}[Backward substitution]
+Let $U\in\C^{n\times n}$ be an upper triangular matrix, and let $y,b\in\C^n$. If $Uy = b$, then:
+\begin{enumerate}
+\item $y_n = U_{n,n}^{-1}b_n$; and for $i=n-1,\ldots,1$,
+\item $\displaystyle y_i = U_{i,i}^{-1}\left(b_i - \sum_{j=i+1}^nU_{i,j}y_j\right)$.
+\end{enumerate}
+\end{algorithm}
+
+Using forward (backward) substitution, the inverse of a lower (upper) triangular matrix can be applied to a vector in $n^2+\OO(n)$ operations, which is faster than Gaussian elimination for an unstructured matrix. Clearly, a diagonal matrix can be inverted in $n$ operations.
+
+\begin{example}
+If $\begin{bmatrix} 1 &0&0\\ 2&3&0\\4&8&3\\\end{bmatrix}y = \begin{bmatrix}1\\2\\3\\\end{bmatrix}$, then:
+\begin{align*}
+y_1 & = 1,\\
+y_2 & = \dfrac{1}{3}\left(2 - 2\cdot1\right) = 0,\\
+y_3 & = \dfrac{1}{3}\left(3 - 4\cdot1-8\cdot0\right) = -\dfrac{1}{3}.
+\end{align*}
+\end{example}
+
+\begin{definition}
+A {\em unit} lower (upper) triangular matrix is a lower (upper) triangular matrix whose diagonal entries are all $1$.
+\end{definition}
+
+\subsection{Permutation Matrices}
+
+\begin{definition}
+Let $p$ be a permutation of the set $\{1,\ldots,n\}$. A {\em row permutation} matrix $P_n^r\in\R^{n\times n}$ is a matrix whose rows are the $p^{\rm th}$ rows of the identity $P_n^r = I_n[p,:]$. Similarly, a {\em column permutation} matrix $P_n^c\in\R^{n\times n}$ is a matrix whose columns are the $p^{\rm th}$ columns of the identity $P_n^c = I_n[:,p]$.
+\end{definition}
+
+Row permutation matrices applied to the left of a matrix $A\in\C^{n\times n}$ permute the rows of the matrix $A$ according to the permutation $p$. Column permutation matrices applied to the right of a matrix permute the columns of the matrix $A$ according to the permutation $p$. In other words:
+\[
+P_n^rA = A[p,:],\quad{\rm and}\quad AP_n^c = A[:,p].
+\]
+
+Row and column permutation matrices corresponding to the same permutation $p$ are inverses, and indeed, $P_n^{r,-1} = P_n^{r,\top} = P_n^c$ and $P_n^{c,-1} = P_n^{c,\top} = P_n^r$.
+
+\subsection{Unitary (and Orthogonal) Matrices}
+
+\begin{definition}
+A {\em unitary matrix} $Q\in\C^{n\times n}$ is a matrix whose rows and columns are all mutually orthonormal. In other words:
+\[
+QQ^* = Q^* Q = I.
+\]
+An {\em orthogonal matrix} $Q\in\R^{n\times n}$ is a unitary matrix with real entries. In this case, $QQ^\top = Q^\top Q = I$.
+\end{definition}
+
+Unitary matrices are an important class of matrices because they will enable us to derive new types of matrix factorizations with better conditioning. Indeed, unitary matrices can be viewed as the class of matrices whose conjugate transpose is the inverse, $Q^{-1} = Q^*$, and specializing on the class of orthogonal matrices, $Q^{-1} = Q^\top$. This simple identification allows for $\OO(n^2)$ (fast) inversion via matrix-vector multiplication.
+
+\begin{lemma}\label{lemma:unitary2norm}
+For any unitary matrix $Q\in\C^{n\times n}$, $\norm{Q}_2=1$.
+\end{lemma}
+\begin{proof}
+We prove that for any vector $x\in\C^n$, $\norm{Qx}_2 = \norm{x}_2$. The result then follows by the definition of the induced $2$-norm:
+\[
+\norm{Q}_2 = \sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{Qx}_2}{\norm{x}_2}.
+\]
+Since the space $\ell^2$ is an inner product space, we identify the square of the $2$-norm with the inner product:
+\[
+\norm{Qx}_2^2 = \langle Qx,Qx\rangle = \pr(Qx)^*Qx = x^*Q^*Qx = x^*Ix = x^*x = \langle x,x\rangle = \norm{x}_2^2.
+\]
+\end{proof}
+This lemma is very powerful because it allows us to prove the following theorem regarding the $2$-norm condition number of unitary matrices.
+\begin{theorem}
+For any unitary matrix $Q\in\C^{n\times n}$, $\cond_2(Q)=1$.
+\end{theorem}
+\begin{proof}
+By definition:
+\[
+\cond_2(Q) = \norm{Q}_2\norm{Q^{-1}}_2 = \norm{Q}_2\norm{Q^*}_2.
+\]
+Since $Q^*$ is also a unitary matrix, it follows from Lemma~\ref{lemma:unitary2norm} that $\norm{Q}_2 = 1$ and $\norm{Q^*}_2 = 1$.
+\end{proof}
+
+Unitary matrices have a host of other properties which make them excellent to work with. Lemma~\ref{lemma:unitary2norm} has a geometrical interpretation of unitary matrices. Since $\norm{Qx}_2 = \norm{x}_2$, the vector $x$ is {\em neither} expanded nor contracted by the transformation $Q$. This allows us to identify $Q$ with a change of basis that is simply a rotation of the coordinates in $\C^n$.
+
+Two classes of unitary matrices can be derived from this geometrical interpretation. The first class is known as Givens rotation matrices. The second class is known as Householder reflector matrices. They are named after the mathematicians who identified them first.
+
+\begin{example}
+Let $\theta\in[0,2\pi)$, let $c = \cos\theta$ and $s=\sin\theta$, and let $i,j\in\{1,\ldots,n\}$. The $n\times n$ {\em Givens matrix}:
+\[
+G(i,j,\theta) = \begin{bmatrix}
+1 & \cdots & 0 & \cdots & 0 & \cdots & 0\\
+\vdots & \ddots & \vdots & & \vdots & & \vdots\\
+0 & \cdots & c & \cdots & s & \cdots & 0\\
+\vdots & & \vdots & \ddots & \vdots & & \vdots\\
+0 & \cdots & -s & \cdots & c & \cdots & 0\\
+\vdots & & \vdots & & \vdots & \ddots & \vdots\\
+0 & \cdots & 0 & \cdots & 0 & \cdots & 1\\
+\end{bmatrix},
+\]
+where the first $c$ appears at the intersection of the $i^{\rm th}$ row and column, and the second $c$ appears at the intersection of the $j^{\rm th}$ row and column, is an orthogonal matrix. This can be observed by identifying $G(i,j,\theta)$ as a clockwise rotation of a vector in the $i$ and $j$ coordinates by the angle $\theta$. It can also be proved by multiplying by $G(i,j,\theta)^\top$ and recovering the identity.
+\end{example}
+
+\begin{example}
+Let $0\ne w\in\R^n$. The $n\times n$ {\em Householder matrix}:
+\[
+H(w) := I - \dfrac{2}{\langle w,w\rangle} ww^\top,
+\]
+is an orthogonal matrix. This follows from:
+\begin{align*}
+H(w)H(w)^\top & = \left(I - \dfrac{2}{\langle w,w\rangle} ww^\top\right)\left(I - \dfrac{2}{\langle w,w\rangle} ww^\top\right),\\
+& = I - \dfrac{4}{\langle w,w\rangle}ww^\top + \dfrac{4}{\langle w,w\rangle^2}w (w^\top w)w^\top,\\
+& = I.
+\end{align*}
+Householder matrices can be identified as reflections about the hyperplane defined by $w\cdot x = 0$.
+\end{example}
+
+Why are the Givens and Householder matrices so important? Due to the following theorem, we can express {\em any} orthogonal matrix $Q$ as a product of Givens and/or Householder matrices.
+\begin{theorem}\label{theorem:unitaryproduct}
+The product of unitary (orthogonal) matrices is unitary (orthogonal).
+\end{theorem}
+
+\section{Matrix Factorizations}
+
+\subsection{LU Factorization}
+
+The basic operation of the algorithm of Gaussian elimination is the replacement of row $i$ with row $i$ plus some constant multiple of row $j$. The computational complexity of Gaussian elimination consists of $\frac{2}{3}n^3+\OO(n^2)$ for the operations on the matrix $A$, and $n^2+\OO(n)$ for the operations on the vector $b$. Suppose we are required to calculate the solution of both $Ax=b$ and $Ax=c$. It would be ideal to save as much work as possible in the first ``solve'' so that successive solves can be computed by only operating on the input data $(b,c,\ldots)$. This is achieved by the $LU$ factorization of the matrix $A$, where $L$ is a lower triangular matrix, and $U$ is an upper triangular matrix:
+\begin{equation}
+\begin{bmatrix}
+A_{1,1} & A_{1,2} & \cdots & A_{1,n}\\
+A_{2,1} & A_{2,2} & \cdots & A_{2,n}\\
+\vdots & \vdots & \ddots & \vdots\\
+A_{n,1} & A_{n,2} & \cdots & A_{n,n}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+L_{1,1} & & & 0\\
+L_{2,1} & L_{2,2}\\
+\vdots & \vdots & \ddots\\
+L_{n,1} & L_{n,2} & \cdots & L_{n,n}\\
+\end{bmatrix}
+\begin{bmatrix}
+U_{1,1} & U_{1,2} & \cdots & U_{1,n}\\
+& U_{2,2} & \cdots & U_{2,n}\\
+& & \ddots & \vdots\\
+0 & & & U_{n,n}\\
+\end{bmatrix}.
+\end{equation}
+As there are $\displaystyle \sum_{l=1}^n l = \frac{n(n+1)}{2}$ unknowns in $L$ and similarly in $U$, the LU factorization of a matrix $A$ is not unique. In order to enforce uniqueness, we factorize $A$ into a {\em unit} lower triangular matrix $L$ and an upper triangular matrix $U$, removing the ambiguity:
+\begin{equation}
+\begin{bmatrix}
+A_{1,1} & A_{1,2} & \cdots & A_{1,n}\\
+A_{2,1} & A_{2,2} & \cdots & A_{2,n}\\
+\vdots & \vdots & \ddots & \vdots\\
+A_{n,1} & A_{n,2} & \cdots & A_{n,n}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & & & 0\\
+L_{2,1} & 1\\
+\vdots & \vdots & \ddots\\
+L_{n,1} & L_{n,2} & \cdots & 1\\
+\end{bmatrix}
+\begin{bmatrix}
+U_{1,1} & U_{1,2} & \cdots & U_{1,n}\\
+& U_{2,2} & \cdots & U_{2,n}\\
+& & \ddots & \vdots\\
+0 & & & U_{n,n}\\
+\end{bmatrix}.
+\end{equation}
+
+By expanding the matrix-matrix product, it is clear that $A_{1,1} = 1\cdot U_{1,1}$, and thus $U_{1,1}$ is readily determined. We could continue this process, but we want to draw analogy to GE. Note that in each step of GE, we seek row transformations in order to introduce zeros below the column pivot. For every column, we can accumulate all this work into a special unit lower triangular matrix. Let $v\in\C^{n-j}$, and consider the matrix:
+\begin{equation}
+M_n(v) := \begin{bmatrix}
+1 & & 0 & & & & 0\\
+& \ddots\\
+0 & & 1\\
+& & & 1\\
+& & & v_1 & 1 & & 0\\
+& & & \vdots & & \ddots\\
+0 & & & v_{n-j} & 0 & & 1\\
+\end{bmatrix}.
+\end{equation}
+This matrix is the unit lower triangular matrix with the entries of the vector $v$ in the $j^{\rm th}$ column below the main diagonal. This class of matrices is useful in storing the multipliers for every row in each iteration of GE.
+
+\begin{example}
+In Example~\ref{example:SecondGE}, we solved the system:
+\[
+\begin{bmatrix} 3 & -1 & 2\\ 1 & 2 & 3\\ 2 & -2 & -1\end{bmatrix}\begin{bmatrix} x_1\\x_2\\x_3\end{bmatrix} = \begin{bmatrix}12\\11\\2\end{bmatrix},
+\]
+by GE. The row operations were:
+\[
+\begin{array}{c} r_2 \leftarrow r_2 - \frac{1}{3}r_1\\ r_3 \leftarrow r_3 - \frac{2}{3} r_1\end{array},
+\]
+followed by:
+\[
+r_3 \leftarrow r_3 + \tfrac{4}{7}r_2.
+\]
+These row operations can be represented with the $M$ matrices as:
+\[
+M_3((-\tfrac{1}{3},-\tfrac{2}{3})^\top) = \begin{bmatrix} 1 & & 0\\ -\frac{1}{3} & 1\\ -\frac{2}{3} & & 1\end{bmatrix},
+\]
+and:
+\[
+M_3((\tfrac{4}{7})^\top) = \begin{bmatrix} 1 & & 0\\ & 1\\ & \frac{4}{7} & 1\end{bmatrix}.
+\]
+\end{example}
+
+The class of $M$ matrices satisfies a couple powerful properties.
+
+\begin{lemma}\label{lemma:MinverseLU} Let $v\in\C^{n-j}$. Then:
+\begin{equation}
+M_n(v)^{-1} = M_n(-v).
+\end{equation}
+\end{lemma}
+
+\begin{lemma}\label{lemma:MuMv} Let $u\in\C^{n-j}$ and let $v\in\C^{n-k}$ where $j<k$. Then:
+\begin{equation}
+M_n(u)M_n(v) = M_n(u)+M_n(v)-I.
+\end{equation}
+\end{lemma}
+
+These properties allow us to accumulate the multipliers in GE into a product of unit lower triangular matrices, whose inverses are known. The products of these inverses are then accumulated into a single unit lower triangular matrix.
+
+\begin{example}
+In Example~\ref{example:SecondGE}, we solved the system:
+\[
+\begin{bmatrix} 3 & -1 & 2\\ 1 & 2 & 3\\ 2 & -2 & -1\end{bmatrix}\begin{bmatrix} x_1\\x_2\\x_3\end{bmatrix} = \begin{bmatrix}12\\11\\2\end{bmatrix},
+\]
+by GE. The row operations were: 
+\[
+M_3((-\tfrac{1}{3},-\tfrac{2}{3})^\top) = \begin{bmatrix} 1 & & 0\\ -\frac{1}{3} & 1\\ -\frac{2}{3} & & 1\end{bmatrix},
+\]
+followed by:
+\[
+M_3((\tfrac{4}{7})^\top) = \begin{bmatrix} 1 & & 0\\ & 1\\ & \frac{4}{7} & 1\end{bmatrix}.
+\]
+Thus,
+\[
+M_3((\tfrac{4}{7})^\top)M_3((-\tfrac{1}{3},-\tfrac{2}{3})^\top)A = \begin{bmatrix} 3 & -1 & 2\\ 0 & \frac{7}{3} & \frac{7}{3}\\ 0 & 0 & -1\end{bmatrix} = U.
+\]
+By successively inverting the $M$ matrices and accumulating the result:
+\[
+A = \begin{bmatrix} 1\\ \frac{1}{3} & 1\\\frac{2}{3}&-\frac{4}{7}&1\end{bmatrix}\begin{bmatrix} 3 & -1 & 2\\ & \frac{7}{3} & \frac{7}{3}\\ & & -1\end{bmatrix} = LU.
+\]
+\end{example}
+
+The $LU$ factorization of $A$ carries the same complexity\footnote{After all, it is just an organization of the arithmetic.} as GE with respect to operations on the matrix $A$, but does not include any operations with an input vector $b$. When we want to solve a system $Ax=b$, we can:
+\begin{enumerate}
+\item Compute the factorization $A=LU$ in $\frac{2}{3}n^3+\OO(n^2)$ operations;
+\item Solve the system $Ly = b$ via forward substitution in $n^2+\OO(n)$ operations; and,
+\item Solve the system $Ux = y$ via backward substitution in $n^2+\OO(n)$ operations.
+\end{enumerate}
+
+We know that GE is numerically stable with partial pivoting, and in this case, we would also like to store pivot information in the $LU$ factorization.
+
+\begin{example}
+In Example~\ref{eq:LastGE}, we applied GE with partial pivoting to $\begin{bmatrix} 2 & 1 & 1 & 0\\ 4 & 3 & 3 & 1\\ 8 & 7 & 9 & 5\\ 6 & 7 & 9 & 8\end{bmatrix}$. The row permutations and eliminations can be written succinctly as:
+\begin{align*}
+& M_4((-\tfrac{1}{3})^\top)I_4[(1,2,4,3)^\top,:]M_4((\tfrac{3}{7},\tfrac{2}{7})^\top)I_4[(1,4,3,2)^\top,:]\\
+& \times M_4((-\tfrac{1}{2},-\tfrac{1}{4},-\tfrac{3}{4})^\top) I_4[(3,2,1,4)^\top,:]A = \begin{bmatrix} 8 & 7 & 9 & 5\\ 0 & \frac{7}{4} & \frac{9}{4} & \frac{17}{4}\\ 0 & 0 & -\frac{6}{7} & -\frac{2}{7}\\ 0 & 0 & 0 & \frac{2}{3}\end{bmatrix} = U.
+\end{align*}
+If we invert the multiplication and permutation matrices, we find:
+\[
+A = I_4[(3,2,1,4)^\top,:]^\top M_4((\tfrac{1}{2},\tfrac{1}{4},\tfrac{3}{4})^\top) I_4[(1,4,3,2)^\top,:]^\top M_4((-\tfrac{3}{7},-\tfrac{2}{7})^\top) I_4[(1,2,4,3)^\top,:]^\top M_4((\tfrac{1}{3})^\top) U
+\]
+If we carry out the matrix-matrix multiplications, then we find:
+\[
+A = \begin{bmatrix}\frac{1}{4} & -\frac{3}{7} & \frac{1}{3} & 1\\ \frac{1}{2} & -\frac{2}{7} & 1 & 0\\ 1 & 0 & 0 & 0\\ \frac{3}{4} & 1 & 0 & 0\end{bmatrix}U,
+\]
+The rows of the matrix multiplying $U$ can then be permuted\footnote{This much is straightforward: one need only organize the ones such that they are on the diagonal.} such that it is unit lower triangular:
+\[
+\underbrace{\begin{bmatrix} 1 & 0 & 0 & 0\\ \frac{3}{4} & 1 & 0 & 0\\\frac{1}{2} & -\frac{2}{7} & 1 & 0\\ \frac{1}{4} & -\frac{3}{7} & \frac{1}{3} & 1\end{bmatrix}}_{L} = \underbrace{\begin{bmatrix} 0 & 0 & 1 & 0\\ 0 & 0 & 0 & 1\\ 0 & 1 & 0 & 0\\ 1 & 0 & 0 & 0\end{bmatrix}}_{P} \begin{bmatrix}\frac{1}{4} & -\frac{3}{7} & \frac{1}{3} & 1\\ \frac{1}{2} & -\frac{2}{7} & 1 & 0\\ 1 & 0 & 0 & 0\\ \frac{3}{4} & 1 & 0 & 0\end{bmatrix}.
+\]
+Thus, $PA = LU$.
+\end{example}
+
+Similarly to the $LU$ factorization, the $LUP$ factorization can be used to solve linear systems as follows:
+\begin{enumerate}
+\item Compute the factorization $PA=LU$ in $\frac{2}{3}n^3+\OO(n^2)$ operations;
+\item Solve the system $Ly = Pb$ via forward substitution in $n^2+\OO(n)$ operations; and,
+\item Solve the system $Ux = y$ via backward substitution in $n^2+\OO(n)$ operations.
+\end{enumerate}
+
+\subsection{QR Factorization}
+
+We have seen that unitary and orthogonal matrices have interesting properties that make them useful. In this section, we combine the fact that the product of unitary (orthogonal) matrices is unitary (orthogonal) and the fact that unitary (orthogonal) matrices have an $\OO(n^2)$ inverse to consider another factorization of a square matrix $A\in\C^{n\times n}$. Such a factorization is the $QR$ factorization, where $Q$ is a unitary matrix and $R$ is an upper triangular matrix. Due to the added degrees of freedom, $QR$ factorizations are not unique\footnote{Non-uniqueness is irrelevant for the $QR$ factorization.}; however, we will assert existence of the factorization by constructions. The main advantage of the $QR$ factorization is that, viewed as an algorithm for solving linear systems, it is a well-conditioned algorithm since unitary (orthogonal) matrices have $2$-norm condition number $1$.
+\begin{theorem}
+Given a square matrix $A\in\C^{n\times n}$, there exists a unitary matrix $Q$ and an upper triangular matrix $R$ such that:
+\[
+A = QR.
+\]
+\end{theorem}
+Without loss of generality, we will focus on real square matrices $A\in\R^{n\times n}$ with orthogonal $QR$ factorizations\footnote{The technical details of the unitary $QR$ factorization for $A\in\C^{n\times n}$ needlessly complicate the matter.}.
+
+\subsubsection{Construction via Givens Matrices}
+
+\begin{lemma}\label{lemma:GivensZero}
+Given $u\in\R^n$, there exists a $\theta\in[0,2\pi)$ such that:
+\[
+G(i,j,\theta)u = \begin{bmatrix}u_1\\\vdots \\u_{i-1}\\ r\\ u_{i+1}\\\vdots\\ u_{j-1}\\ 0\\u_{j+1}\\\vdots\\u_n\end{bmatrix} =: v,
+\]
+say, where $r = \sqrt{u_i^2+u_j^2}$.
+\end{lemma}
+\begin{proof}
+Recall that the Givens matrix is:
+\[
+G(i,j,\theta) = \begin{bmatrix}
+1 & \cdots & 0 & \cdots & 0 & \cdots & 0\\
+\vdots & \ddots & \vdots & & \vdots & & \vdots\\
+0 & \cdots & c & \cdots & s & \cdots & 0\\
+\vdots & & \vdots & \ddots & \vdots & & \vdots\\
+0 & \cdots & -s & \cdots & c & \cdots & 0\\
+\vdots & & \vdots & & \vdots & \ddots & \vdots\\
+0 & \cdots & 0 & \cdots & 0 & \cdots & 1\\
+\end{bmatrix},
+\]
+Multiplying through, we note that the Givens matrix leaves every entry of $u$ untouched except the $i^{\rm th}$ and the $j^{\rm th}$ entries:
+\[
+G(i,j,\theta)u = \begin{bmatrix}u_1\\\vdots \\u_{i-1}\\ cu_i + s u_j\\ u_{i+1}\\\vdots\\ u_{j-1}\\ -su_i + c u_j\\u_{j+1}\\\vdots\\u_n\end{bmatrix} = \begin{bmatrix}u_1\\\vdots \\u_{i-1}\\ r\\ u_{i+1}\\\vdots\\ u_{j-1}\\ 0\\u_{j+1}\\\vdots\\u_n\end{bmatrix}.
+\]
+From the $j^{\rm th}$ equation, we know that $\tan\theta = \dfrac{u_j}{u_i}$, or equivalently:
+\[
+s = \dfrac{u_j}{\sqrt{u_i^2+u_j^2}},\quad{\rm and}\quad c = \dfrac{u_i}{\sqrt{u_i^2+u_j^2}}.
+\]
+\end{proof}
+Since there {\em always} exists an angle $\theta$ by which we can ``rotate'' the vector $u$ in order to introduce a zero in entry $j$, we will use the notation $G(i,j)$ to denote the Givens matrix that uses entry $i$ to introduce a zero in entry $j$.
+
+Now, if $u$ denotes the first column of $A\in\R^{n\times n}$, apply the Givens rotation to ``zero'' the $n,1$ entry of $A$ using the $n-1,1$ entry:
+\[
+G(n-1,n)A = \begin{bmatrix}
+A_{1,1} & A_{1,2} & \cdots & A_{1,n}\\
+A_{2,1} & A_{2,2} & \cdots & A_{2,n}\\
+\vdots & \vdots & \ddots & \vdots\\
+\sqrt{A_{n-1,1}^2+A_{n,n}^2} & \times & \cdots & \times\\
+0 & \times & \cdots & \times\\
+\end{bmatrix},
+\]
+where the $\times$ denotes a general, modified entry. Continue by introducing a zero in the $n-1,1$ entry of the modified matrix using the $n-2,1$ entry:
+\[
+G(n-2,n-1)G(n-1,n)A = \begin{bmatrix}
+A_{1,1} & A_{1,2} & \cdots & A_{1,n}\\
+A_{2,1} & A_{2,2} & \cdots & A_{2,n}\\
+\vdots & \vdots & \ddots & \vdots\\
+\sqrt{A_{n-2,1}^2+A_{n-1,1}^2+A_{n,n}^2} & \times & \cdots & \times\\
+0 & \times & \cdots & \times\\
+0 & \times & \cdots & \times\\
+\end{bmatrix}.
+\]
+Thus it is clear that we may introduce zeros in the $n-1$ entries below the $1,1$ entry, zeros in the $n-2$ entries below the $2,2$ entry, and so on and so forth until we have introduced zeros in every position below the main diagonal:
+\[
+\underbrace{G(n-1,n)\cdots \cdots G(2,3)\cdots G(n-1,n) G(1,2) \cdots G(n-1,n)}_{Q^\top}A = \begin{bmatrix}
+\times & \times & \cdots & \times\\
+0 & \times & \cdots & \times\\
+\vdots & \ddots & \ddots & \vdots\\
+0 & \cdots & 0 & \times
+\end{bmatrix} =: R.
+\]
+
+\subsubsection{Construction via Householder Matrices}
+
+\begin{lemma}\label{lemma:HouseholderZero}
+Given $u\in\R^n$, there exists a $w\in\R^n$ such that:
+\[
+H(w)u = \begin{bmatrix} \alpha\\ 0\\ \vdots\\0\end{bmatrix} =: v,
+\]
+say, where $\alpha = \pm\sqrt{\langle u,u\rangle}$.
+\end{lemma}
+\begin{proof}
+Let $w = \gamma(u-v)$ where $\gamma\ne0$. Recall that $\langle u,u\rangle = \langle v,v\rangle$. Thus:
+\begin{align*}
+w^\top w & = \gamma^2(u-v)^\top(u-v) = \gamma^2(u^\top u - u^\top v - v^\top u + v^\top v),\\
+& = \gamma^2(2u^\top u -2u^\top v) = 2\gamma^2u^\top(u-v) = 2\gamma u^\top w = 2\gamma w^\top u.
+\end{align*}
+Let us apply $H(w)$ to $u$:
+\begin{align*}
+H(w)u & = \left(I-\dfrac{2}{w^\top w}ww^\top\right)u,\\
+& = u - \dfrac{2}{2\gamma w^\top u} w w^\top u.
+\end{align*}
+Here, we can cancel the factor $2w^\top u$ from the numerator and denominator to obtain:
+\[
+H(w)u = u - \dfrac{1}{\gamma}w = u - (u-v) = v.
+\]
+\end{proof}
+Lemma~\ref{lemma:HouseholderZero}, is useful in showing that Householder matrices can be used to introduce as many as $n-1$ {\em zeros} in a vector of length $n$. 
+Now, if $u$ is the first column of the $n$-by-$n$ matrix $A$, then let:
+\[
+H(w_1)A = \left[\begin{array}{c|ccc} \alpha & \times & \cdots & \times\\ \hline 0 & \multicolumn{3}{c}{\multirow{3}{*}{$B$}}\\ \vdots\\0\\ \end{array}\right].
+\]
+The resulting matrix has zeros introduced below the first entry, which is now $\alpha$, $\times$ denotes a general entry of the matrix, and where $B\in\R^{n-1\times n-1}$. Similarly for $B$, we can find $\hat{w}\in\R^{n-1}$ such that:
+\[
+H(\hat{w})B = \left[\begin{array}{c|ccc} \beta & \times & \cdots & \times\\ \hline 0 & \multicolumn{3}{c}{\multirow{3}{*}{$C$}}\\ \vdots\\0\\ \end{array}\right].
+\]
+Since $H(\hat{w})$ is orthogonal, we can embed it in the identity matrix of size $n$-by-$n$:
+\[
+\left[\begin{array}{c|ccc} 1 & 0 & \cdots & 0\\ \hline 0 & \multicolumn{3}{c}{\multirow{3}{*}{$H(\hat{w})$}}\\ \vdots\\0\\ \end{array}\right] =: H(w_2),\quad{\rm where}\quad w_2 = \begin{bmatrix} 0\\\hat{w}\end{bmatrix}.
+\]
+Then:
+\[
+H(w_2)H(w_1)A = \left[\begin{array}{cc|ccc} \alpha & \times & \times & \cdots & \times\\ 0 & \beta & \times & \cdots & \times\\ \hline 0 & 0 & \multicolumn{3}{c}{\multirow{3}{*}{$C$}}\\ \vdots &\vdots\\0 & 0\\ \end{array}\right].
+\]
+Continuing in this manner for the $n-1$ steps, we obtain:
+\begin{equation}
+\underbrace{H(w_{n-1})\cdots H(w_2)H(w_1)}_{Q^\top}A = 
+\begin{bmatrix} \alpha & \times & \cdots & \times\\
+0 & \beta & \cdots & \times\\
+\vdots & \ddots & \ddots & \vdots\\
+0 & \cdots & 0 & \omega\\
+\end{bmatrix} =: R,
+\end{equation}
+an upper triangular matrix! Since the product of orthogonal matrices is also an orthogonal matrix, we have constructed the $QR$ factorization of $A = QR$.
+
+\subsubsection{Givens Matrices vs.~Householder Matrices}
+
+In certain scenarios, there are advantages to using either the Givens matrices or the Householder matrices to form the $QR$ factorization of $A$. Givens rotations are efficient to use on a parallel computer because every Givens rotation only modifies two rows of the matrix $A$. Therefore, a large matrix can be distributed between processors and Givens rotations can be performed in parallel. In contrast, Householder matrices are very efficient on a serial computer due to low-level optimization of code such as inner products in Basic Linear Algebra Subprograms (BLAS).
+
+\begin{remark}
+Recall that the $2$-norm condition number of a square matrix $A\in\C^{n\times n}$, $\cond_2(A) = \norm{A}_2\norm{A^{-1}}_2$, provides a least upper bound on the relative errors we can expect in matrix-vector multiplication and solution of linear systems. Furthermore, in Remark~\ref{remark:ConditionNumberFactorization}, we distinguished between the condition number of the {\em problem} and the condition number of the {\em algorithm} we use to solve the problem. We considered a factorization $A=BC$ as a useful algorithm for linear systems, only if the matrices $B$ and $C$ can be used efficiently to:
+\begin{enumerate}
+\item Solve for $y := B^{-1}b$; and,
+\item Solve for $x = C^{-1}y$.
+\end{enumerate}
+Using matrix inequalities, we compared condition numbers of the problem and the algorithm:
+\begin{align*}
+\cond_p(A) = \cond_p(BC) & = \norm{BC}_p\norm{(BC)^{-1}}_p = \norm{BC}_p\norm{C^{-1}B^{-1}}_p,\\
+& \le \norm{B}_p\norm{C}_p\norm{C^{-1}}_p\norm{B^{-1}}_p = \cond_p(B)\cond_p(C),
+\end{align*}
+concluding that the condition number of the algorithm is {\em at least as large} as the condition number of the problem. This is certainly true for the $LU$ factorization of a matrix, but for the $QR$, we can do better. Consider comparing the following condition numbers:
+\begin{align*}
+\cond_2(R) = \cond_2(Q^* A) & = \norm{Q^* A}_2\norm{(Q^*A)^{-1}}_2 = \norm{Q^*A}_2\norm{A^{-1}Q}_2,\\
+& \le \norm{Q^*}_2\norm{A}_2 \norm{A^{-1}}_2\norm{Q}_2 = \norm{A}_2\norm{A^{-1}}_2 = \cond_2(A).
+\end{align*}
+On the one hand it follows from the generic inequality for {\em any} factorization that:
+\[
+\cond_2(A) \le \cond_2(R),
+\]
+and from the inequality just derived:
+\[
+\cond_2(R) \le \cond_2(A).
+\]
+This can be true if and only if $\cond_2(A) = \cond_2(R)$. Since the $QR$ factorization has exactly the same condition number as the problem, it is a well-conditioned algorithm for solving linear systems.
+\end{remark}
+
+\subsubsection{Least Squares Approximation}
+
+By the same upper triangularization procedures of Givens and Householder, given a matrix $A\in\C^{m\times n}$ with $m>n$, it should not be inconceivable that we can also find a factorization:
+\[
+A = QR,
+\]
+where $Q\in\C^{m\times n}$ has $n$ orthonormal columns and where $R\in\C^{n\times n}$ is upper triangular. This is known as the {\em reduced} $QR$ factorization.
+
+The reduced $QR$ factorization can be used to solve the least squares problem $Ax=b$, where $A\in\C^{m\times n}$ with $m>n$ is the matrix of an over-determined system. Recall that the least squares solution is given by:
+\[
+A^*Ax = A^*b.
+\]
+However, forming the matrix-matrix product $A^*A$ is costly and can double the relative size of the matrix, risking doubling the loss of accuracy. Alternatively, let $A=QR$ be the reduced $QR$ factorization of $A$. Then:
+\begin{align*}
+(QR)^*QRx & = (QR)^*b,\\
+R^*Q^*QRx & = R^*Q^*b,\\
+Q^*QRx & = Q^*b.
+\end{align*}
+Since $Q$ has orthonormal columns, $Q^*Q = I_n$, and thus the solution of the linear system via the reduced $QR$ factorization, $x = R^{-1}Q^*b$, is {\em equivalent} to the least squares approximation, and avoids the formation of $A^*A$.
+
+\subsection{Spectral Decomposition}
+
+A square matrix $A\in\C^{n\times n}$ may transform some vectors $v\in\C^n$ only by stretching them, that is:
+\begin{equation}\label{eq:eigvalvec}
+Av = \lambda v,
+\end{equation}
+for some $\lambda\in\C$. Such vectors are known as {\em eigenvectors} of $A$ and the factors $\lambda$ are known as {\em eigenvalues}. To find all the eigenvalues of a matrix, we rewrite~\eqref{eq:eigvalvec} as the homogeneous system:
+\begin{equation}
+(A-\lambda I)v = 0.
+\end{equation}
+To ensure that we do not obtain the trivial ``zero'' eigenvector solution, we assert that $\det(A-\lambda I)=0$, guaranteeing that the linear system is singular. The determinant then defines the degree-$n$ {\em characteristic polynomial} of $A$:
+\[
+p(\lambda) := \det(A-\lambda I).
+\]
+By the fundamental theorem of algebra, we know that $p(\lambda)$ has exactly $n$ roots in the complex plane, though they may not be distinct. Let $\{\lambda_i\}_{i=1}^n$ denote the set of solutions of the characteristic equation $p(\lambda) = 0$. The set $\{\lambda_i\}_{i=1}^n$ is also known as the {\em spectrum} of the matrix $A$.
+
+Certain matrices allow for a canonical decomposition in terms of all of its eigenvalues and eigenvectors.
+
+\begin{definition}
+Let $A\in\C^{n\times n}$ be a square matrix with $n$ linearly independent eigenvectors $v_1,\ldots,v_n$. Then $A$ can be factored as:
+\[
+A = V\Lambda V^{-1},
+\]
+where the columns of $V$ are the eigenvectors $v_1,\ldots,v_n$ and $\Lambda = \diag(\lambda_1,\ldots,\lambda_n)$.
+\end{definition}
+If $A$ admits the {\em spectral decomposition}, or {\em eigendecomposition}, described above then we say that $A$ is {\em diagonalizable}. Generally speaking, not all matrices are diagonalizable. However, under certain conditions on $A$, the spectral decomposition can be described in terms of orthogonal or unitary matrices $V$.
+
+\begin{definition}
+A {\em symmetric} matrix $A\in\R^{n\times n}$ is a matrix that satisfies $A=A^\top$, or $A_{i,j} = A_{j,i}$ for every $i,j=1,\ldots,n$.
+\end{definition}
+
+\begin{definition}
+An {\em Hermitian} matrix $A\in\C^{n\times n}$ is a matrix that satisfies $A=A^*$, or $A_{i,j} = \conj{A_{j,i}}$ for every $i,j=1,\ldots,n$.
+\end{definition}
+
+\begin{lemma}\label{lemma:SymmetricEigenvaluesAreReal}
+Let $A\in\R^{n\times n}$ be a symmetric matrix:
+\begin{enumerate}
+\item Eigenvalues of $A$ are real;
+\item Eigenvectors of $A$ are real; and,
+\item Eigenvectors of distinct eigenvalues of $A$ are orthogonal.
+\end{enumerate}
+\end{lemma}
+\begin{proof} We prove the results in order.
+\begin{enumerate}
+\item Let $v\in\C^n$ be an eigenvector and let $\lambda\in\C$ be an eigenvalue, $Av=\lambda v$. Taking complex conjugates:
+\begin{align}
+\conj{Av} & = \conj{\lambda v},\nonumber\\
+=\conj{A}\conj{v} = A\conj{v} & = \conj{\lambda}\conj{v}.\label{eq:SymmetricEigenvaluesAreReal}
+\end{align}
+Next, apply $\conj{v}^\top$ to the eigenvalue equation to obtain:
+\begin{align*}
+\conj{v}^\top Av & = \conj{v}^\top \lambda v,\\
+=\underbrace{(A^\top\conj{v})^\top v}_{\hbox{by $x^\top A = (A^\top x)^\top$}} = \underbrace{(A\conj{v})^\top v}_{\hbox{by symmetry}} = \underbrace{(\conj{\lambda}\conj{v})^\top v}_{\hbox{by~\eqref{eq:SymmetricEigenvaluesAreReal}}} = \conj{\lambda}\conj{v}^\top v & = \lambda\conj{v}^\top v.
+\end{align*}
+We conclude that:
+\[
+(\lambda-\conj{\lambda})\langle v, v\rangle = 0.
+\]
+Since $v$ is an eigenvector of $A$, its inner product with itself cannot be zero and thus $\lambda = \conj{\lambda}$.
+\item The eigenvector $v\in\ker(A-\lambda I)$, where $A-\lambda I\in\R^{n\times n}$. Vectors in the kernel of real homogeneous linear systems are real.
+\item Let $Av_1 = \lambda_1v_1$ and $Av_2 = \lambda_2v_2$, with $\lambda_1,\lambda_2$ distinct. Apply $v_1^\top$ to the second eigenvalue equation to obtain:
+\begin{align*}
+v_1^\top Av_2 & = v_1^\top \lambda_2v_2,\\
+= (A^\top v_1)^\top v_2 = (A v_1)^\top v_2 = (\lambda_1v_1)^\top v_2 = \lambda_1v_1^\top v_2 & = \lambda_2 v_1^\top v_2.
+\end{align*}
+We conclude that:
+\[
+(\lambda_1-\lambda_2)\langle v_1, v_2\rangle = 0.
+\]
+Since $\lambda_1\ne\lambda_2$, $\langle v_1,v_2\rangle = 0$.
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}\label{theorem:SymmetricSpectralTheorem}
+Let $A\in\R^{n\times n}$ be a symmetric matrix. Then, the spectral decomposition of $A$ can be described in terms of orthonormal eigenvectors $q_1,\ldots,q_n$ and real eigenvalues:
+\[
+A = Q\Lambda Q^\top,
+\]
+where $Q\in\R^{n\times n}$ is an orthogonal matrix whose columns are the orthonormal eigenvectors $q_1,\ldots,q_n$ and $\Lambda = \diag(\lambda_1,\ldots,\lambda_n)\in\R^{n\times n}$.
+\end{theorem}
+\begin{proof}
+By Lemma~\ref{lemma:SymmetricEigenvaluesAreReal}, it is clear that eigenvalues and eigenvectors of $A$ are real, and eigenvectors of distinct eigenvalues are orthogonal. If an eigenvalue $\lambda$ has multiplicity $m$, we can always find a set of $m$ orthogonal eigenvectors associated with $\lambda$. The result follows from orthonormalization.
+\end{proof}
+
+The following theorem is the complex analogue of Theorem~\ref{theorem:SymmetricSpectralTheorem}.
+
+\begin{theorem}\label{theorem:HermitianSpectralTheorem}
+Let $A\in\C^{n\times n}$ be an Hermitian matrix. Then, the spectral decomposition of $A$ can be described in terms of orthonormal eigenvectors $q_1,\ldots,q_n$ and real eigenvalues:
+\[
+A = Q\Lambda Q^*,
+\]
+where $Q\in\C^{n\times n}$ is a unitary matrix whose columns are the orthonormal eigenvectors $q_1,\ldots,q_n$, and $\Lambda = \diag(\lambda_1,\ldots,\lambda_n)\in\R^{n\times n}$.
+\end{theorem}
+
+\subsection{Singular Value Decomposition}
+
+Not every square matrix is diagonalizable. In fact, it is not so complicated to construct a counter-example:
+\[
+A = \begin{bmatrix} 1 & 1\\ 0 & 1\end{bmatrix}.
+\]
+This matrix has the eigenvalue $1$ with multiplicity $2$, and it is {\em impossible} to construct linearly independent eigenvectors.
+
+However, there are certain instances in which {\em another} canonical decomposition is useful. This other decomposition is also applicable more generally to rectangular matrices as well.
+
+\begin{theorem}
+Let $A\in\C^{m\times n}$. Then, the {\em singular value} decomposition of $A$ is:
+\[
+A = U\Sigma V^*,
+\]
+where $U\in\C^{m\times m}$ and $V\in\C^{n\times n}$ are unitary matrices and $\Sigma\in\R^{m\times n}$ is a diagonal matrix with non-increasing {\em singular values} $\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_{\min\{m,n\}}$. The columns of $U$ are known as left singular vectors, while the columns of $V$ are known as right singular vectors.
+\end{theorem}
+\begin{proofsketch}
+The matrix $AA^*\in\C^{m\times m}$ is Hermitian, i.e. $(AA^*)^* = A^{**}A^* = AA^*$. Therefore, by Theorem~\ref{theorem:HermitianSpectralTheorem}, it has the spectral decomposition:
+\[
+AA^* = U\Lambda_1 U^*.
+\]
+Similarly, $A^*A\in\C^{n\times n}$ is also Hermitian and has the spectral decomposition:
+\[
+A^*A = V\Lambda_2 V^*.
+\]
+Making no assumptions on the form of $\Sigma$, if we take $A=U\Sigma V^*$, then:
+\begin{align*}
+AA^* & = U\Sigma V^* (V\Sigma^*U^*) = U\Sigma\Sigma^* U^*,\\
+A^*A & = V\Sigma^* U^* (U\Sigma V^*) = V\Sigma^*\Sigma V^*.
+\end{align*}
+Thus, $\Sigma\Sigma^* = \Lambda_1$ and $\Sigma^*\Sigma = \Lambda_2$ are both diagonal matrices. We can choose $\Sigma$ to be a diagonal matrix, and it turns out that\footnote{Omitting parts of the proof beyond the scope of this course.} the nonzero eigenvalues of $AA^*$ and $A^*A$ are the {\em same}, and thus the singular values are just the positive square roots of the nonzero real eigenvalues $\Lambda_1$ and $\Lambda_2$.
+\end{proofsketch}
+
+\begin{theorem}\label{theorem:SVD2normcond}
+Let $\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_n$ be the real singular values of $A\in\C^{n\times n}$. Then:
+\begin{enumerate}
+\item $\norm{A}_2 = \sigma_1$;
+\item $\displaystyle \norm{A^{-1}}_2 = 1/\sigma_n$; and,
+\item $\displaystyle \cond_2(A) = \sigma_1/\sigma_n$.
+\end{enumerate}
+\end{theorem}
+
+\section{Taking Advantage of Structure II}
+
+Normally, a matrix $A\in\C^{m\times n}$ arising from a particular type of problem will also be endowed with extra structure that will allow either lower storage complexity or faster matrix operations or both. In these cases, it is beneficial to fully describe the structure of the matrix $A$. Below, we enumerate certain matrix structures that allow for increased performance and solution of linear systems much larger than via dense factorizations.
+
+\subsection{Symmetric Positive-Definite Matrices}
+
+We have already seen the property of symmetry (more generally, the Hermitian property) in proving the spectral theorem for symmetric matrices. When we also add {\em positive-definiteness} to the matrix $A$, then even more favourable properties can be derived.
+
+\begin{definition}
+Let $A\in\C^{n\times n}$ be an Hermitian matrix. We say that $A$ is {\em symmetric positive-definite} if $z^*Az > 0$ for every nonzero vector $z\in\C^n$.
+\end{definition}
+Note that if we restrict our attention to real symmetric matrices, then these are symmetric positive-definite if $x^\top A x>0$ for every nonzero vector $x\in\R^n$.
+
+The term positive-definite is derived from the fact that $x^*Ay = \langle x,Ay\rangle =: \langle x,y\rangle_A$ can be used to define an inner product, which has the positive-definite property.
+
+Symmetric positive-definite (SPD) matrices have a unique {\em Cholesky} factorization, which is a symmetric version of the $LU$ factorization. Thus, $A\in\R^{n\times n}$ can be factored into $LL^\top$ and $A\in\C^{n\times n}$ can be factored into $LL^*$. The beauty of the SPD property is that {\em no pivoting\footnote{In fact, row and/or column pivoting generally destroy the SPD property, so the numerical stability without pivoting is nothing short of a mathematical miracle.} is required for numerical stability!}
+
+\subsection{Sparse Matrices}
+
+Often, large matrices, such as matrices with dimensions greater than $10,000$, only have a small fraction of their entries nonzero. In this case, it becomes efficient to store three vectors consisting of the indices $i,j$ such that $A_{i,j}\ne0$ and the nonzero entries themselves. These matrices have fast matrix-vector products and are therefore generally amenable to solution via iterative methods.
+
+\subsection{Banded Matrices}
+
+\begin{definition}
+A matrix $A\in\C^{m\times n}$ is {\em banded} with lower bandwidth $p$ and upper bandwidth $q$ if:
+\[
+A_{i,j} = 0,\quad{\rm for}\quad i-j > p,\quad{\rm or}\quad i-j < -q.
+\]
+In other words:
+\[
+A = \begin{bmatrix}
+A_{1,1} & \cdots & A_{1,q+1} & 0 & \cdots & 0\\
+\vdots & & & \ddots & \ddots & \vdots\\
+A_{p+1,1} & & & & \ddots & 0\\
+0 & \ddots & & & & A_{m-q,n}\\
+\vdots & \ddots & \ddots & & & \vdots\\
+0 & \cdots & 0 & A_{m,n-p} & \cdots & A_{m,n}\\
+\end{bmatrix}.
+\]
+A {\em banded} matrix $A$ has bandwidth $r = \max\{p,q\}$.
+\end{definition}
+
+Banded matrices can be stored more compactly by only storing the nonzero terms within the bandwidth. Banded matrices also have banded $LU$ and $QR$ factorizations; therefore solution of linear systems of square banded matrices can be performed in $\OO(r^2n)$ operations. Banded matrices are a special class of sparse matrices, where the sparsity pattern is known {\em a priori}.
+
+\begin{example}
+The banded matrix:
+\[
+A = \begin{bmatrix} 2 & -1\\ -1 & 2 & -1\\ \frac{1}{2} & -1 & 2 & -1\\ & \frac{1}{2} & -1 & 2 & -1\\ & & \frac{1}{2} & -1 & 2\end{bmatrix},
+\]
+has the banded $LU$ factorization:
+\[
+L = \begin{bmatrix} 1\\ -\frac{1}{2} & 1\\ \frac{1}{4} & -\frac{1}{2} & 1\\ & \frac{1}{3} & -\frac{4}{9} & 1\\ & & \frac{1}{3} & -\frac{3}{7} & 1\end{bmatrix},\qquad
+U = \begin{bmatrix} 2 & -1\\ & \frac{3}{2} & -1\\ & & \frac{3}{2} & -1\\ & & & \frac{14}{9} & -1\\ & & & & \frac{11}{7}\end{bmatrix}.
+\]
+\end{example}
+
+\section{Iterative Solvers}
+
+Dense factorizations calculate the exact solution (modulo rounding errors) of a linear system in a finite number of steps. A second class of methods, called iterative solvers, usually converge to the exact solution after infinitely many iterations. At first, it may seem odd why one would want to consider iterative solvers at all. But in actuality, there are several good reasons. In many applications requiring the solution of partial differential equations, the linear systems involved are extremely large, say $10^6\times10^6$ or larger. A na\"ive approach involving dense factorizations such as $LU$ and $QR$ requires storage of all $\OO(10^{12})$ entries of the entire matrix, since during the factorization process, zero entries in the matrix do not imply zero entries in the factorization. Currently, no personal computer can store $10^{12}$ floating-point numbers in double precision in random access memory (RAM), and thus one would need to rely on secondary memory (hard drive storage) which drastically slows down the solution process. Another consideration is that the flop count of the $LU$ factorization is approximately $\OO(10^{18})$. Assuming that a personal computer runs at its peak flop rate for the entire calculation, which is roughly $1.5\times10^{11}{\rm\,flops/s}$, then an $LU$ factorization would require $\OO(7\times 10^6)$ seconds, or approximately $77$ days.
+
+Clearly, the above pitfalls concerning the na\"ive dense factorization of a large linear system are enough to warrant an investigation into iterative solvers. Typically, iterative solvers just need access to a matrix-vector product, which is ideal for the class of sparse matrices since only the nonzero entries need to be stored and the matrix-vector product is fast. Another reason for using iterative solvers is that, sometimes we already have a good guess to the solution. In this case, there is a good chance that iterative solvers will converge to a better solution with just a few corrections. Iterative solvers, however, may not converge for arbitrary non-singular matrices. However, for the class of symmetric positive-definite matrices, it has been shown that certain iterative solvers are {\em guaranteed} to converge.
+
+Furthermore, to remedy the problem-dependence of iterative solvers, a technique known as {\em preconditioning} has significantly preoccupied numerical linear algebraists since the first modern iterative solvers were derived.
+
+\subsection{Jacobi and Gauss--Seidel}
+
+Given the linear system $Ax=b$, let $B$ be any non-singular matrix. The system is equivalent to $Bx + (A-B)x = b$, or:
+\begin{equation}\label{eq:IterationEquivalentSystem}
+x = (I-B^{-1}A)x + B^{-1}b.
+\end{equation}
+Base on this equation, it is natural to define an iterative method as:
+\begin{equation}\label{eq:IterativeMethod}
+x^{(k+1)} = G x^{(k)} + B^{-1}b,
+\end{equation}
+where the matrix $G := I-B^{-1}A$ is called the {\em iteration matrix}. For an efficient iterative method, $B$ should be easy to invert and should be as ``close'' to $A$ as possible such that $\norm{G}$ is small. Unfortunately, these two criteria are conflicting. Considering one extreme scenario where $B=A$, then $I-B^{-1}A = 0$ and only one iteration is necessary to compute the exact solution. However, in that iteration, we solved to original linear system! At the other extreme, if we choose $B=I$, linear solves involving $B$ are trivial, but $I-B^{-1}A = I-A$, is in general the same size as $A$ and the iteration may not converge.
+
+Let $e^{(k)} := x^{(k)} - x$ and let $\rho(G)$ denote the {\em spectral radius} of the matrix $G$:
+\[
+\rho(G) := \max_{1\le i\le n}\abs{\lambda_i},
+\]
+where $\lambda_i$ are the eigenvalues of $G$. 
+
+\begin{theorem}
+Let $G$ be a diagonalizable matrix, $G = V\Lambda V^{-1}$. Let $x^{(0)}\in\R^n$ be any initial iterate. Then $e^{(k)}\to 0$ iff $\rho(G)<1$.
+\end{theorem}
+\begin{proof}
+Subtracting~\eqref{eq:IterativeMethod} from~\eqref{eq:IterationEquivalentSystem}, we have $e^{(k+1)} = Ge^{(k)}$, or $e^{(k)} = G^ke^{(0)}$. If $\rho(G)\ge1$, let $e^{(0)}$ be a normalized eigenvector of $G$ with eigenvalue of magnitude $\rho(G)$. Clearly, $e^{(k)}$ does not converge to $0$.
+
+On the other hand, suppose $\rho(G)<1$. Then $G^k = V\Lambda^kV^{-1}$. Since every eigenvalue of $\Lambda$ has magnitude less than one, $\Lambda^k\to0$ and hence $G^k\to0$ which implies that $e^{(k)}\to0$.
+\end{proof}
+
+We are now prepared to discuss two classical iterative methods. Suppose the matrix $A = L+D+U$ is decomposed into a diagonal matrix $D$, and $L$ and $U$ are strictly lower and upper triangular matrices\footnote{These $L$ and $U$ should not be confused with the factors in the $LU$ factorization of $A$.} with entries corresponding to $A$.
+
+The {\em Jacobi} iteration takes $B=D$ and thus:
+\[
+x^{(k+1)} = -D^{-1}(L+U)x^{(k)} + D^{-1}b.
+\]
+Suppose $x^{(k)}$ is known. Applying $L+U$ to $x^{(k)}$ requires $\OO(n^2)$ operations generically, and applying $D^{-1}$ requires $\OO(n)$ operations, requiring $\OO(n^2)$ operations per iteration, generically:
+\[
+x_i^{(k+1)} = \dfrac{1}{A_{i,i}}\left(b_i-\sum_{j\ne i}A_{i,j}x_j^{(k)}\right),\qquad 1\le i\le n.
+\]
+
+The {\em Gauss--Seidel} iteration takes $B=L+D$ and thus:
+\[
+x^{(k+1)} = -(L+D)^{-1}Ux^{(k)} + (L+D)^{-1} = (L+D)^{-1}(b-Ux^{(k)}).
+\]
+This scheme is similar to the Jacobi iteration except that the most up-to-date components are used as one sweeps from the first equation to the last equation. Since matrix-vector multiplication and solution of triangular linear systems is required, the complexity is again $\OO(n^2)$ operations per iteration, generically:
+\[
+x_i^{(k+1)} = \dfrac{1}{A_{i,i}}\left(b_i-\sum_{j< i}A_{i,j}x_j^{(k+1)} - \sum_{j>i}A_{i,j}x_j^{(k)}\right),\qquad 1\le i\le n.
+\]
+The complexity of Jacobi and Gauss--Seidel improve when iterating with sparse matrices.
+
+Characterizing convergence of an iterative method by the spectral radius is expensive; therefore, an alternative characterization in terms of {\em strict diagonal dominance} can determine whether the Jacobi or Gauss--Seidel iterations will converge.
+
+\begin{definition}
+A matrix $A\in\R^{n\times n}$ is said to be {\em strictly diagonally dominant} if for every $1\le i\le n$:
+\[
+\abs{A_{i,i}} > \sum_{j\ne i} \abs{A_{i,j}}.
+\]
+\end{definition}
+
+\begin{theorem}\label{theorem:DiagonalDominance}
+If $A\in\R^{n\times n}$ is strictly diagonally dominant, then the Jacobi and Gauss--Seidel iterations converge for any initial iterate.
+\end{theorem}
+
+\subsection{Conjugate Gradients}
+
+Modern iterative methods are not built on the fictitious factorization of $A$ into $B + (A-B)$ as in the classical Jacobi and Gauss--Seidel iterations. In fact, modern iterative methods are built on the fact that matrix-vector multiplication is fast when $A$ is (data-)sparse.
+
+\begin{definition}
+Let $r^{(0)} := b-Ax^{(0)}$ be the residual of the initial starting vector $x^{(0)}$. The {\em Krylov subspace} is defined to be:
+\[
+K_k(r^{(0)},A) := \mspan\{r^{(0)},Ar^{(0)},\ldots, A^{k-1}r^{(0)}\},\quad{\rm for}\quad k=1,2,\ldots.
+\]
+\end{definition}
+
+Krylov subspace methods produce a sequence of vectors $x^{(k)}\in x_0 + K_k(r^{(0)},A)$, and the amount of work per iteration $k\rightarrow k+1$ is roughly equal to that of matrix-vector multiplication.
+
+The first method of this kind, known as the {\em conjugate gradient} (cg-) method, was proposed by Hestenes and Stiefel~\cite{Hestenes-Stiefel-49-409-52} for linear systems with a symmetric positive definite matrix. These matrices define a norm:
+\[
+\norm{z}_A := \sqrt{z^\top Az},
+\]
+and the cg-method generates a sequence in the Krylov subspace with the minimality property:
+\begin{equation}\label{eq:CGMinimality}
+\norm{x^{(k)}-x}_A = \min_{z\in x^{(0)}+K_k(r^{(0)},A)} \norm{z-x}_A,
+\end{equation}
+where $x$ is the true solution.
+
+While beyond the scope of this course, we list the cg-method here for comparison with the Jacobi and Gauss--Seidel methods. A good reference on the cg- and other Krylov subspace methods is~\cite[Chap. 8]{Stoer-Bulirsch-02}.
+
+\begin{algorithm}[Conjugate-Gradient Method]
+Initialize $x^{(0)}\in\R^n$ and set $p^{(0)} := r^{(0)} :=b-Ax^{(0)}$.
+
+For $k=0,1,\ldots$:
+\begin{enumerate}
+\item If $\norm{r^{(k)}}_2 < \epsilon$, set $m:=k$ and stop: $x^{(k)}$ is the approximate solution of $Ax=b$. Otherwise,
+\item Compute:
+\begin{align*}
+\alpha_k & := \dfrac{\langle r^{(k)}, r^{(k)}\rangle}{\langle p^{(k)}, Ap^{(k)}\rangle},\\
+x^{(k+1)} & := x^{(k)} + \alpha_kp^{(k)},\\
+r^{(k+1)} & := r^{(k)} - \alpha_k Ap^{(k)},\\
+\beta_k & := \dfrac{\langle r^{(k+1)}, r^{(k+1)}\rangle}{\langle r^{(k)}, r^{(k)}\rangle},\\
+p^{(k+1)} & := r^{(k+1)} + \beta_k p^{(k)}.
+\end{align*}
+\end{enumerate}
+\end{algorithm}
+
+For the implementation of the cg-method, only four vectors, $x^{(k)}$, $r^{(k)}$, $p^{(k)}$, and $Ap^{(k)}$, need to be stored. At each step in the iteration, only one matrix-vector multiplication, $Ap^{(k)}$, is required; the remaining work amounts to the calculation of six inner products in $\R^n$. The total computational effort, for sparse matrices, is therefore modest.
+
+\subsection{Preconditioning}
+
+The convergence rate of the cg-method is highly problem-dependent. Using the minimality property~\eqref{eq:CGMinimality}, it can be shown that the convergence rate of the cg-method can be bounded by a function of the condition number of the matrix.
+
+\begin{theorem}
+Let $A$ be a symmetric positive definite matrix. For $k=0,1,\ldots$, let $e^{(k)}:=x^{(k)}-x$ be the difference between the $k^{\rm th}$ iterate in the cg-method and the solution to $Ax=b$. Then:
+\[
+\dfrac{\norm{e^{(k)}}_A}{\norm{e^{(0)}}_A} \le 2\left(\dfrac{\sqrt{\kappa}-1}{\sqrt{\kappa}+1}\right)^k,
+\]
+where $\kappa = \cond_2(A)$.
+\end{theorem}
+Therefore, the convergence of the cg-method is exponential and the constant is determined by the square-root of the $2$-norm condition number of the matrix.
+
+This behaviour may be exploited by so-called preconditioners, in order to accelerate the cg-method and, at best, try to prove a bound on the total number of iterations for a certain class of problems. To precondition $A$, we find another symmetric positive definite matrix $P$, the {\em preconditioner}, such that $P^{-1}A$ is a good approximation of the identity\footnote{The name ``preconditioner'' is derived from the fact that the identity matrix has unit condition number and $P^{-1}A\approx I$.}. However, as we need to be able to apply the inverse, a balance must again be struck.
+
+\begin{algorithm}[Preconditioned Conjugate-Gradient Method]
+Initialize $x^{(0)}\in\R^n$ and set $r^{(0)} :=b-Ax^{(0)}$, $q^{(0)} := P^{-1}r^{(0)}$ and set $p^{(0)} := q^{(0)}$.
+
+For $k=0,1,\ldots$:
+\begin{enumerate}
+\item If $\sqrt{\langle r^{(k)},q^{(k)}\rangle} < \epsilon$, set $m:=k$ and stop: $x^{(k)}$ is the approximate solution of $Ax=b$. Otherwise,
+\item Compute:
+\begin{align*}
+\alpha_k & := \dfrac{\langle r^{(k)}, q^{(k)}\rangle}{\langle p^{(k)}, Ap^{(k)}\rangle},\\
+x^{(k+1)} & := x^{(k)} + \alpha_kp^{(k)},\\
+r^{(k+1)} & := r^{(k)} - \alpha_k Ap^{(k)},\\
+q^{(k+1)} & := P^{-1}r^{(k+1)},\\
+\beta_k & := \dfrac{\langle r^{(k+1)}, q^{(k+1)}\rangle}{\langle r^{(k)}, q^{(k)}\rangle},\\
+p^{(k+1)} & := q^{(k+1)} + \beta_k p^{(k)}.
+\end{align*}
+\end{enumerate}
+\end{algorithm}
+
+Essentially, the only difference between the cg- and the preconditioned cg- (pcg-) methods is that we have to solve at each step an additional linear system $Pq = r$ with the preconditioner.
+
+\section{Problems}
+
+\begin{enumerate}
+
+\item Prove Lemmas~\ref{lemma:MinverseLU} and~\ref{lemma:MuMv} regarding the multiplication matrices $M_n(v)$.
+
+\item The Cholesky factorization of a real symmetric positive definite matrix is the unique factorization $A=LL^\top$, where $L$ is a lower triangular matrix. Derive the relations for the entries of the matrix $L$. Since the algorithm fails if $A$ is not SPD, the Cholesky factorization is an algorithm to {\em test} for positive-definiteness. Use your algorithm to check whether the following matrices are SPD:
+\[
+A_1 = \begin{bmatrix} 2 & -1 & \tfrac{1}{2} & 0\\ -1 & 3 & -1 & -1\\ \tfrac{1}{2} & -1 & 4 & -1\\ 0 & -1 & -1 & 5\end{bmatrix},\quad{\rm and}\quad A_2 = \begin{bmatrix} 2 & -1 & -\tfrac{3}{4} & 0\\ -1 & 2 & -1 & -\tfrac{3}{4}\\ -\tfrac{3}{4} & -1 & 2 & -1\\ 0 & -\tfrac{3}{4} & -1 & 2\end{bmatrix}.
+\]
+
+\item \begin{enumerate}
+
+\item Show that Givens matrices $G(i,j,\theta)$ have the eigenvalues $e^{\pm\i\theta}$ and $n-2$ eigenvalues $+1$;
+
+\item Show that Householder matrices have one eigenvalue $-1$ and $n-1$ eigenvalues $+1$. {\em Hint: clearly $H(w)w=-w$; then, one must identify $n-1$ vectors for which $H(w)v = v$;}
+
+\item Use Lemma~\ref{lemma:unitary2norm} to show that the eigenvalues of unitary matrices are all on the unit circle;
+
+\item Conclude from part (c) that if $Q$ is a unitary matrix, $\abs{\det(Q)} = 1$; and,
+
+\item Conclude from the singular value decomposition of $A\in\C^{n\times n}$ that $\displaystyle \abs{\det(A)} = \prod_{i=1}^n\sigma_i$.
+
+\end{enumerate}
+
+\item Formally, let $f(x) = a_0 + a_1x + a_2x^2 + \cdots +$ be a power series in $x$. Show that if $A\in\C^{n\times n}$ is diagonalizable, i.e. $A=V\Lambda V^{-1}$, then $f(A) = Vf(\Lambda)V^{-1}$ where $f(\Lambda) = \diag(f(\lambda_1),\ldots,f(\lambda_n))$.
+
+\item Let $A\in\C^{n\times n}$ and consider its $QR$ factorization. After showing that $\cond_2(A) = \cond_2(Q)\cond_2(R) = \cond_2(R)$, we concluded that the $QR$ factorization is a well-conditioned method for solving linear systems, when viewed as an algorithm. Show that:
+\begin{enumerate}
+\item the eigendecomposition of an Hermitian matrix $A\in\C^{n\times n}$; and,
+\item the singular value decomposition of $A\in\C^{n\times n}$;
+\end{enumerate}
+are also well-conditioned methods for solving linear systems.
+
+\item Prove Theorem~\ref{theorem:SVD2normcond}. {\em Hint: combine Example~\ref{example:diagonalpnorm} and Lemma~\ref{lemma:unitary2norm}.}
+
+\item Prove Theorem~\ref{theorem:DiagonalDominance}. {\em Hint: Use as an initial guess the normalized eigenvector with corresponding eigenvalue equal in absolute value to the spectral radius. Show that strict diagonal dominance bounds the spectral radius by $1$.}
+
+\item Let $n=10,000$, let:
+\[
+T = \begin{bmatrix}
+3 & -1\\
+-1 & 3 & -1\\
+& \ddots & \ddots & \ddots\\
+& & -1 & 3 & -1\\
+&&&-1 & 3
+\end{bmatrix} \in\R^{n\times n},
+\]
+be the symmetric tridiagonal matrix of threes on the diagonal and ones on the sub- and super-diagonals, and let $u = (1/1,\ldots,1/n)^\top$ and $b=(0,\ldots,0,1)^\top$. The matrix $A$ is formed by adding the symmetric tridiagonal matrix $T$ and the symmetric outer product $uu^\top$:
+\[
+A = T+uu^\top \in\R^{n\times n}.
+\]
+The matrix $A$ is the data-sparse result of discretizing an integro-differential equation. It can be taken for granted that for every $n\in\N$, $A$ is also positive-definite.
+
+Solve the system $Ax=b$ using Jacobi and Gauss--Seidel iterations and the pcg-method with a preconditioner of your choice. Compare and contrast the methods and your solutions. How many steps does each method take for residual error $\norm{Ax^{(k)}-b}_2 < 10^{-10}$?
+
+\end{enumerate}

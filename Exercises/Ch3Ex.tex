@@ -1,0 +1,157 @@
+\documentclass[11pt,letterpaper]{article}
+\input{../header}
+
+\usepackage{longtable}
+
+\begin{document}
+\title{MATH 2160, Chapter 3 Summary \& Exercises}
+\author{Richard M. Slevinsky}
+\date{}
+\maketitle
+
+\section*{Slevinsky's Notes}
+
+\begin{longtable}{p{0.475\textwidth}|p{0.475\textwidth}}
+\hline
+Problems & Solutions\\
+\hline
+Given data $(x_0,f_0)$ to $(x_n,f_n)$ with $x_i$ distinct, find a polynomial that interpolates the data. & Existence \& uniqueness established!
+
+Lagrange interpolating polynomial with $\OO(n^2)$ cost to create \& $\OO(n^2)$ cost to evaluate.
+
+The second barycentric formula with $\OO(n^2)$ cost to create \& $\OO(n)$ cost to evaluate.
+
+Newton interpolating polynomial with $\OO(n^2)$ cost to create \& $\OO(n)$ cost to evaluate.\\
+
+Given data $(x_0,f_0,f_0')$ to $(x_n,f_n,f_n')$ with $x_i$ distinct, find a polynomial that interpolates the data. & Existence \& uniqueness established!
+
+Hermite interpolating polynomial with $\OO(n^2)$ cost to create \& $\OO(n^2)$ cost to evaluate.\\
+
+Given a function $f\in C^{n+1}(x_0,x_n)$, what is the error in interpolating it at the points $x_i$ with a polynomial? & Theorem 3.1.3 states that $r(x) := f(x) - p_n(x) = \ell(x)\dfrac{f^{(n+1)}(\xi)}{(n+1)!}$ where $\xi = \xi(x)\in(x_0,x_n)$.\\
+
+Given a function $f\in C^{2n+2}(x_0,x_n)$, what is the error in interpolating it and its derivative at the points $x_i$ with a polynomial? & Theorem 3.1.6 states the analogous result for the Hermite case.\\
+
+Generally speaking, polynomial interpolants will {\em diverge} when using equi-spaced points! This is the {\em Runge phenomenon}. & \vspace*{-.7cm}\begin{enumerate} \item Use Chebyshev points. \item Use $(n+1)^2$ equi-spaced points \& extract a degree-$n$ polynomial from a least-squares ($QR$) formulation. The logic is that $QR$ extracts the ``orthogonal'' information among all $(n+1)^2$ equations in the over-determined system, and this information happens to be almost the same as that provided by sampling at the $n+1$ Chebyshev points. At the ends of the interval, the spacing of Chebyshev points is $\OO(n^{-2})$, thus taking $(n+1)^2$ equi-spaced points will ensure that points nearby the Chebyshev points are chosen and everything else is ``discarded'' through the reduced $QR$ factorization. \item Use piecewise-defined polynomials \& approximate with lower regularity (smoothness).\end{enumerate}\\
+
+Given $f\in L^p(D,\ud\mu(x))$, what is its best polynomial approximation? & Hard.\\
+
+Given $f\in L^2(D,\ud\mu(x))$, what is its best polynomial approximation? & Beautiful theory of orthogonal polynomials. We prove the fact that the best polynomial approximant to $f$ is orthogonal to all polynomials of lower degree. Therefore, we seek solutions as expansions in {\em orthogonal polynomials}: $\displaystyle f(x) \sim p_n(x) = \sum_{k=0}^n \dfrac{\langle \pi_k, f\rangle}{\langle \pi_k,\pi_k\rangle}\pi_k(x)$.\\
+
+Given $f\in L^\infty([a,b])$, what is its best polynomial approximation? & We characterize best polynomial approximants in the supremum norm as polynomials whose error ($f-p_n$) {\em equioscillates} at least $n+2$ times. This characterization allows us to develop the Remez exchange algorithm (by iteratively seeking such polynomials whose error equioscillates), and it will also allow us to prove that the Chebyshev points are the best points in which to interpolate a function.\\
+
+Notation & Wherever you see the following: $\pi_n$ are orthogonal polynomials with any normalization (the normalization is not pertinent to the discussion), $\hat{\pi}_n$ are monic orthogonal polynomials, $\tilde{\pi}_n$ are orthonormal polynomials.\\
+
+What is a {\bf spline}? & A {\bf s}mooth {\bf p}iecewise {\bf line}ar interpolant.
+
+We investigate the linear case, and show that the cubic (higher order generally) cases can also be derived, but introduce ambiguity.\\
+\hline
+\end{longtable}
+
+\section*{Exercises}
+
+\begin{enumerate}
+
+\item While working for The Boeing Company in Los Angeles, you are asked to design a new flight controller to move a Boeing 777 between two parallel flight paths $y=0$ and $y=2$. Passenger comfort is highly desired.
+
+\begin{enumerate}
+
+\item The plane starts turning at $(0,0)$ and you are told that the flight path must pass through the points $(0,0)$, $(2,1)$, and $(4,2)$. Write down the Newton interpolating polynomial to these data. Report the value of the slope of the flight path at the point $x = 2$.
+
+\item The flight path from part (a) would be seriously uncomfortable for passengers at $(0, 0)$ and $(4, 2)$. Therefore, we now put more constraints on the flight path. A natural constraint is that the flight path should be tangent to the horizontal lines $y = 0$ at $x = 0$ and $y = 2$ at $x = 4$. This gives you a total of $5$ constraints for the path, which can be satisfied by a degree-$4$ polynomial. Use a small number $\varepsilon>0$ to construct a Newton interpolating polynomial through the points $(0-\varepsilon,0)$, $(0,0)$, $(2,1)$, $(4,2)$, and $(4+\varepsilon,2)$. Take the limit as $\varepsilon\to0$ to obtain your smooth flight path. Report the value of the slope of the path at the point $x = 2$. {\em Partial answer: $p_4'(2) = \tfrac{3}{4}$.}
+
+\end{enumerate}
+
+\item Consider the data $(-1,4)$, $(0,3)$, $(2,-5)$, $(3,0)$, and $(4,2)$. Construct the Lagrange and Newton interpolating polynomials. Re-express the Lagrange polynomial via the second barycentric formula. If $p_4(x)$ is the interpolant, what is $p_4'(1)$?
+
+\item Consider the data $(-3,3,2)$, $(-1,2,3)$, $(2,-2,-2)$, and $(3,5,7)$. Construct the Hermite interpolating polynomial.
+
+\item We will now be using norms (and inner products for $p=2$) for the function spaces $L^p(D,\ud\mu(x))$. Here are some examples to help familiarize you with the notation:
+\[
+\norm{f}_{p,\mu} = \left(\int_D \abs{f(x)}^p\ud\mu(x)\right)^{1/p},\quad{\rm and}\quad\langle f,g\rangle = \int_D \conj{f(x)}g(x)\ud\mu(x).
+\]
+ Let $f(x) = e^x$, $g(x) = \sin(x)$, and $h(x) = \dfrac{1}{1+x^2}$.
+\begin{enumerate}
+\item Let $D = [-1,1]$ and let $\ud\mu(x) = \ud x$. Calculate:
+\[\begin{array}{ccc}
+\norm{f}_1 & \norm{f}_2 & \norm{f}_\infty\\
+\norm{g}_1 & \norm{g}_2 & \norm{g}_\infty\\
+\norm{h}_1 & \norm{h}_2 & \norm{h}_\infty\\
+\end{array}.
+\]
+\item Let $D=[-1,1]$ and let $\ud\mu(x) = \ud\arcsin(x) = \dfrac{\ud \arcsin(x)}{\ud x}\ud x = \dfrac{\ud x}{\sqrt{1-x^2}}$. Write down the integral representation, but do not evaluate:
+\[
+\begin{array}{ccc}
+\norm{f}_{2,\mu} & \norm{g}_{2,\mu} & \norm{h}_{2,\mu}\\
+\end{array}.
+\]
+\item Let $D = [0,\infty)$ and let $\ud\mu(x) = e^{-x}\ud x$. Write down the integral representation, (and try your best to evaluate!):
+\[
+\begin{array}{ccc}
+\norm{f}_{2,\mu} & \norm{g}_{2,\mu} & \norm{h}_{2,\mu}\\
+\end{array}.
+\]
+\item Let $D=\R$. Let $\displaystyle \erf(x) := \dfrac{2}{\sqrt{\pi}}\int_0^x e^{-t^2}\ud t$, and therefore let $\ud\mu(x) = \ud\erf(x) = \dfrac{\ud \erf(x)}{\ud x}\ud x = \dfrac{2}{\sqrt{\pi}}e^{-x^2}\ud x$. Write down the integral representation, (and try your best to evaluate!):
+\[
+\begin{array}{ccc}
+\norm{f}_{2,\mu} & \norm{g}_{2,\mu} & \norm{h}_{2,\mu}\\
+\end{array}.
+\]
+\item Find the best degree-$0$ polynomial approximant (best constant approximant) to $f$, $g$, and $h$ in $L^p([1,1],\ud x)$ for $p=1,2,\infty$. Do so by setting up the problem as a minimization problem:
+\[
+\min_{c_0\in\R}\norm{f-c_0}_p.
+\]
+Explain in your own terms why $p=1$ is so hard (and even harder for degree-$n>0$), $p=2$ is simplified by the expansion in orthogonal polynomials, and with $p=\infty$ the equioscillation theorem ``is a start.''
+\end{enumerate}
+
+\item \begin{enumerate}
+\item Legendre polynomials are given by the Rodrigues formula:
+\[
+P_n(x) = \dfrac{1}{(-2)^nn!}\dfrac{\ud^n}{\ud x^n}\left(1-x^2\right)^n.
+\]
+Show that they satisfy the three-term recurrence relation:
+\[
+(n+1)P_{n+1}(x) = (2n+1)xP_n(x) - nP_{n-1}(x).
+\]
+Infer from this recurrence relation that $P_{2n}(x)$ is even and $P_{2n+1}(x)$ is odd. Construct the best degree-$4$ polynomial interpolant to $e^x$ in $L^2([-1,1])$:
+\[
+p_4(x) = \sum_{k=0}^4 \dfrac{\langle P_k,f\rangle}{\langle P_k,P_k\rangle}P_k(x).
+\]
+\item Chebyshev polynomials of the first kind are cosines with a ``variable frequency.'' In other words: $T_n(x) = \cos(n\arccos(x))$ or $T_n(\cos\theta) = \cos(n\theta)$. Use the trigonometric identity:
+\[
+\cos(\theta+\varphi) + \cos(\theta-\varphi) = 2\cos\theta \cos\varphi,
+\]
+to derive:
+\[
+\cos((n+1)\theta) = 2\cos\theta \cos(n\theta) - \cos((n-1)\theta),
+\]
+and thereby the recurrence relation:
+\[
+T_{n+1}(x) = 2xT_n(x) - T_{n-1}(x).
+\]
+Use the same identity to derive:
+\[
+2T_m(x)T_n(x) = T_{m+n}(x) + T_{\abs{m-n}}(x).
+\]
+Chebyshev polynomials (and expansions therein) are so important that we will have an entire chapter devoted to them. The basic reason is that, due to their connection with trigonometric polynomials, they are {\em extremely easy} to work with on a computer, even though the measure $\ud\mu(x) = \ud \arcsin(x)$ may seem daunting at first sight. In fact, this weight also makes Chebyshev polynomials {\em near best} polynomial approximants in $L^\infty([-1,1])$. That is, within a very small factor, they are close to the best polynomial approximants in the infinity-norm.
+\item\,\! [Hard but satisfying] Laurent polynomials are the orthogonal polynomials on the unit circle in the complex plane. That is, expansions in Laurent polynomials provide best polynomial approximants in $L^2(\U,\ud z)$. Here we use $\ud z$ to stick with the convention that $z$ is a complex number. The Laurent polynomials are very simple, just $z^n$, but this time the index $n$ ranges over {\em all integers} rather than starting from $0$: $n\in\Z = \{\ldots,-2,-1,0,1,2,\ldots\}$. Using the variable substitution $z = e^{i\theta}$, recover the trigonometric functions $\cos(n\theta)$ and $\sin(n\theta)$ as appropriate linear combinations of Laurent polynomials such as:
+\[
+\dfrac{z^{n}+z^{-n}}{2},\quad{\rm and}\quad\dfrac{z^{n}-z^{-n}}{2\i}.
+\]
+There is a slight subtlety about the Laurent polynomials. Due to the change of variables to bring them into trigonometric form, show that they instead satisfy the orthogonality:
+\[
+\langle z^{m+1}, z^n\rangle = \int_\U \conj{z^{m+1}}z^n\ud z = 2\pi\i\delta_{m,n} = \left\{\begin{array}{ccc} 2\pi\i & \for & m = n,\\ 0 & \for & m \ne n,\end{array}\right.
+\]
+which is slightly different from the classical orthogonal polynomials. Show that on the unit circle, $\conj{z} \equiv z^{-1}$, and therefore:
+\[
+f(z) \sim \sum_{n=-\infty}^\infty f_n z^n,\quad{\rm where}\quad f_n = \dfrac{1}{2\pi\i}\int_\U \dfrac{f(z)}{z^{n+1}}\ud z.
+\]
+\end{enumerate}
+
+\item Consider the data $(-1,4)$, $(0,3)$, $(2,-5)$, $(3,0)$, and $(4,2)$. Construct its piecewise linear interpolant.
+
+\end{enumerate}
+
+
+
+
+\end{document}

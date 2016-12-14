@@ -1,0 +1,8 @@
+.ipynb_checkpoints/*
+*.aux
+*.log
+*.gz
+*.blg
+Exams/*
+other/*
+Solutions/*

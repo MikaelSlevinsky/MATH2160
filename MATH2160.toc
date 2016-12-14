@@ -1,0 +1,97 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {}Preface}{4}
+\contentsline {chapter}{\numberline {1}Fundamentals}{5}
+\contentsline {section}{\numberline {1.1}Vector Spaces}{5}
+\contentsline {subsection}{\numberline {1.1.1}Normed Vector Spaces}{6}
+\contentsline {subsection}{\numberline {1.1.2}Function Spaces}{7}
+\contentsline {subsection}{\numberline {1.1.3}Inner Product Spaces}{9}
+\contentsline {subsection}{\numberline {1.1.4}Matrix Norms Induced by Vector Norms}{10}
+\contentsline {section}{\numberline {1.2}Computer Representation of Numbers}{12}
+\contentsline {subsection}{\numberline {1.2.1}Integers}{13}
+\contentsline {subsection}{\numberline {1.2.2}Fixed-Point Numbers}{13}
+\contentsline {subsection}{\numberline {1.2.3}Floating-Point Numbers}{13}
+\contentsline {subsubsection}{How continuous is real life?}{14}
+\contentsline {subsection}{\numberline {1.2.4}The Standard Model}{15}
+\contentsline {subsection}{\numberline {1.2.5}Cancellation Error}{16}
+\contentsline {section}{\numberline {1.3}Conditioning and Stability}{18}
+\contentsline {section}{\numberline {1.4}Theorems of Calculus}{23}
+\contentsline {section}{\numberline {1.5}Asymptotic Analysis and Complexity}{23}
+\contentsline {section}{\numberline {1.6}Simple Numerical Algorithms}{24}
+\contentsline {subsection}{\numberline {1.6.1}Horner's Rule}{24}
+\contentsline {subsection}{\numberline {1.6.2}Matrix-Vector Multiplication}{25}
+\contentsline {section}{\numberline {1.7}Problems}{25}
+\contentsline {chapter}{\numberline {2}Linear Systems of Equations}{28}
+\contentsline {section}{\numberline {2.1}Gaussian Elimination}{28}
+\contentsline {subsection}{\numberline {2.1.1}Without Pivoting}{29}
+\contentsline {subsection}{\numberline {2.1.2}With Partial Pivoting}{30}
+\contentsline {section}{\numberline {2.2}Taking Advantage of Structure I}{32}
+\contentsline {subsection}{\numberline {2.2.1}Triangular Matrices}{32}
+\contentsline {subsection}{\numberline {2.2.2}Permutation Matrices}{33}
+\contentsline {subsection}{\numberline {2.2.3}Unitary (and Orthogonal) Matrices}{34}
+\contentsline {section}{\numberline {2.3}Matrix Factorizations}{35}
+\contentsline {subsection}{\numberline {2.3.1}LU Factorization}{35}
+\contentsline {subsection}{\numberline {2.3.2}QR Factorization}{39}
+\contentsline {subsubsection}{Construction via Givens Matrices}{39}
+\contentsline {subsubsection}{Construction via Householder Matrices}{41}
+\contentsline {subsubsection}{Givens Matrices vs.~Householder Matrices}{42}
+\contentsline {subsubsection}{Least Squares Approximation}{43}
+\contentsline {subsection}{\numberline {2.3.3}Spectral Decomposition}{44}
+\contentsline {subsection}{\numberline {2.3.4}Singular Value Decomposition}{46}
+\contentsline {paragraph}{\it Sketch of Proof.}{46}
+\contentsline {section}{\numberline {2.4}Taking Advantage of Structure II}{47}
+\contentsline {subsection}{\numberline {2.4.1}Symmetric Positive-Definite Matrices}{47}
+\contentsline {subsection}{\numberline {2.4.2}Sparse Matrices}{47}
+\contentsline {subsection}{\numberline {2.4.3}Banded Matrices}{48}
+\contentsline {section}{\numberline {2.5}Iterative Solvers}{48}
+\contentsline {subsection}{\numberline {2.5.1}Jacobi and Gauss--Seidel}{49}
+\contentsline {subsection}{\numberline {2.5.2}Conjugate Gradients}{50}
+\contentsline {subsection}{\numberline {2.5.3}Preconditioning}{51}
+\contentsline {section}{\numberline {2.6}Problems}{52}
+\contentsline {chapter}{\numberline {3}Interpolation and Approximation}{54}
+\contentsline {section}{\numberline {3.1}Lagrange Interpolation}{54}
+\contentsline {subsection}{\numberline {3.1.1}Existence and Uniqueness}{54}
+\contentsline {subsection}{\numberline {3.1.2}Recursive Construction of Lagrange Interpolating Polynomials}{55}
+\contentsline {subsection}{\numberline {3.1.3}Barycentric Formul\ae }{56}
+\contentsline {subsection}{\numberline {3.1.4}Hermite Interpolating Polynomial}{56}
+\contentsline {subsection}{\numberline {3.1.5}Newton's Divided Differences}{57}
+\contentsline {subsection}{\numberline {3.1.6}Runge phenomenon}{58}
+\contentsline {section}{\numberline {3.2}Best Polynomial Approximation}{60}
+\contentsline {subsection}{\numberline {3.2.1}Best Polynomial Approximation in $L^2$ and Orthogonal Polynomials}{60}
+\contentsline {subsubsection}{Properties of Orthogonal Polynomials}{63}
+\contentsline {subsubsection}{The Classical Orthogonal Polynomials}{65}
+\contentsline {subsection}{\numberline {3.2.2}Best Polynomial Approximation in $L^\infty $ and The Remez Exchange Algorithm}{66}
+\contentsline {subsection}{\numberline {3.2.3}The Best Choice of Interpolation Nodes on $\mathbb {I}$}{69}
+\contentsline {section}{\numberline {3.3}Spline Approximation}{70}
+\contentsline {section}{\numberline {3.4}Problems}{71}
+\contentsline {chapter}{\numberline {4}Numerical Differentiation and Integration}{73}
+\contentsline {section}{\numberline {4.1}Finite Differences}{73}
+\contentsline {subsection}{\numberline {4.1.1}Complex Differences}{74}
+\contentsline {subsection}{\numberline {4.1.2}Dual Numbers and Forward-Mode Automatic Differentiation}{75}
+\contentsline {section}{\numberline {4.2}Newton--Cotes Quadrature}{77}
+\contentsline {subsection}{\numberline {4.2.1}Composite Formul\ae }{79}
+\contentsline {section}{\numberline {4.3}Richardson Extrapolation}{80}
+\contentsline {section}{\numberline {4.4}Gaussian Quadrature}{82}
+\contentsline {section}{\numberline {4.5}Monte Carlo Integration}{87}
+\contentsline {section}{\numberline {4.6}Problems}{87}
+\contentsline {chapter}{\numberline {5}Fourier Analysis}{89}
+\contentsline {section}{\numberline {5.1}The Discrete Fourier Transform}{89}
+\contentsline {subsection}{\numberline {5.1.1}The Inverse Discrete Fourier Transform}{90}
+\contentsline {subsection}{\numberline {5.1.2}The Fast Fourier Transform}{90}
+\contentsline {subsection}{\numberline {5.1.3}Aliasing}{92}
+\contentsline {section}{\numberline {5.2}The Discrete Cosine Transform}{93}
+\contentsline {subsection}{\numberline {5.2.1}The Inverse Discrete Cosine Transform}{94}
+\contentsline {section}{\numberline {5.3}The Discrete Sine Transform}{94}
+\contentsline {subsection}{\numberline {5.3.1}The Inverse Discrete Sine Transform}{96}
+\contentsline {section}{\numberline {5.4}Conversion, Differentiation, and Integration}{96}
+\contentsline {subsection}{\numberline {5.4.1}Conversion}{97}
+\contentsline {subsection}{\numberline {5.4.2}Differentiation}{98}
+\contentsline {subsection}{\numberline {5.4.3}Integration}{99}
+\contentsline {subsubsection}{Clenshaw--Curtis Quadrature}{99}
+\contentsline {section}{\numberline {5.5}Problems}{99}
+\contentsline {chapter}{\numberline {6}Mathematical Programming}{101}
+\contentsline {section}{\numberline {6.1}Nonlinear Programming}{101}
+\contentsline {subsection}{\numberline {6.1.1}Evolutionary Algorithms}{102}
+\contentsline {subsection}{\numberline {6.1.2}Quadratic Models}{105}
+\contentsline {section}{\numberline {6.2}Linear Programming}{107}
+\contentsline {subsection}{\numberline {6.2.1}The Simplex Method}{108}
+\contentsline {section}{\numberline {6.3}Problems}{111}
