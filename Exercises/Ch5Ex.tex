@@ -1,0 +1,184 @@
+\documentclass[11pt,letterpaper]{article}
+\input{../header}
+
+\usepackage{longtable}
+
+\begin{document}
+\title{MATH 2160, Chapter 5 Summary \& Exercises}
+\author{Richard M. Slevinsky}
+\date{}
+\maketitle
+
+\section*{A Conversation with Slevinsky}
+
+\begin{longtable}{p{0.475\textwidth}|p{0.475\textwidth}}
+\hline
+Problems & Solutions\\
+\hline
+How do I interpolate a periodic function and preserve the periodicity? & There are two scenarios that are related by a variable transformation. If $f$ is a function of a complex variable $z$, then the orthogonal polynomials with respect to $L^2(\U,\ud z)$ are the integer powers $\{z^k\}_{k=-\infty}^{+\infty}$. Both the function $f$ and the basis $z^k$ are periodic on the unit circle $\U$, because $\U$ has no beginning and no end. This allows us to project $f$ onto its {\em Laurent series}:
+\[
+f(z) \sim \sum_{k=-\infty}^{+\infty} f_k z^k,
+\]
+where the coefficients are given by:
+\[
+f_k = \dfrac{1}{2\pi\i}\int_\U \dfrac{f(z)}{z^{k+1}}\ud z.
+\]
+If $f$ is periodic on $[0,2\pi)$, then we may represent it as a {\em Fourier series}:
+\[
+f(\theta) \sim \sum_{k=-\infty}^{+\infty} c_k e^{\i k\theta},
+\]
+where the coefficients are given by:
+\[
+c_k = \dfrac{1}{2\pi}\int_0^{2\pi} f(\theta) e^{-\i k\theta}\ud\theta.
+\]\\
+I thought a Fourier series was given in terms of sines and cosines. & Indeed, yet another alternative representation gives:
+\[
+f(\theta) \sim \dfrac{a_0}{2} + \sum_{k=1}^\infty \left\{ a_k\cos k\theta + b_k\sin k\theta\right\},
+\]
+where the coefficients are:
+\[
+a_k = c_k+c_{-k},\quad b_k = \i(c_k-c_{-k}).
+\]
+\\
+\hline
+OK, but all these coefficients are given by integrals. How should we approximate them {\em numerically}? & As we saw in our chapter on numerical differentiation and integration, the composite trapezoidal rule worked {\em exceptionally well} on integrands with periodicity. This is precisely because it {\em is the Gaussian quadrature rule} on $L^2(\U,\ud z)$. This leads us to the DFT matrix and its inverse.\\
+\hline
+What is the DFT matrix? & The {\em discrete Fourier transform} (DFT) matrix represents the transformation from $N$ equispaced function samples on the unit circle to $N$ approximate Maclaurin coefficients $\hat{f}_k$, for $k=0,\ldots,N-1$.\\
+\hline
+Oh, I remember now!
+\[
+\FF_N = \begin{bmatrix}
+1 & 1 & \cdots & 1\\
+1 & \omega & \cdots & \omega^{N-1}\\
+\vdots & \vdots & \ddots & \vdots\\
+1 & \omega^{N-1} & \cdots & \omega^{(N-1)^2}
+\end{bmatrix},
+\]
+where $\omega = e^{-2\pi\i/N}$. & Exactly! This matrix has {\em so much structure} that when $N$ is a power of two, we may decompose its odd-even permutation into the product of a sparse matrix with $2N$ entries and a matrix containing two copies of the DFT matrix of half the size:
+\[
+\FF_NP_N = \begin{bmatrix}
+I_{N/2} & \Omega_{N/2}\\
+I_{N/2} & -\Omega_{N/2}\\
+\end{bmatrix}
+\begin{bmatrix}
+\FF_{N/2} & 0\\
+0 & \FF_{N/2}\\
+\end{bmatrix}.
+\]\\
+\hline
+Let me see if I've got this right; if $N=4$:
+\[
+\FF_4 = \begin{bmatrix}
+1 & 1 & 1 & 1\\
+1 & \omega & \omega^2 & \omega^3\\
+1 & \omega^2 & \omega^4 & \omega^6\\
+1 & \omega^3 & \omega^6 & \omega^9
+\end{bmatrix},
+\]
+then since $\omega^4 = (e^{-2\pi\i/4})^4\equiv1$:
+\[
+\FF_4 = \begin{bmatrix}
+1 & 1 & 1 & 1\\
+1 & \omega & \omega^2 & \omega^3\\
+1 & \omega^2 & 1 & \omega^2\\
+1 & \omega^3 & \omega^2 & \omega
+\end{bmatrix}.
+\]
+& Yep, and if we swap the second and third columns:
+\[
+\FF_4[:,[1;3;2;4]] = \begin{bmatrix}
+1 & 1 & 1 & 1\\
+1 & \omega^2 & \omega & \omega^3\\
+1 & 1 & \omega^2 & \omega^2\\
+1 & \omega^2 & \omega^3 & \omega
+\end{bmatrix},
+\]
+then we can write:
+\[
+\FF_4[:,[1;3;2;4]] = \begin{bmatrix}
+1 & 0 & 1 & 0\\
+0 & 1 & 0 & \omega\\
+1 & 0 & -1 & 0\\
+0 & 1 & 0 & -\omega\\
+\end{bmatrix}
+\begin{bmatrix}
+\FF_2 & 0\\
+0 & \FF_2\\
+\end{bmatrix}.
+\]\\
+\hline
+Whoa, that's a lot of omegas. I still don't understand how this gets us the $\OO(N\log N)$ complexity, though. & If we continue the factorization {\em recursively}, then we can visualize it as a {\em tree}. For $N=8$, for example:
+
+\begin{tikzpicture}[level/.style={sibling distance=43mm/#1},grow=up]
+\node (a){$\FF_8$}
+    child {node (b){$\FF_4$}
+        child {node (c){$\FF_2$}
+            child {node (d){$\FF_1$}}
+	    child {node (e){$\FF_1$}}
+	}
+	child {node (f){$\FF_2$}
+	    child {node (g){$\FF_1$}}
+	    child {node (h){$\FF_1$}}
+	}
+    }
+    child {node (i){$\FF_4$}
+        child {node (j){$\FF_2$}
+            child {node (k){$\FF_1$}}
+            child {node (l){$\FF_1$}}
+        }
+        child {node (m){$\FF_2$}
+            child {node (n){$\FF_1$}}
+            child {node (o){$\FF_1$}}
+        }
+    };
+\end{tikzpicture}
+There are four levels of the tree with eight $1$-by-$1$ matrices at the leaves.\\
+\hline
+Very interesting. Wait, why are there hats on the coefficients? In which sense are they approximate? & The phenomenon of {\em aliasing} shows us that the $\hat{f}_k$ contain {\em all} the Laurent modes:
+\[
+\hat{f}_k = f_k + f_{k-N} + f_{k+N} + f_{k-2N} + f_{k+2N}+\cdots+.
+\]
+Thus, if there is decay in the coefficients and if we use a lot of them, then we will converge to the true Laurent coefficients.\\
+All of this technology transfers to Chebyshev polynomials of the first and second kinds, right? & Yep. The DCT and the DST allow us to create polynomial interpolants to $f\in C([-1,1])$ in only $\OO(N\log N)$ operations. Let me tell ya folks, this is ``yuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuge.''\\
+...making polynomial interpolation great again? & Precisely.\\
+We have two polynomial bases $T_k$ and $U_k$. When should we use which one? & It depends what you would like to do, but there is a banded conversion between the bases, so we can change our representation very rapidly. Differentiation and integration is done term-by-term.\\
+\hline
+\end{longtable}
+
+\section*{Exercises}
+
+\begin{enumerate}
+
+\item If we have the Laurent expansion of a function $f(z)$, then we may easily calculate its $2$-norm only in terms of the coefficients. What is the expression for:
+\[
+\norm{f}_2^2 = \abs{\int_\U \abs{f(z)}^2\ud z} ?
+\]
+Alternatively, when $f(\theta)$ is a periodic function on $[0,2\pi)$, what is the expression for:
+\[
+\norm{f}_2^2 = \int_0^{2\pi} \abs{f(\theta)}^2\ud\theta,\quad \hbox{in terms of $a_k$ and $b_k$, or $c_k$?}
+\]
+
+\item Carefully confirm the factorization of $\FF_8P_8$ in terms of $I_4$, $\Omega_4$, and $\FF_4$. What is the inverse of the permutation matrix $P_8$?
+
+\item In problem 4 of chapter 3, we derived the $N(=N(a,\varepsilon))$ required to satisfy $\norm{f-p_N}_\infty \le \varepsilon \norm{f}_\infty$ for $f(x) = (x^2+a^2)^{-1}$. It was:
+\[
+N(a,\varepsilon) \ge -\log\left(\varepsilon\dfrac{(a+\sqrt{a^2+1})^2-1}{a^2}\right)/\log(a+\sqrt{a^2+1}).
+\]
+Use the DCT to examine how close the first $N$ coefficients of the interpolant are to the first $N$ coefficients of the expansion. In your opinion, is aliasing a concern for this particular function?
+
+\item Use the conversion matrix:
+\[
+\CC_N = \begin{bmatrix}
+1 & 0 & -\tfrac{1}{2}\\
+& \tfrac{1}{2} & 0 & -\tfrac{1}{2}\\
+& & \ddots & \ddots & \ddots\\
+& & & \tfrac{1}{2} & 0 & -\tfrac{1}{2}\\
+& & & & \tfrac{1}{2} & 0\\
+& & & & & \tfrac{1}{2}\\
+\end{bmatrix},
+\]
+between the $T_k$ and $U_k$ bases to confirm numerically the exact Chebyshev-$U$ coefficients of $e^x$ in Table 5.3 given the exact Chebyshev-$T$ coefficients in Table 5.2 in terms of the modified Bessel functions of the first kind $I_k(1)$.
+
+\end{enumerate}
+
+\end{document}

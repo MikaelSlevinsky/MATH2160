@@ -374,7 +374,7 @@ Let $x_j^N := \cos(\pi(j+1)/(N+1))$ and let $\omega_j^N = \sin(\pi(j+1)/(N+1))$.
 f_k \approx \hat{f}_k & := \dfrac{2}{N+1}\sum_{j=0}^{N-1} w_j^Nf(x_j^N)U_k(\cos(\pi (j+1)/(N+1))),\quad{\rm for}\quad k=0,\ldots,N-1,\\
 & = \dfrac{2}{N+1}\sum_{j=0}^{N-1} \left[\omega_j^Nf(x_j^N)\right]\sin(\pi (k+1)(j+1)/(N+1)).
 \end{align}
-Let $\DD_N$ be the matrix with entries $[\DD_N]_{k,j} = 2\sin(\pi (k+1)(j+1)/(N+1))$. This matrix is the so-called discrete sine transform matrix of type-I (DST-I)\footnote{We will adopt the same commonality as the DCT-II when we call the DST-I {\em the} DST.}. It can be seen that the DST can be related to the real-to-real map of a DFT with odd symmetry in the input data. Thus, a DCT can be applied in $\OO(N\log N)$ operations.
+Let $\DD_N$ be the matrix with entries $[\DD_N]_{k,j} = 2\sin(\pi (k+1)(j+1)/(N+1))$. This matrix is the so-called discrete sine transform matrix of type-I (DST-I)\footnote{We will adopt the same commonality as the DCT-II when we call the DST-I {\em the} DST.}. It can be seen that the DST can be related to the real-to-real map of a DFT with odd symmetry in the input data. Thus, a DST can be applied in $\OO(N\log N)$ operations.
 
 \subsection{The Inverse Discrete Sine Transform}
 

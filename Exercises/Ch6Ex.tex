@@ -1,0 +1,61 @@
+\documentclass[11pt,letterpaper]{article}
+\input{../header}
+
+\usepackage[pdftex,colorlinks]{hyperref}
+
+\usepackage{longtable}
+
+\begin{document}
+\title{MATH 2160, Chapter 6 Summary \& Exercises}
+\author{Richard M. Slevinsky}
+\date{}
+\maketitle
+
+\section*{A Conversation with Slevinsky}
+
+\begin{longtable}{p{0.475\textwidth}|p{0.475\textwidth}}
+\hline
+Problems & Solutions\\
+\hline
+How should I find the global minimum/maximum of a nonlinear function? & Generally speaking, your guess is as good as mine. Maybe start by identifying a realistic subdomain $D\subset\R^n$?\\
+OK, I should be able to do that with a little mathematics and some logic. & Then, one approach we learned in class is to harness a powerful force of nature. From the ethereal movements of a swarm, to pattern formation in animal furs, and the processes of natural selection and mutation during microevolution, nature is incredibly efficient at self-organization from the bottom-up.\\
+Wow, I knew we took advantage of nature, but I never thought of it {\em mathematically} before! & In evolutionary algorithms, each coordinate is a random point in our realistic subdomain $D$ and the objective function's value at these coordinates is the {\em fitness value}. For each generation, we let the genes ``evolve,'' and we only keep the genes-of-best-fit for the next generation.\\
+\hline
+How should I find the global minimum/maximum of a linear program? & We learned about the simplex algorithm, which is based on the observation that the optimal value is located at a vertex of the feasible region.\\
+Why is it called the simplex algorithm? & A simplex is a higher-dimensional version of a triangle or tetrahedron. The simplex algorithm moves from one vertex to the next in a consistent way, ending up at the global optimum.\\
+\hline
+\end{longtable}
+
+\section*{Exercises}
+
+\begin{enumerate}
+
+\item Use the evolutionary algorithms on UM Learn and go to Wikipedia's ``\href{https://en.wikipedia.org/wiki/Test_functions_for_optimization}{Test Functions For Optimization}'' to try to see for which types of single-objective functions the algorithms are successful and which are not.
+
+\item Home in on your estimates for global minima using Newton iteration. Take (first and second) partial derivatives of the objective functions to form the gradient vector and Hessian matrix required in Newton iteration.
+
+\item Here are some resources on evolutionary algorithms:
+\begin{itemize}
+\item A \href{https://vimeo.com/79098420}{video} to see bipedal creatures learn how to walk;
+
+\item The accompanying \href{http://www.cs.ubc.ca/~van/papers/2013-TOG-MuscleBasedBipeds/2013-TOG-MuscleBasedBipeds.pdf}{paper}; and,
+\item A \href{http://boxcar2d.com}{simulator} to see simple cars evolve from random designs (and also the chance to play God).
+\end{itemize}
+
+\item Solve the linear program:
+\mathprog{\begin{array}{rrrrrrrrrrr} x_1 & + & 3x_2 & + & 2x_3 & + & 2x_4 & + & 4x_5\end{array}}{\begin{array}{rrrrrrrrrrr} x_1 & - & x_2 & + & 2x_3 & - & 3x_4 & + & 2x_5 & = & 1\\
+-x_1 & + & 2x_2 & & & + & 3x_4 & & & = & 2\\\end{array}}{x_1\ge0,~x_2\ge0,~x_3\ge0,~x_4\ge0,~x_5\ge0}{LP:problem1}
+
+{\em Hint: the minimum of $13/3$ is attained at $x = \pr(0,0,3/2,2/3,0)^\top$.}
+
+\item Solve the linear program:
+\mathprog{\begin{array}{rrrrrrrrrrr} x_1 & + & 2x_2 & + & 3x_3 & + & 4x_4\end{array}}{\begin{array}{rrrrrrrrrrr}
+x_1 & + & 2x_2 & + & 3x_3 & + & 4x_4 & = & 5\\
+-5x_1 & + & 6x_2 & + & 7x_3 & + & 8x_4 & = & 6\\
+9x_1 & - & 10x_2 & + & 11x_3 & - & 12x_4 & = & 7\\\end{array}}{x_1\ge0,~x_2\ge0,~x_3\ge0,~x_4\ge0}{LP:problem2}
+
+{\em Hint: the minimum of $5$ is attained at $x = \pr(51/76,0,53/76,85/152)^\top$.}
+
+\end{enumerate}
+
+\end{document}

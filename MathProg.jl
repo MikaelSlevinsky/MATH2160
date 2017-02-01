@@ -70,6 +70,58 @@ function surf(problem::Problem{2},N=301;cmap="seismic")
     grid(false);gcf()
 end
 
+function makegif(solution::Solution{2};N=301,L=50,cmap="seismic")
+    tm=string(time_ns())
+    dr = math2160*"/other/"*tm*"mov"
+    mkdir(dr)
+
+    problem = solution.problem
+    f, hypercube = problem.f, problem.hypercube
+    xl, xr = hypercube.left[1], hypercube.right[1]
+    yl, yr = hypercube.left[2], hypercube.right[2]
+
+    x = linspace(xl, xr, N)
+    y = linspace(yl, yr, N)
+    xx, yy = [x for y in y, x in x], [y for y in y, x in x]
+    fplotvals = map(f,map(tuple,xx,yy))
+
+    allparents, allchildren = solution.allparents, solution.allchildren
+    nmembers, ngenerations = length(first(allparents)), length(allparents)
+
+    xp = map(x->x[1], allparents[1])
+    yp = map(y->y[2], allparents[1])
+
+    clf();hold(true)
+    contourf(x,y,fplotvals,L;cmap=cmap)
+    xlim((xl,xr));ylim((yl,yr))
+    xlabel("\$x_1\$");ylabel("\$x_2\$")
+    grid(false)
+    plot(xp, yp, "om"; markersize = 3.0)
+    gcf()
+    savefig(dr * "/" * lpad(1,max(4,ceil(Int,log10(ngenerations))),0) * ".png";dpi=150,bbox_inches="tight")
+
+
+    for i=2:ngenerations
+        xc = map(x->x[1], allchildren[i-1])
+        yc = map(y->y[2], allchildren[i-1])
+        xp = map(x->x[1], allparents[i])
+        yp = map(y->y[2], allparents[i])
+
+        clf();hold(true)
+        contourf(x,y,fplotvals,L;cmap=cmap)
+        xlim((xl,xr));ylim((yl,yr))
+        xlabel("\$x_1\$");ylabel("\$x_2\$")
+        grid(false)
+        plot(xc, yc, "oy"; markersize = 3.0)
+        plot(xp, yp, "om"; markersize = 3.0)
+        gcf()
+        savefig(dr * "/" * lpad(i,max(4,ceil(Int,log10(ngenerations))),0) * ".png";dpi=150,bbox_inches="tight")
+    end
+    # Requires: brew install imagemagick
+    run(`convert -delay 6 -loop 0 $dr/*.png $dr/solution.gif`)
+    run(`open $dr/solution.gif`)
+end
+
 #=
 cart2polr(x, y) = hypot(x, y)
 cart2polt(x, y) = atan2(y, x)
