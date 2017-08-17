@@ -326,7 +326,7 @@ where $a_i^*$ denotes the $i^{\rm th}$ row of $A$.
 
 Finally, it should be clear that induced norms are submultiplicative, since:
 \[
-\norm{AB}_p = \sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{ABx}_p}{\norm{x}_p} = \sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{ABx}_p}{\norm{Bx}_p}\dfrac{\norm{Bx}_p}{\norm{x}_p} \le \sup_{\substack{y\in\C^n\\y\ne0}}\dfrac{\norm{Ay}_p}{\norm{y}_p}\sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{Bx}_p}{\norm{x}_p} = \norm{A}_p\norm{B}_p.
+\norm{AB}_p = \sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{ABx}_p}{\norm{x}_p} = \sup_{\substack{x\in\C^n\\x\ne0\\Bx\ne0}}\dfrac{\norm{ABx}_p}{\norm{Bx}_p}\dfrac{\norm{Bx}_p}{\norm{x}_p} \le \sup_{\substack{y\in\C^n\\y\ne0}}\dfrac{\norm{Ay}_p}{\norm{y}_p}\sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{Bx}_p}{\norm{x}_p} = \norm{A}_p\norm{B}_p.
 \]
 
 \section{Computer Representation of Numbers}

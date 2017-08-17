@@ -353,6 +353,12 @@ But this last equality implies that $\sum_{i=0}^n\alpha_ix^i\equiv0$ and thus $\
 \end{proof}
 Invertibility of the matrix $A$ establishes existence and uniqueness of the best polynomial approximation in $L^2(D,\ud\mu(x))$. It does not, however, imply that the normal equations are well-conditioned. To find a well-conditioned solution to this problem, we use our knowledge of the QR factorization for matrices to construct degree-graded polynomial bases that behave significantly better than the monomials.
 
+\begin{example}
+Set up, but do not evaluate, the linear system for the best degree-$n$ polynomial approximation in $L^2([0,1],\ud x)$ by using the monomial basis.
+
+The entries of the matrix $A$ are $A_{k,i} = \langle x^k, x^i\rangle = \int_0^1 x^{k+i}\ud x = \dfrac{1}{k+i+1}$, while the right-hand side is $\langle x^k, f\rangle = \int_0^1x^k f(x)\ud x$. In this example, the matrix $A$ turns out to be the notorious Hilbert matrix, whose terrible conditioning we explored in chapter 1.
+\end{example}
+
 The solution of the normal equations $A\alpha = \varphi$ for best least-squares polynomial approximation would be trivial if $A$ were diagonal. Instead of using $\{1,x,\ldots,x^n\}$ as a basis for $\P_n$, we shall construct a basis $\{\pi_0,\pi_1,\ldots,\pi_n\}$ in order to diagonalize $A$.
 
 In this basis, our best polynomial approximation $p_n(x) = \sum_{i=0}^n \beta_i\pi_i(x)$, and the normal equations become:
@@ -396,7 +402,28 @@ For any $j=0,\ldots,k$,
 \end{proof}
 
 \begin{remark}
-The Gram--Schmidt procedure constructs orthogonal polynomials inductively starting from $\pi_0(x) = 1$. $\pi_k(x)$ is always of exact degree $k$, so $\{\pi_0,\ldots,\pi_k\}$ is a basis for $\P_k$, $\forall k\in\N_0$. The orthogonal polynomials can be normalized to be {\bf orthonormal}, i.e. $\langle\pi_k,\pi_k\rangle = 1$, to be {\bf monic}, i.e. $\hat{\pi}_k(x) = x^k + \cdots +$, or even have other normalizations such as $\pi_k(1)=1$.
+\begin{enumerate}
+\item The Gram--Schmidt procedure constructs orthogonal polynomials inductively starting from $\pi_0(x) = 1$. $\pi_k(x)$ is always of exact degree $k$, so $\{\pi_0,\ldots,\pi_k\}$ is a basis for $\P_k$, $\forall k\in\N_0$. The orthogonal polynomials can be normalized to be {\bf orthonormal}, i.e. $\langle\pi_k,\pi_k\rangle = 1$, to be {\bf monic}, i.e. $\hat{\pi}_k(x) = x^k + \cdots +$, or even have other normalizations such as $\pi_k(1)=1$.
+\item The Gram--Schmidt procedure may be organized in a matrix:
+\[
+\begin{bmatrix}
+1\\
+\frac{\langle \pi_0, x\rangle}{\langle \pi_0,\pi_0\rangle} & 1\\
+\frac{\langle \pi_0, x^2\rangle}{\langle \pi_0,\pi_0\rangle} & \frac{\langle \pi_1, x^2\rangle}{\langle \pi_1,\pi_1\rangle} & 1\\
+\frac{\langle \pi_0, x^3\rangle}{\langle \pi_0,\pi_0\rangle} & \frac{\langle \pi_1, x^3\rangle}{\langle \pi_1,\pi_1\rangle} & \frac{\langle \pi_2, x^3\rangle}{\langle \pi_2,\pi_2\rangle} & 1\\
+\vdots & \vdots & \cdots & \cdots & \ddots\\
+\frac{\langle \pi_0, x^n\rangle}{\langle \pi_0,\pi_0\rangle} & \frac{\langle \pi_1, x^n\rangle}{\langle \pi_1,\pi_1\rangle} & \cdots & \cdots & \frac{\langle \pi_{n-1}, x^n\rangle}{\langle \pi_{n-1},\pi_{n-1}\rangle} & 1\\
+\end{bmatrix}
+\begin{bmatrix}
+\pi_0(x)\\\pi_1(x)\\\pi_2(x)\\\pi_3(x)\\\vdots\\\pi_n(x)
+\end{bmatrix}
+=
+\begin{bmatrix}
+1\\x\\x^2\\x^3\\\vdots\\x^n
+\end{bmatrix},
+\]
+where the system is solved by $\OO(n^2)$ inner products and forward substitution with $\OO(n^2)$ flops. Entries in subsequent rows are computed on-the-fly, once the required orthogonal polynomials are known.
+\end{enumerate}
 \end{remark}
 
 \subsubsection{Properties of Orthogonal Polynomials}

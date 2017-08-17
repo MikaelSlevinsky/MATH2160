@@ -734,7 +734,11 @@ A = Q\Lambda Q^\top,
 where $Q\in\R^{n\times n}$ is an orthogonal matrix whose columns are the orthonormal eigenvectors $q_1,\ldots,q_n$ and $\Lambda = \diag(\lambda_1,\ldots,\lambda_n)\in\R^{n\times n}$.
 \end{theorem}
 \begin{proof}
-By Lemma~\ref{lemma:SymmetricEigenvaluesAreReal}, it is clear that eigenvalues and eigenvectors of $A$ are real, and eigenvectors of distinct eigenvalues are orthogonal. If an eigenvalue $\lambda$ has multiplicity $m$, we can always find a set of $m$ orthogonal eigenvectors associated with $\lambda$. The result follows from orthonormalization.
+By Lemma~\ref{lemma:SymmetricEigenvaluesAreReal}, it is clear that eigenvalues and eigenvectors of $A$ are real, and eigenvectors of distinct eigenvalues are orthogonal. Thus, in the simple case that the eigenvalues of $A$ are distinct, the proof is complete. More generally, let $q_1$ be a $2$-normalized eigenvector associated with $\lambda_1$. Construct an orthogonal matrix with $q_1$ in the first column, $Q_1 := \begin{bmatrix} q_1 & \tilde{Q}_1\end{bmatrix}$. Then:
+\[
+Q_1^\top A Q_1 = \begin{bmatrix} q_1^\top \lambda_1 q_1 & q_1^\top A\tilde{Q}_1\\ \tilde{Q}_1^\top\lambda_1 q_1 & \tilde{Q}_1^\top A \tilde{Q}_1 \end{bmatrix}.
+\]
+Now, since $Q_1^\top A Q_1$ is symmetric and $\tilde{Q}_1$ is chosen to be orthogonal to $q_1$, all entries in the first row and column are zero except the first entry, which is the eigenvalue $\lambda_1$. Furthermore, the characteristic polynomial informs us that $A$ and $Q_1^\top A Q_1$ have the same eigenvalues. In the lower right corner, $\tilde{Q}_1^\top A\tilde{Q}_1$ is symmetric, and we continue finding orthonormal eigenvectors to $\lambda_2,\ldots,\lambda_n$ until the dimension of $\R^n$ is depleted.
 \end{proof}
 
 The following theorem is the complex analogue of Theorem~\ref{theorem:SymmetricSpectralTheorem}.
