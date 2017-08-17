@@ -11,14 +11,13 @@ function lagrange(knots, data)
     left = minimum(knots); right = maximum(knots); range = right - left;
     top = maximum(data); bottom = minimum(data); height = top - bottom;
 
-    x = linspace(left - 0.1*range, right + 0.1*range, 500);
+    x = linspace(left - 0.1*range, right + 0.1*range, 2000);
     y = polyval(p, x);
 
     T = Float64
     clf()
-    plot(map(T,knots), map(T,data), "mx")
-    hold(true)
-    plot(map(T,x), map(T,y))
+    plot(T.(knots), T.(data), "mx")
+    plot(T.(x), T.(y))
     xlabel("\$x\$")
     xlim((T(x[1]),T(x[end])))
     ylim((T(bottom-0.1*height),T(top+0.1*height)))
@@ -89,27 +88,26 @@ function chebyshevpoints{T<:Number}(::Type{T},n::Integer;kind::Integer=1)
 end
 chebyshevpoints(n::Integer;kind::Integer=1) = chebyshevpoints(Float64,n;kind=kind)
 
-f(x) = 1./(1+x.^2)
+f = x-> 1./(1+x.^2)
 
 for i=1:3
     x = -5:big(2.0)/2^i:5
-    lagrange(x,f(x));ylabel("\$f(x)\$");grid(true);gcf()
+    lagrange(x,f.(x));ylabel("\$f(x)\$");grid(true);gcf()
     savefig(math2160*"/runge$i.pdf")
 end
-length(-5:big(2.0)/2^3:5)
 
 for i=1:3
     x = 5chebyshevpoints(BigFloat,1+5*2^i)
-    lagrange(x,f(x));ylabel("\$f(x)\$");grid(true);gcf()
+    lagrange(x,f.(x));ylabel("\$f(x)\$");grid(true);gcf()
     savefig(math2160*"/rungefixed$i.pdf")
 end
 
 function chebyshevt(k::Int,x)
-    cos(k*acos(x))
+    cos.(k*acos.(x))
 end
 
 function chebyshevu(k::Int,x)
-    sin((k+1)*acos(x))./sin(acos(x))
+    sin.((k+1)*acos.(x))./sin.(acos.(x))
 end
 
 function legendre(k::Int,x)
@@ -129,9 +127,9 @@ function legendre(k::Int,x)
 end
 
 x = chebyshevpoints(100)
-leg = Vector{ASCIIString}(6)
+leg = Vector{String}(6)
 
-clf();hold(true)
+clf()
 for i=0:5
     plot(x,chebyshevt(i,x))
     leg[i+1] = "\$T_$(i)(x)\$"
@@ -141,7 +139,7 @@ xlabel("\$x\$");ylabel("Chebyshev polynomials of the first kind")
 ylim((-1.1,1.1))
 savefig(math2160*"/chebyshevt.pdf")
 
-clf();hold(true)
+clf()
 for i=0:5
     plot(x,chebyshevu(i,x))
     leg[i+1] = "\$U_$(i)(x)\$"
@@ -150,7 +148,7 @@ legend(leg,loc="lower right");grid(true)
 xlabel("\$x\$");ylabel("Chebyshev polynomials of the second kind")
 savefig(math2160*"/chebyshevu.pdf")
 
-clf();hold(true)
+clf()
 for i=0:5
     plot(x,legendre(i,x))
     leg[i+1] = "\$P_$(i)(x)\$"
@@ -166,29 +164,29 @@ using Remez
 colours = ["b","g","r","c","m"]
 x = chebyshevpoints(501)
 
-f(x) = abs(x+0.5)
+f = x -> abs(x+0.5)
 
-clf();hold(true)
-plot(x,f(x),"-k")
+clf()
 i=1
-leg[1] = "\$|x+\\frac{1}{2}|\$"
 for n in [1;2;4;8;16]
     (cfsabs,err,equi) = remez(f,(-1,1),n)
-    bestapprox = [Float64(Remez.clenshaw(cfsabs,big(x))) for x in x]
-    plot(x,bestapprox,colours[i])
-    leg[i+1] = "\$ p_{$(n)}(x)\$"
+    bestapprox = [Float64(Remez.clenshaw(cfsabs, big(x))) for x in x]
+    plot(x, bestapprox, colours[i])
+    leg[i] = "\$ p_{$(n)}(x)\$"
     i+=1
 end
+plot(x,f.(x),"-k")
+leg[i] = "\$|x+\\frac{1}{2}|\$"
 legend(leg,loc="lower right");grid(true)
 xlabel("\$x\$");ylabel("Best Polynomial Approximation in \$L^\\infty\\!([-1,1])\$")
 savefig(math2160*"/BPAabs.pdf")
 
-clf();hold(true)
+clf()
 i=1
 for n in [1;2;4;8;16]
     (cfsabs,err,equi) = remez(f,(-1,1),n)
-    bestapprox = [Float64(Remez.clenshaw(cfsabs,big(x))) for x in x]
-    plot(x,f(x)-bestapprox,colours[i])
+    bestapprox = [Float64(Remez.clenshaw(cfsabs, big(x))) for x in x]
+    plot(x, f.(x) - bestapprox, colours[i])
     leg[i] = "\$ f(x) - p_{$(n)}(x)\$"
     i+=1
 end
@@ -207,7 +205,7 @@ savefig(math2160*"/BPAerrabs.pdf")
 x = -3:3
 yi = [ones(4);zeros(3)]
 
-clf();hold(true)
+clf()
 
 lagrange(x,yi);xlabel("")
 ax = gca()
@@ -220,7 +218,7 @@ xticks([]);yticks([])
 xlim(1.02collect(extrema(x)));ylim((-0.3,1.4))
 savefig(math2160*"/spline1a.pdf")
 
-clf();axes(aspect="equal");hold(true)
+clf();axes(aspect="equal")
 
 plot(x,yi,"xm",x,yi)
 ax = gca()
@@ -233,14 +231,14 @@ xlim(1.02collect(extrema(x)));ylim((-0.3,1.4))
 savefig(math2160*"/spline1b.pdf")
 
 
-f(x) = x#1./(1+exp(x))
+f = x -> x#1./(1+exp(x))
 
 n = 1000
 h = 10/n
 k = -n:n
 kh = k*h
-wk = exp(-kh.^2)
-fk = f(kh)
+wk = exp.(-kh.^2)
+fk = f.(kh)
 
 function cardinalbary(x::Number)
     ind = findfirst(v->x∈v,kh)
@@ -252,11 +250,10 @@ function cardinalbary(x::Number)
         return fk[ind]
     end
 end
-@vectorize_1arg Number cardinalbary
 
-clf();hold(true)
+clf()
 x = linspace(-10,10,1002)
-semilogy(x,map(abs,f(x)-cardinalbary(x)),"-k")
+semilogy(x,abs.(f.(x)-cardinalbary.(x)),"-k")
 grid(true)
 xlabel("\$x\$");ylabel("Absolute error")
 savefig(math2160*"/cardinalbary.pdf")

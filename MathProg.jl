@@ -91,7 +91,7 @@ function makegif(solution::Solution{2};N=301,L=50,cmap="seismic")
     xp = map(x->x[1], allparents[1])
     yp = map(y->y[2], allparents[1])
 
-    clf();hold(true)
+    clf()
     contourf(x,y,fplotvals,L;cmap=cmap)
     xlim((xl,xr));ylim((yl,yr))
     xlabel("\$x_1\$");ylabel("\$x_2\$")
@@ -107,7 +107,7 @@ function makegif(solution::Solution{2};N=301,L=50,cmap="seismic")
         xp = map(x->x[1], allparents[i])
         yp = map(y->y[2], allparents[i])
 
-        clf();hold(true)
+        clf()
         contourf(x,y,fplotvals,L;cmap=cmap)
         xlim((xl,xr));ylim((yl,yr))
         xlabel("\$x_1\$");ylabel("\$x_2\$")
@@ -258,12 +258,12 @@ plotprob(pop,Peukaryotic,A,c_eukaryotic)
 problem1 = Problem(f, HyperCube([-20.,-20.],[20.,20.]))
 
 surf(problem1,501)
-#savefig(math2160*"/MathProgf1.png";dpi=300)
+#savefig(math2160*"/MathProgf1.png";dpi=600)
 
 problem2 = Problem(f, HyperCube(2))
 
 contourf(problem2)
-#savefig(math2160*"/MathProgf2.png";dpi=300)
+#savefig(math2160*"/MathProgf2.png";dpi=600)
 
 ################################################################################
 # 2D Newton iteration.
@@ -271,14 +271,14 @@ contourf(problem2)
 
 f = x -> exp(sin(50x[1])) + sin(60exp(x[2])) + sin(70sin(x[1])) + sin(sin(80x[2])) - sin(10*(x[1]+x[2])) + (x[1].^2 + x[2].^2)./4
 
-function g(x)
+function grad(x)
     ret = fill(-10cos(10*(x[1]+x[2])), 2)
     ret[1] += 50.*cos(50x[1]).*exp(sin(50x[1])) + 70cos(x[1]).*cos(70sin(x[1])) + x[1]/2
     ret[2] += 60exp(x[2]).*cos(60exp(x[2])) + 80cos(80x[2]).*cos(sin(80x[2])) + x[2]/2
     ret
 end
 
-function H(x)
+function Hessian(x)
     ret = fill(100sin(10(x[1]+x[2])), 2, 2)
     ret[1,1] += ( (50cos(50x[1])).^2 - 50^2*sin(50x[1]) ).*exp(sin(50x[1])) + 1/2
     ret[1,1] -= (70cos(x[1]))^2.*sin(70sin(x[1])) + 70sin(x[1]).*cos(70sin(x[1]))
@@ -303,8 +303,8 @@ setprecision(33333)
 
 x = [big(-0.02);big(0.21)]
 
-while norm(g(x)) > log(eps(x[1]))^2*eps(x[1])
-    x += H(x)\-g(x)
+while norm(grad(x)) > log(eps(x[1]))^2*eps(x[1])
+    x += Hessian(x)\-grad(x)
     println("x = [parse(BigFloat,\"",x[1],"\");")
     println("parse(BigFloat,\"",x[2],"\")]")
 end

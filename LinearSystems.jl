@@ -2,20 +2,20 @@ const math2160 = "/Users/Mikael/Documents/Courses/MATH2160"
 
 using PyPlot
 
-function computeHouseholder(A::Matrix,col::Int)
+function computeHouseholder(A::Matrix, col::Int)
     u = A[:,col]
     u[1:col-1] = 0
-    α = -copysign(sqrt(dot(u,u)), u[col])
+    α = sign(u[col])*norm(u)
     w = u
-    w[col] = w[col]-α
+    w[col] = α + w[col]
     w
 end
 
-function applyHouseholder!(A::Matrix,w::Vector)
+function applyHouseholder!(A::Matrix, w::Vector)
     # Psychologically H(w) = I - 2/⟨w,w⟩ ww^⊤,
     # but we implement this in-place on A.
     m,n = size(A)
-    wTA = A'*w
+    wTA = (w'A).'
     twoiww = 2/dot(w, w)
     scale!(twoiww, wTA)
     for j = 1:n

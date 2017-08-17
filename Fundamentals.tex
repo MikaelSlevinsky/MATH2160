@@ -242,15 +242,15 @@ An $m\times n$ matrix can be viewed as a vector in an $mn$-dimensional space: ea
 
 However, in dealing with a space of matrices, certain special norms are more useful than the vector norms already discussed. These are the {\em induced matrix norms}, defined in terms of the behaviour of a matrix as an operator between its normed domain and range spaces.
 
-Given vector norms $\norm{\cdot}_{(n)}$ and $\norm{\cdot}_{(m)}$ on the domain and range of $A\in\C^{m\times n}$, respectively, the induced matrix norm $\norm{A}_{(m,n)}$ is the smallest number $C$ for which the following inequality holds for all $x\in\C^n$:
+Given a vector $p$-norm $\norm{\cdot}_p$, the induced matrix norm $\norm{A}_p$ is the smallest number $C$ for which the following inequality holds for all $x\in\C^n$:
 \begin{equation}
-\norm{Ax}_{(m)} \le C\norm{x}_{(n)}.
+\norm{Ax}_p \le C\norm{x}_p.
 \end{equation}
-In other words, $\norm{A}_{(m,n)}$ is the supremum of the ratios $\norm{Ax}_{(m)}/\norm{x}_{(n)}$ over all vectors $x\in\C^n$--the maximum factor by which $A$ can ``stretch'' a vector $x$. We say that $\norm{\cdot}_{(m,n)}$ is the matrix norm induced by $\norm{\cdot}_{(m)}$ and $\norm{\cdot}_{(n)}$.
+In other words, $\norm{A}_p$ is the supremum of the ratios $\norm{Ax}_p/\norm{x}_p$ over all vectors $x\in\C^n$--the maximum factor by which $A$ can ``stretch'' a vector $x$. We say that $\norm{\cdot}_p$ is the matrix norm induced by $\norm{\cdot}_p$.
 
 Because of condition 3.~of Definition~\ref{definition:norm} the action of $A$ is determined by its action on unit vectors. Therefore, the matrix norm can be defined equivalently in terms of the images of the unit vectors under $A$:
 \begin{equation}
-\norm{A}_{(m,n)} = \sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{Ax}_{(m)}}{\norm{x}_{(n)}} = \sup_{\substack{x\in\C^n\\ \norm{x}_{(n)} = 1}}\norm{Ax}_{(m)}.
+\norm{A}_p = \sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{Ax}_p}{\norm{x}_p} = \max_{\substack{x\in\C^n\\ \norm{x}_p = 1}}\norm{Ax}_p.
 \end{equation}
 This form of the definition can be convenient for visualizing induced matrix norms.
 
@@ -806,13 +806,20 @@ Using Taylor's theorem and the geometric series, we know that:
 
 Horner's rule~\cite{Horner-109-308-19} is an algorithm for evaluating polynomials in the monomial basis. Let $p_n(x) = \sum_{k=0}^n c_kx^k$.
 \begin{algorithm}[Horner~\cite{Horner-109-308-19}]~
-\begin{enumerate}
-\item Set $S = c_n$;
-\item For $k = n-1,\ldots,0$, set $S = c_k + xS$.
-\end{enumerate}
+\begin{description}
+\item[Step 1:] Initialization:
+
+{\tt S = c[n]}.
+\item[Step 2:] The main loop:
+\begin{verbatim}
+for k = n-1:-1:0
+    S = c[k] + x*S
+end
+\end{verbatim}
+\end{description}
 $S$ is the result of evaluating $p_n$ at the point $x$.
 \end{algorithm}
-This algorithm can be reasoned by re-expressing the polynomial $p_n$ as:
+This algorithm is derived by re-expressing the polynomial $p_n$ as:
 \[
 p_n(x) = c_0 + x(c_1 + x(c_2 + \cdots + x(c_{n-1}+c_nx))).
 \]
@@ -823,28 +830,53 @@ Horner's rule requires:
 \end{itemize}
 It is an example of a perfectly fine algorithm for numerically evaluating polynomials in the monomial basis.
 
-\subsection{Matrix-Vector Multiplication}
+\subsection{Bisection Method}
 
-Matrix-vector multiplication allows us to determine the vector $b := Ax$, where $A\in\F^{m\times n}$, $x\in\F^n$, and $b\in\F^m$. Generically speaking, we find:
-\begin{algorithm}~\\
-for $i=1,\ldots,m,$ set:
+The bisection method is used to compute a solution of the equation $f(x) = 0$ in an interval $x\in[a,b]$. Based on the Intermediate Value Theorem, a continuous function $f$ which changes sign on $[a,b]$ has at least one zero in the open interval $(a,b)$. Bisection adds to this a comparison with the function evaluated at the midpoint $c = \frac{a+b}{2}$ to determine in which interval to continue to subdivide. Pseudo-code for the algorithm is as follows:
 
-\hspace*{0.75cm} $b_i=0$
-
-\hspace*{0.75cm} for $j=1,\ldots,n,$ set:
-
-\hspace*{1.5cm} $b_i = b_i + A_{i,j}x_j$
-
-\hspace*{0.75cm} end
-
+\begin{algorithm}[Bisection]~\\
+\begin{description}
+\item[Step 1:] Initialization:
+\begin{verbatim}
+fa = f(a)
+fb = f(b)
+if fa*fb > 0
+    error("Bisection cannot guarantee a root")
 end
+if fa == 0
+    return a
+elseif fb == 0
+    return b
+end
+absbma = abs(b-a)
+\end{verbatim}
+\item[Step 2:] The main loop:
+\begin{verbatim}
+while abs(b-a) > absbma*tol
+    c = (a+b)/2
+    fc = f(c)
+    if fa*fc > 0 # f(a) and f(c) have the same sign
+        a = c
+        fa = fc
+    elseif fa*fc < 0 # f(a) = f(c) have opposite sign
+        b = c
+        fb = fc
+    else # fa*fc == 0 which means f(c) == 0.
+    	return c
+    end
+end
+c = (a+b)/2
+return c
+\end{verbatim}
+\end{description}
+$c$ is the result of bisecting until we find a zero.
 \end{algorithm}
 
-Matrix-vector multiplication requires:
-\begin{itemize}
-\item $mn$ additions and $mn$ multiplications, or $\OO(mn)$ flops; and,
-\item $m$ units of storage for the output and $1$ unit of storage during execution\footnote{On hardware that supports fused multiply-add, the algorithm requires $0$ units of storage during execution.}, or $\OO(m)$ storage.
-\end{itemize}
+If we let $c_n$ denote the coordinate of the $n^{\rm th}$ iteration of the bisection method and $\displaystyle x^* = \lim_{n\to\infty} c_n$, then it is straightforward to reason that:
+\begin{equation}\label{eq:bisectionerror}
+\abs{x^* - c_n} \le \frac{\abs{b-a}}{2^n},
+\end{equation}
+since the error is at least halved after every iteration.
 
 \section{Problems}
 
@@ -860,13 +892,24 @@ Matrix-vector multiplication requires:
 
 \item Let the matrix $A = uv^\top$ be the {\em outer product} of the vectors $u\in\R^m$ and $v\in\R^n$ such that $A_{i,j} = u_iv_j$. Use the Cauchy--Schwarz inequality to show that $\norm{A}_2 = \norm{u}_2\norm{v}_2$.
 
-\item The function $\VEC(\cdot)$ maps a matrix $A\in\F^{m\times n}$ to the vector $a\in\F^{mn}$ such that $A_{i,j} = a_{i+m(j-1)}$. Show that the function $\norm{\cdot}_F = \norm{\VEC(\cdot)}_2$ is a matrix norm. (Indeed, it is known as the Frobenius norm.) Prove the inequality $\norm{AB}_F \le \norm{A}_F\norm{B}_F$.
-
 \item Convert:
 \begin{itemize}
 \item the binary number $(0.111101)_2$ into decimal; and,
 \item the octal number $(0.3416)_8$ into binary.
 \end{itemize}
+
+\item \begin{enumerate}
+\item Write a {\sc Julia} function {\tt bisection(a,b,f,tol)} that implements the bisection method;
+\item Use Eq.~\eqref{eq:bisectionerror} to determine precisely the number $n$ of iterations that are required to reduce the error $\abs{x^*-c_n}$ below a tolerance $\varepsilon>0$;
+\item Write a new function, say {\tt bisection2(a,b,f,tol)}, that implements the bisection method with a {\tt for} loop using precisely $n$ iterations (no fewer, no more) rather than the {\tt while} loop; and,
+
+\item Use both functions with a tolerance {\tt tol = eps()} to compute a zero of:
+\begin{itemize}
+\item $f(x) = 2\cos(2x)+x^3-e^x$ in $[0,5]$; and,
+\item $g(x) = \sin(15x)$ in $[-1,1]$.
+\end{itemize}
+Report and explain your results.
+\end{enumerate}
 
 \item The condition number of the Hilbert matrices grows so rapidly that using a built-in computer function \verb+cond+ will {\em not} accurately compute the condition number past about $n=12$. Instead, use the definition of $\cond_2(A) := \norm{A}_2\norm{A^{-1}}_2$ together with the inverse Hilbert matrices with elements given by:
 \[

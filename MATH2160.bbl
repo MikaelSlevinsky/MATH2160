@@ -33,17 +33,6 @@ W.~G. Horner.
   continuous approximation.
 \newblock {\em Phil. Trans. Roy. Soc.}, 109:308--335, 1819.
 
-\bibitem{Hestenes-Stiefel-49-409-52}
-M.~R. Hestenes and E.~Stiefel.
-\newblock Methods of conjugate gradients for solving linear systems.
-\newblock {\em J. Res. Nat. Bur. Standards}, 49:409--436, 1952.
-
-\bibitem{Stoer-Bulirsch-02}
-J.~Stoer and R.~Bulirsch.
-\newblock {\em Introduction to Numerical Analysis, Third Edition. Texts in
-  Applied Mathematics 12}.
-\newblock Springer-Verlag, New York, 2002.
-
 \bibitem{Higham-24-547-04}
 N.~J. Higham.
 \newblock The numerical stability of barycentric {L}agrange interpolation.
@@ -74,7 +63,7 @@ A.~F. Nikiforov and V.~B. Uvarov.
 \bibitem{Trefethen-12}
 L.~N. Trefethen.
 \newblock {\em Approximation Theory and Approximation Practice}.
-\newblock SIAM, 2012.
+\newblock SIAM, Philadelphia, PA, 2012.
 
 \bibitem{Richardson-210-459-11}
 L.~F. Richardson.

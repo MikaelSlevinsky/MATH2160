@@ -86,7 +86,7 @@ is third order. Use it to numerically differentiate $e^x$ at $x=1$. At which poi
 \int_\R \dfrac{e^{-x^2}}{x^2+2^2}\ud x & = [1-\Phi(2)]\dfrac{\pi e^4}{2} \approx 0.401~174~590~227~840~8\ldots,\quad{\rm and},\\
 \int_\R \abs{x}^3e^{-x^2}\ud x & = 1.
 \end{align*}
-for $n=10,20,30,\ldots,150$. Here $\Phi$ is the error function (available in {\sc Julia} via \verb+erf+).
+for $n=10,20,30,\ldots,150$. Here $\Phi$ is the error function (available in {\sc Julia} via \verb+erf+ in the \verb+SpecialFunctions+ package, \verb+Pkg.add("SpecialFunctions")+).
 
 Gaussian quadrature is designed to integrate functions that look like polynomials. Does this help you explain why Gauss--Hermite works well for the first two integrals, but not the third?
 

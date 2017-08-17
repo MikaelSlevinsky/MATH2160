@@ -12,7 +12,7 @@ A_{n,1}x_1 + A_{n,2}x_2+\cdots+A_{n,n}x_n & = & b_n.
 \end{equation}
 This is without a doubt the most important problem in scientific computing; many problems in science and engineering are often restated as a linear system of equations. For instance, after discretization, a system of linear partial differential equations becomes a system of linear equations.
 
-We shall examine two classes of methods for solving linear systems. The first class of methods are direct methods, with Gaussian elimination as the poster child. Direct methods are designed to return the exact solution (modulo rounding errors) in a finite number of steps. The second class of methods are iterative methods, which are designed to converge only after an infinite number of steps. Each class of methods is useful for different classes of linear systems. In particular, iterative methods are primarily used for the solution of large (data-)sparse linear systems\footnote{Sparsity in a matrix means {\em many} of its entries are zero. Data sparsity in a matrix means that while many entries may {\em not} be zero, the entries are prescribed by a formula involving a very small number of degrees of freedom. For example, in the data-sparse outer-product $A=uv^\top$, the $mn$ entries of $A$ are all determined by only $m+n$ entries in $u$ and $v$.}.
+We shall discuss two classes of methods for solving linear systems. The first class of methods are direct methods, with Gaussian elimination as the poster child. Direct methods are designed to return the exact solution (modulo rounding errors) in a finite number of steps. The second class of methods are iterative methods, which are designed to converge only after an infinite number of steps. Each class of methods is useful for different classes of linear systems. In particular, iterative methods are primarily used for the solution of large (data-)sparse linear systems\footnote{Sparsity in a matrix means {\em many} of its entries are zero. Data sparsity in a matrix means that while many entries may {\em not} be zero, the entries are prescribed by a formula involving a very small number of degrees of freedom. For example, in the data-sparse outer-product $A=uv^\top$, the $mn$ entries of $A$ are all determined by only $m+n$ entries in $u$ and $v$.}.
 
 We shall also consider the solution of overdetermined systems $Ax=b$, where $A\in\C^{m\times n}$ where $m>n$ and $x\in\C^n$ and $b\in\C^m$. The so-called least squares solution of the system can be obtained by solving the square system $A^* Ax = A^* b$. While directly multiplying both sides of the equation by $A^*$ roughly doubles the inaccuracy, we will explore matrix factorizations that provide well-conditioned algorithms for least squares solutions.
 
@@ -915,90 +915,17 @@ A matrix $A\in\R^{n\times n}$ is said to be {\em strictly diagonally dominant} i
 If $A\in\R^{n\times n}$ is strictly diagonally dominant, then the Jacobi and Gauss--Seidel iterations converge for any initial iterate.
 \end{theorem}
 
-\subsection{Conjugate Gradients}
-
-Modern iterative methods are not built on the fictitious factorization of $A$ into $B + (A-B)$ as in the classical Jacobi and Gauss--Seidel iterations. In fact, modern iterative methods are built on the fact that matrix-vector multiplication is fast when $A$ is (data-)sparse.
-
-\begin{definition}
-Let $r^{(0)} := b-Ax^{(0)}$ be the residual of the initial starting vector $x^{(0)}$. The {\em Krylov subspace} is defined to be:
-\[
-K_k(r^{(0)},A) := \mspan\{r^{(0)},Ar^{(0)},\ldots, A^{k-1}r^{(0)}\},\quad{\rm for}\quad k=1,2,\ldots.
-\]
-\end{definition}
-
-Krylov subspace methods produce a sequence of vectors $x^{(k)}\in x_0 + K_k(r^{(0)},A)$, and the amount of work per iteration $k\rightarrow k+1$ is roughly equal to that of matrix-vector multiplication.
-
-The first method of this kind, known as the {\em conjugate gradient} (cg-) method, was proposed by Hestenes and Stiefel~\cite{Hestenes-Stiefel-49-409-52} for linear systems with a symmetric positive definite matrix. These matrices define a norm:
-\[
-\norm{z}_A := \sqrt{z^\top Az},
-\]
-and the cg-method generates a sequence in the Krylov subspace with the minimality property:
-\begin{equation}\label{eq:CGMinimality}
-\norm{x^{(k)}-x}_A = \min_{z\in x^{(0)}+K_k(r^{(0)},A)} \norm{z-x}_A,
-\end{equation}
-where $x$ is the true solution.
-
-While beyond the scope of this course, we list the cg-method here for comparison with the Jacobi and Gauss--Seidel methods. A good reference on the cg- and other Krylov subspace methods is~\cite[Chap. 8]{Stoer-Bulirsch-02}.
-
-\begin{algorithm}[Conjugate-Gradient Method]
-Initialize $x^{(0)}\in\R^n$ and set $p^{(0)} := r^{(0)} :=b-Ax^{(0)}$.
-
-For $k=0,1,\ldots$:
-\begin{enumerate}
-\item If $\norm{r^{(k)}}_2 < \epsilon$, set $m:=k$ and stop: $x^{(k)}$ is the approximate solution of $Ax=b$. Otherwise,
-\item Compute:
-\begin{align*}
-\alpha_k & := \dfrac{\langle r^{(k)}, r^{(k)}\rangle}{\langle p^{(k)}, Ap^{(k)}\rangle},\\
-x^{(k+1)} & := x^{(k)} + \alpha_kp^{(k)},\\
-r^{(k+1)} & := r^{(k)} - \alpha_k Ap^{(k)},\\
-\beta_k & := \dfrac{\langle r^{(k+1)}, r^{(k+1)}\rangle}{\langle r^{(k)}, r^{(k)}\rangle},\\
-p^{(k+1)} & := r^{(k+1)} + \beta_k p^{(k)}.
-\end{align*}
-\end{enumerate}
-\end{algorithm}
-
-For the implementation of the cg-method, only four vectors, $x^{(k)}$, $r^{(k)}$, $p^{(k)}$, and $Ap^{(k)}$, need to be stored. At each step in the iteration, only one matrix-vector multiplication, $Ap^{(k)}$, is required; the remaining work amounts to the calculation of six inner products in $\R^n$. The total computational effort, for sparse matrices, is therefore modest.
-
-\subsection{Preconditioning}
-
-The convergence rate of the cg-method is highly problem-dependent. Using the minimality property~\eqref{eq:CGMinimality}, it can be shown that the convergence rate of the cg-method can be bounded by a function of the condition number of the matrix.
-
-\begin{theorem}
-Let $A$ be a symmetric positive definite matrix. For $k=0,1,\ldots$, let $e^{(k)}:=x^{(k)}-x$ be the difference between the $k^{\rm th}$ iterate in the cg-method and the solution to $Ax=b$. Then:
-\[
-\dfrac{\norm{e^{(k)}}_A}{\norm{e^{(0)}}_A} \le 2\left(\dfrac{\sqrt{\kappa}-1}{\sqrt{\kappa}+1}\right)^k,
-\]
-where $\kappa = \cond_2(A)$.
-\end{theorem}
-Therefore, the convergence of the cg-method is exponential and the constant is determined by the square-root of the $2$-norm condition number of the matrix.
-
-This behaviour may be exploited by so-called preconditioners, in order to accelerate the cg-method and, at best, try to prove a bound on the total number of iterations for a certain class of problems. To precondition $A$, we find another symmetric positive definite matrix $P$, the {\em preconditioner}, such that $P^{-1}A$ is a good approximation of the identity\footnote{The name ``preconditioner'' is derived from the fact that the identity matrix has unit condition number and $P^{-1}A\approx I$.}. However, as we need to be able to apply the inverse, a balance must again be struck.
-
-\begin{algorithm}[Preconditioned Conjugate-Gradient Method]
-Initialize $x^{(0)}\in\R^n$ and set $r^{(0)} :=b-Ax^{(0)}$, $q^{(0)} := P^{-1}r^{(0)}$ and set $p^{(0)} := q^{(0)}$.
-
-For $k=0,1,\ldots$:
-\begin{enumerate}
-\item If $\sqrt{\langle r^{(k)},q^{(k)}\rangle} < \epsilon$, set $m:=k$ and stop: $x^{(k)}$ is the approximate solution of $Ax=b$. Otherwise,
-\item Compute:
-\begin{align*}
-\alpha_k & := \dfrac{\langle r^{(k)}, q^{(k)}\rangle}{\langle p^{(k)}, Ap^{(k)}\rangle},\\
-x^{(k+1)} & := x^{(k)} + \alpha_kp^{(k)},\\
-r^{(k+1)} & := r^{(k)} - \alpha_k Ap^{(k)},\\
-q^{(k+1)} & := P^{-1}r^{(k+1)},\\
-\beta_k & := \dfrac{\langle r^{(k+1)}, q^{(k+1)}\rangle}{\langle r^{(k)}, q^{(k)}\rangle},\\
-p^{(k+1)} & := q^{(k+1)} + \beta_k p^{(k)}.
-\end{align*}
-\end{enumerate}
-\end{algorithm}
-
-Essentially, the only difference between the cg- and the preconditioned cg- (pcg-) methods is that we have to solve at each step an additional linear system $Pq = r$ with the preconditioner.
-
 \section{Problems}
 
 \begin{enumerate}
 
 \item Prove Lemmas~\ref{lemma:MinverseLU} and~\ref{lemma:MuMv} regarding the multiplication matrices $M_n(v)$.
+
+\item In this problem, we investigate stability of matrix factorizations on a contrived example. In {\sc Julia}, write a function to create the matrix:
+\[
+A = \begin{bmatrix} 1 & & & & 1\\ -1 & 1 & & & 1\\ \vdots & \ddots & \ddots & & \vdots\\ \vdots & & \ddots & 1 & 1\\ -1 & \cdots & \cdots & -1 & 1\end{bmatrix} \in \R^{n\times n}.
+\]
+This matrix has ones on the main diagonal, ones in the last column, negative ones below the main diagonal, and zeros everywhere else. Write a {\tt for} loop over dimensions starting at $n=5$, increasing in steps of $5$ to $50$ and inside the {\tt for} loop, compare the relative residual, $\frac{\norm{Ax - b}_2}{\norm{A}_2}$, of solutions $x\in\R^n$ to linear systems with random data $b$ (generated by the {\tt rand} function). Use the {\sc Julia} functions {\tt lu} and {\tt qr} to compute the $LUP$ and $QR$ factorizations\footnote{Type {\tt ?lu} for help on how to use the function {\tt lu}, for example.}, and in each case use the factorizations to solve the linear systems for $x$. Comment on your results\footnote{This is an extreme example which shows that the stability of the $LUP$ factorization is not described in terms of the problem dimension. For this particular family of matrices, the error grows {\em geometrically} with respect to $n$.}.
 
 \item The Cholesky factorization of a real symmetric positive definite matrix is the unique factorization $A=LL^\top$, where $L$ is a lower triangular matrix. Derive the relations for the entries of the matrix $L$. Since the algorithm fails if $A$ is not SPD, the Cholesky factorization is an algorithm to {\em test} for positive-definiteness. Use your algorithm to check whether the following matrices are SPD:
 \[
@@ -1031,23 +958,5 @@ are also well-conditioned methods for solving linear systems.
 \item Prove Theorem~\ref{theorem:SVD2normcond}. {\em Hint: combine Example~\ref{example:diagonalpnorm} and Lemma~\ref{lemma:unitary2norm}.}
 
 \item Prove Theorem~\ref{theorem:DiagonalDominance}. {\em Hint: Use as an initial guess the normalized eigenvector with corresponding eigenvalue equal in absolute value to the spectral radius. Show that strict diagonal dominance bounds the spectral radius by $1$.}
-
-\item Let $n=10,000$, let:
-\[
-T = \begin{bmatrix}
-3 & -1\\
--1 & 3 & -1\\
-& \ddots & \ddots & \ddots\\
-& & -1 & 3 & -1\\
-&&&-1 & 3
-\end{bmatrix} \in\R^{n\times n},
-\]
-be the symmetric tridiagonal matrix of threes on the diagonal and ones on the sub- and super-diagonals, and let $u = (1/1,\ldots,1/n)^\top$ and $b=(0,\ldots,0,1)^\top$. The matrix $A$ is formed by adding the symmetric tridiagonal matrix $T$ and the symmetric outer product $uu^\top$:
-\[
-A = T+uu^\top \in\R^{n\times n}.
-\]
-The matrix $A$ is the data-sparse result of discretizing an integro-differential equation. It can be taken for granted that for every $n\in\N$, $A$ is also positive-definite.
-
-Solve the system $Ax=b$ using Jacobi and Gauss--Seidel iterations and the pcg-method with a preconditioner of your choice. Compare and contrast the methods and your solutions. How many steps does each method take for residual error $\norm{Ax^{(k)}-b}_2 < 10^{-10}$?
 
 \end{enumerate}

@@ -191,8 +191,8 @@ Since there are $n$ powers of $2$ in $N$, $C_N = 2nN+NC_1$. Since $C_1=1$, we ha
 The first $N=16$ Taylor coefficients of $e^x$ can be computed as simply as:
 \begin{verbatim}
 N = 2^4
-z = exp(2*pi*im*(0:N-1)/N)
-[real(fft(exp(z))/N) 1./gamma(1:N)]
+z = exp.(2*pi*im*(0:N-1)/N)
+[real(fft(exp.(z))/N) 1./gamma.(1:N)]
 \end{verbatim}
 The resulting output is shown in Table~\ref{table:TaylorExponential}.
 \begin{table}[htdp]
@@ -310,10 +310,11 @@ Furthermore, the matrix $\sqrt{\tfrac{1}{2N}}\diag(\sqrt{\tfrac{1}{2}},1,\ldots,
 \begin{example}\label{Example:DCT}
 We use the DCT to calculate the Chebyshev-$T$ coefficients of $e^x$ on $\I$.
 \begin{verbatim}
+using SpecialFunctions
 N = 2^4
-x = cospi((0.5:N-0.5)/N)
-fhatT = FFTW.r2r(exp(x),FFTW.REDFT10)/N; fhatT[1] *= 0.5;
-ftrueT = besseli(0:N-1,1); ftrueT[2:end] *= 2;
+x = cospi.((0.5:N-0.5)/N)
+fhatT = FFTW.r2r(exp.(x), FFTW.REDFT10)/N; fhatT[1] *= 0.5;
+ftrueT = besseli.(0:N-1,1); ftrueT[2:end] *= 2;
 @show [fhatT ftrueT]
 \end{verbatim}
 The resulting output is shown in Table~\ref{table:ChebyshevTExponential}.
@@ -402,10 +403,9 @@ Furthermore, the matrix $\dfrac{1}{\sqrt{2(N+1)}}\DD_N$ is orthogonal.
 We use the DST to calculate the Chebyshev-$U$ coefficients of $e^x$ on $\I$.
 \begin{verbatim}
 N = 2^4
-x = cospi((1:N)/(N+1))
-wr = sinpi((1:N)/(N+1))
-fhatU = FFTW.r2r(wr.*exp(x),FFTW.RODFT00)/(N+1)
-@show [fhatU ftrueU]
+x = cospi.((1:N)/(N+1))
+wr = sinpi.((1:N)/(N+1))
+fhatU = FFTW.r2r(wr.*exp.(x),FFTW.RODFT00)/(N+1)
 \end{verbatim}
 The resulting output is shown in Table~\ref{table:ChebyshevTExponential}.
 \begin{table}[htdp]

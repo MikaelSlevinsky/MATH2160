@@ -43,7 +43,12 @@ a_k = c_k+c_{-k},\quad b_k = \i(c_k-c_{-k}).
 \hline
 OK, but all these coefficients are given by integrals. How should we approximate them {\em numerically}? & As we saw in our chapter on numerical differentiation and integration, the composite trapezoidal rule worked {\em exceptionally well} on integrands with periodicity. This is precisely because it {\em is the Gaussian quadrature rule} on $L^2(\U,\ud z)$. This leads us to the DFT matrix and its inverse.\\
 \hline
-What is the DFT matrix? & The {\em discrete Fourier transform} (DFT) matrix represents the transformation from $N$ equispaced function samples on the unit circle to $N$ approximate Maclaurin coefficients $\hat{f}_k$, for $k=0,\ldots,N-1$.\\
+What is the DFT matrix? & The {\em discrete Fourier transform} (DFT) matrix represents the transformation from $N$ equispaced function samples on the unit circle to $N$ approximate Maclaurin coefficients $\hat{f}_k$, for $k=0,\ldots,N-1$. From a signal processor's point of view, function samples are a ``signal'' and Maclaurin coefficients represent the energy at ``certain frequencies'':
+\[
+\textcolor{magenta}{\hat{f}}_{\textcolor{green}{k}} = \textcolor{pink}{\dfrac{1}{N}\sum_{j=0}^{N-1}} \textcolor{blue}{f(e^{2\pi\i j/N})}\textcolor{red}{e}^{\textcolor{red}{-\i}\textcolor{orange}{2\pi} \textcolor{green}{k}\textcolor{pink}{j/N}}.
+\]
+To find the \textcolor{magenta}{energy} at \textcolor{green}{a particular frequency}, \textcolor{red}{spin} \textcolor{blue}{your signal} \textcolor{orange}{around a circle} \textcolor{green}{at that frequency}, and \textcolor{pink}{average over equispaced points}.
+\\
 \hline
 Oh, I remember now!
 \[
@@ -158,7 +163,7 @@ Alternatively, when $f(\theta)$ is a periodic function on $[0,2\pi)$, what is th
 \norm{f}_2^2 = \int_0^{2\pi} \abs{f(\theta)}^2\ud\theta,\quad \hbox{in terms of $a_k$ and $b_k$, or $c_k$?}
 \]
 
-\item Carefully confirm the factorization of $\FF_8P_8$ in terms of $I_4$, $\Omega_4$, and $\FF_4$. What is the inverse of the permutation matrix $P_8$?
+\item In chapter 5, we assume that the dimensions of the DFT matrix are powers of two. The Fundamental Theorem of Algebra states that every integer has a prime factorization. For example, $23,452 = 2^2\cdot11\cdot13\cdot41$ (check it!). Using this principle, optimal factorizations of the DFT matrix exist when the dimensions are {\em highly composite}, that is, a positive integer with more divisors than all smaller positive integers, such as $2^3\cdot3^2\cdot5$. The first non-power-of-two highly composite number is $6 = 2\cdot3$. Carefully confirm the factorization of $\FF_6P_6$ in terms of $I_3$, $\Omega_3$, and $\FF_3$. If you are feeling adventurous, can you derive a different factorization starting with a different permutation?
 
 \item In problem 4 of chapter 3, we derived the $N(=N(a,\varepsilon))$ required to satisfy $\norm{f-p_N}_\infty \le \varepsilon \norm{f}_\infty$ for $f(x) = (x^2+a^2)^{-1}$. It was:
 \[

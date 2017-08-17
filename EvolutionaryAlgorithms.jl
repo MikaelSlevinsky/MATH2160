@@ -1,9 +1,9 @@
 immutable HyperCube{T,d}
     left::Vector{T}
     right::Vector{T}
-    function HyperCube(left::Vector{T}, right::Vector{T})
+    function HyperCube{T,d}(left::Vector{T}, right::Vector{T}) where {T,d}
         @assert length(left) == length(right) == d
-        new(left, right)
+        new{T,d}(left, right)
     end
 end
 

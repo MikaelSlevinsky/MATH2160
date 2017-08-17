@@ -2,9 +2,8 @@ const math2160 = "/Users/Mikael/Documents/Courses/MATH2160"
 
 using PyPlot
 
-#=
-f(x) = exp(x)
-fp(x) = exp(x)
+f = x -> exp(x)
+fp = x -> exp(x)
 
 x = 1.0
 h = logspace(log10(eps()/2),0,1000)#2.^(0:-1.0:-52)
@@ -25,7 +24,6 @@ annotate("\$\\mathcal{O}(h)\$",[1e-6,1e-4],fontsize=18)
 annotate("\$\\mathcal{O}(h^2)\$",[1e-4,1e-10],fontsize=18)
 grid(true);gcf()
 savefig(math2160*"/finitedifferences.pdf")
-=#
 
 
 function trap(f,a,b,n)
@@ -50,11 +48,10 @@ function simpson(f,a,b,n)
     (h/3)*s
 end
 
-#=
 #n = 2.^(1:25)
 
 a,b,h = -1.0,1.0,logspace(-7,0,250)
-n = 2round(Int,(b-a)./2h)
+n = 2round.([Int], (b-a)./2h)
 
 CT = [abs(2sinh(1) - trap(f,a,b,i)) for i in n]
 CS = [abs(2sinh(1) - simpson(f,a,b,i)) for i in n]
@@ -68,11 +65,11 @@ loglog(h,CT,"-r",h,CS,"-g",h,secondorder,"--k",h,fourthorder,"--k")
 legend(["Composite Trapezoidal","Composite Simpson",],loc="upper left")
 xlabel("\$h\$");ylabel("Absolute Error")
 xlim(extrema(h));ylim((1e-16,1))
-annotate("\$\\mathcal{O}(h^2)\$",[1e-3,1e-4],fontsize=18)
-annotate("\$\\mathcal{O}(h^4)\$",[1e-3,1e-10],fontsize=18)
+annotate("\$\\mathcal{O}(h^2)\$",[5e-4,1e-4],fontsize=18)
+annotate("\$\\mathcal{O}(h^4)\$",[5e-4,1e-10],fontsize=18)
 grid(true);gcf()
 savefig(math2160*"/compositenewtoncotes.pdf")
-=#
+
 
 using DualNumbers
 
@@ -81,13 +78,13 @@ println("This is f(1+ɛ): ",f(1+ɛ))
 
 include("duck.jl")
 
-rsq(t) = x(t).^2+y(t).^2
+rsq(t) = xd(t).^2+yd(t).^2
 #268779.9125305255
 
 [trap(rsq,0,2π,2^i)/2 for i in 1:10]
 [simpson(rsq,0,2π,2^i)/2 for i in 1:10]
 
-rsqBF(t) = xBF(t).^2+yBF(t).^2
+rsqBF(t) = xdBF(t).^2+ydBF(t).^2
 #268779.9125305254578448085959263059515774569443289752564162584708603294269296908
 
 [trap(rsqBF,big(0),2big(π),2^i)/2 for i in 1:10]
@@ -173,7 +170,7 @@ richardson(retb,h) - e
 
 # Gauss--Legendre
 function gausslegendre(n)
-    sqrtbeta = sqrt((1:n-1).^2./(4*(1:n-1).^2-1))
+    sqrtbeta = sqrt.((1:n-1).^2./(4*(1:n-1).^2-1))
     mu0 = 2.0
     J = diagm(sqrtbeta,-1) + diagm(sqrtbeta,1)
     x, Q = eig(J)
@@ -183,7 +180,7 @@ end
 
 # Gauss--Hermite
 function gausshermite(n)
-    sqrtbeta = sqrt((1:n-1)/2)
+    sqrtbeta = sqrt.((1:n-1)/2)
     mu0 = sqrt(pi)
     J = diagm(sqrtbeta,-1) + diagm(sqrtbeta,1)
     x, Q = eig(J)
@@ -205,10 +202,10 @@ end
 
 immutable BoxIntegrand{T,d}
     s::T
-    BoxIntegrand(s::T) = new(s)
+    BoxIntegrand{T,d}(s::T) where {T,d} = new{T,d}(s)
 end
 
-function Base.call{T,d}(B::BoxIntegrand{T,d},x::Matrix{T},i::Int)
+function (B::BoxIntegrand{T,d}){T,d}(x::Matrix{T},i::Int)
     ret = zero(T)
     for j=1:size(x,1)
         ret += x[j,i]^2
@@ -239,7 +236,7 @@ function montecarloantithetic{d}(f::BoxIntegrand{Float64,d},n::Int)
 end
 
 B4n2 = π*log(2+sqrt(3))-2catalan-π^2/8
-asy(n) = sqrt(n/3)*(1-1/10n)
+asy = n -> sqrt(n/3)*(1-1/10n)
 
 
 Bi = BoxIntegrand{Float64,4}(-2.0)
@@ -250,7 +247,7 @@ MCA = Float64[montecarloantithetic(Bi,i)-B4n2 for i in 10.^(1:7)]
 
 for n in [10,1000,1000_000]
     Bi = BoxIntegrand{Float64,n}(1.0)
-    MC = Float64[montecarlo(Bi,i)-asy(n) for i in 10.^(1:(8-round(Int,log10(n))))]
+    MC = Float64[montecarlo(Bi,i)-asy(n) for i in 10.^(1:(8-round.(Int,log10(n))))]
     @show MC
 end
 

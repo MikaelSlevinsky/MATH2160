@@ -5,7 +5,7 @@ using PyPlot
 gray = (0.75,0.75,0.75)
 yl = 1.1; xl = golden*yl
 
-ls = cospi(linspace(0,1,101))
+ls = cospi.(linspace(0,1,101))
 
 # We first draw the vector norms
 
@@ -28,7 +28,7 @@ savefig(math2160*"/norm1.pdf";bbox_inches="tight")
 
 clf();axes(aspect="equal")
 
-for (x,y) in ((collect(ls),sqrt(1-ls.^2)),(collect(ls),-sqrt(1-ls.^2)))
+for (x,y) in ((collect(ls),sqrt.(1-ls.^2)),(collect(ls),-sqrt.(1-ls.^2)))
     fill_between(x,y,color=gray)
     plot(x,y,"-k",linewidth=2.0)
 end
@@ -81,7 +81,7 @@ savefig(math2160*"/norminf.pdf";bbox_inches="tight")
 
 clf();axes(aspect="equal")
 
-for (x,y) in ((collect(1.6ls),sqrt(1-ls.^2)),(collect(1.6ls),-sqrt(1-ls.^2)))
+for (x,y) in ((collect(1.6ls),sqrt.(1-ls.^2)),(collect(1.6ls),-sqrt.(1-ls.^2)))
     fill_between(x,y,color=gray)
     plot(x,y,"-k",linewidth=2.0)
 end
@@ -144,7 +144,7 @@ U,Σ,V = svd(A)
 
 clf();axes(aspect="equal")
 
-for (x,y) in ((collect(ls),sqrt(1-ls.^2)),(collect(ls),-sqrt(1-ls.^2)))
+for (x,y) in ((collect(ls),sqrt.(1-ls.^2)),(collect(ls),-sqrt.(1-ls.^2)))
     plot(x,y,"-k",linewidth=2.0)
 end
 plot([0.0],[1.0],"sk",linewidth=6.0)
@@ -167,8 +167,8 @@ savefig(math2160*"/norm2annotated.pdf";bbox_inches="tight")
 clf();axes(aspect="equal")
 
 θ = linspace(0,2,100)
-x = Σ[1]*cospi(θ)
-y = Σ[2]*sinpi(θ)
+x = Σ[1]*cospi.(θ)
+y = Σ[2]*sinpi.(θ)
 
 φ = acos(dot(U[:,1],[1.0;0.0])/norm(U[:,1])/norm([1.0;0.0]))
 
@@ -239,7 +239,7 @@ x = Float64[0.5 + i/2^p for i in 0:2^(p-1)-1]
 z = zero(x)
 
 for p in -6:3
-    plot(2.0^p*x,z,"+k",markersize=p+7)
+    plot(2.0^p*x,z,"+k",markersize=p+7,markeredgewidth=2.0^(p-3))
 end
 
 ax = gca()
@@ -253,20 +253,20 @@ xlim((0,6));ylim((-0.2,0.2))
 savefig(math2160*"/FloatingPoint.pdf";bbox_inches="tight")
 
 
-f(x) = log(1+x)/x
-f1(x) = log(1+x)/((1+x)-1)
-f2(x) = log1p(x)/x
+f = x -> log(1+x)/x
+f1 = x -> log(1+x)/((1+x)-1)
+f2 = x -> log1p(x)/x
 
-xx = logspace(-16,0,340)
-xxBF = logspace(big(-16),big(0),340)
+xx = logspace(-16,0.0,340)
+xxBF = logspace(big(-16),big(0.0),340)
 fs = Float64[f(x) for x in xx];
 fBFs = Float64[f(x) for x in xxBF];
 f1s = Float64[f1(x) for x in xx];
 f2s = Float64[f2(x) for x in xx];
 
-err = abs((fs-fBFs)./fBFs)
-err1 = abs((f1s-fBFs)./fBFs)
-err2 = abs((f2s-fBFs)./fBFs)
+err = abs.((fs-fBFs)./fBFs)
+err1 = abs.((f1s-fBFs)./fBFs)
+err2 = abs.((f2s-fBFs)./fBFs)
 
 clf();
 loglog(xx,err,"-r",xx,err1,"-g",xx,err2,"-b")
@@ -326,7 +326,7 @@ function sumpairwise(x::Vector)
 end
 sumjkpairwise(j,k) = sumpairwise((-1.0).^(j:k)./(j:k))
 
-kk = round(Int,logspace(2,6,170))
+kk = round.([Int], logspace(2,6,170))
 
 Sjk = Float64[sumjk(1,k) for k in kk]
 Sjkrev = Float64[sumjkrev(1,k) for k in kk]
@@ -334,10 +334,10 @@ Sjksplit = Float64[sumjksplit(1,k) for k in kk]
 Sjkpairwise = Float64[sumjkpairwise(1,k) for k in kk]
 Sjkbf = Float64[sumjkbf(1,k) for k in kk]
 
-errfor = abs((Sjk-Sjkbf)./Sjkbf)
-errrev = abs((Sjkrev-Sjkbf)./Sjkbf)
-errsplit = abs((Sjksplit-Sjkbf)./Sjkbf)
-errpairwise = abs((Sjkpairwise-Sjkbf)./Sjkbf)
+errfor = abs.((Sjk-Sjkbf)./Sjkbf)
+errrev = abs.((Sjkrev-Sjkbf)./Sjkbf)
+errsplit = abs.((Sjksplit-Sjkbf)./Sjkbf)
+errpairwise = abs.((Sjkpairwise-Sjkbf)./Sjkbf)
 
 clf();
 loglog(kk,errfor,"-r",kk,errrev,"-g",kk,errpairwise,"-b")
@@ -345,6 +345,70 @@ xlabel("\$n\$");ylabel("Relative Error");grid(true)
 ylim((1e-17,1e-11))
 legend(["Forward Summation","Reverse Summation","Pairwise Summation"],loc="upper right")
 savefig(math2160*"/summation.pdf")
+
+function bisection(a, b, f, tol)
+    fa = f(a)
+    fb = f(b)
+    if fa*fb > 0
+        error("Bisection cannot guarantee a root")
+    end
+    if fa == 0
+        return a
+    elseif fb == 0
+        return b
+    end
+    absbma = abs(b-a)
+    while abs(b-a) > tol*absbma
+        c = (a+b)/2
+        fc = f(c)
+        if fa*fc > 0
+           a = c
+           fa = fc
+        elseif fa*fc < 0
+           b = c
+           fb = fc
+        else
+           return c
+        end
+    end
+    c = (a+b)/2
+    return c
+end
+
+function bisection2(a, b, f, tol)
+    fa = f(a)
+    fb = f(b)
+    if fa*fb > 0
+        error("Bisection cannot guarantee a root")
+    end
+    if fa == 0
+        return a
+    elseif fb == 0
+        return b
+    end
+    nmax = round(Int, log(2, abs(b-a)/tol))
+    c = (a+b)/2
+    for n = 1:nmax
+        c = (a+b)/2
+        fc = f(c)
+        if fa*fc > 0
+           a = c
+           fa = fc
+        else
+           b = c
+           fb = fc
+        end
+    end
+    return c
+end
+
+f = x -> 2*cos(2x) + x^3 - exp(x)
+c1 = bisection(0, 5, f, eps())
+c2 = bisection2(0, 5, f, eps())
+
+g = x -> sin(15x)
+c1 = bisection(-1, 1, g, eps())
+c2 = bisection2(-1, 1, g, eps())
 
 
 hilbert(n::Int) = 1./((1:n).+(1:n)'-1)
