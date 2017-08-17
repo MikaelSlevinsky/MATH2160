@@ -234,19 +234,19 @@ norm(z,1),norm(z,2),norm(z,Inf)
 ## Defining our own matrix operations:
 
 function matvec(A::Matrix, x::Vector)
-    m,n = size(A)
-    if n != length(x)
-        throw(DimensionMismatch("A and x are not of conformable sizes"))
-    end
+    m, n = size(A)
+    n == length(x) || throw(DimensionMismatch(
+    "second dimension of A, $n, does not match length of x, $(length(x))"))
     b = zeros(m)
-    for j=1:n
-        for i=1:m
-            b[i] = b[i] + A[i,j]*x[j]
+    for j = 1:n
+        xj = x[j]
+        for i = 1:m
+            b[i] = b[i] + A[i,j]*xj
         end
     end
-
     b
 end
+
 
 # They perform almost as fast as the base library! (In how many dynamic programming
 # languages is this type of performance even possible?!?!)
