@@ -6,16 +6,27 @@ function main()
     println("Hello, world!")
 end
 
-main()
-
 #
 # When we run `main()`, it calls the function println with the string "Hello, world!"
 # and it appears in the console.
 #
 
+main()
 
 #
-# Next, we need to know how to write a function with conditional statements.
+# Defining our own functions couldn't be easier.
+#
+
+f = x -> exp(sin(x))
+
+f(1)
+
+exp(sin(1))
+
+#
+# Sometimes, however, the function body is more complicated (or more clearly
+# written with more lines of code). Here is another example.We need to know
+# how to write a function with conditional statements.
 #
 
 function myabs(x)
@@ -45,16 +56,16 @@ function myjourney(x)
     end
 end
 
-for k=1:100
+for k = 1:100
     println("This is k: ",k)
 end
 
 function myshorterjourney(x,k)
     print("And $(x) goes")
-    i=1
-    while i≤k
+    i = 1
+    while i ≤ k
         print(" on and")
-        i+=1
+        i += 1
     end
     println(" oooon. Strangers...")
 end
@@ -66,6 +77,8 @@ end
 # a certain type. Let's give it a go.
 #
 
+using LinearAlgebra
+
 # We create a vector of length 10 of all zeros:
 x = zeros(10)
 
@@ -76,44 +89,81 @@ x[5] = 3
 x[7] = 2
 
 # We create a 10x10 matrix of all ones with twos on the diagonal:
-A = ones(10,10) + I
+A = ones(10, 10) + I
 
-# then we add a small perturbation:
-
-A += 1e-3rand(10,10)
-
-# Matrix-vector multiplication is native in Julia. Furthermore, the following creates
-# the new vector `b`:
+# Matrix-vector multiplication is native in Julia.
+# Furthermore, the following creates the new vector `b`:
 
 b = A*x
 
-# Similarly, suppose `b` were slightly different:
+# Since the entries of `A` and `x` were integers (converted to floating-point
+# numbers), `b` also consists of integers, which we check as:
 
-b[3] = sum(b)
-b[8] = -9
+b - Int.(b)
 
-# Then, the notation `\`, will invoke a polyalgorithm to solve the linear system
-# `Ax = b` for `x`.
+# Alternatively, we may look at the binary bits of every entry in `b`:
 
-x = A\b
+bitstring.(b)
 
-# Certain functions are available for Matrices and vectors.
+# That strains the eyes, so let's use color to help us distinguish sign, exponent,
+# and mantissa.
 
-res = A*x-b
+function colorbitstring(x::Float64)
+    s = bitstring(x)
+    print("\"")
+    printstyled(string(s[1]); color = :red)
+    printstyled(s[2:12]; color = :green)
+    printstyled(s[13:end]; color = :blue)
+    println("\"")
+end
+
+
+colorbitstring.(b);
+
+# As they are terminating binary representations, we have reasonable evidence
+# they are exactly computed.
+# With `b` in hand, we could try to solve for `x` in `A*x = b`.
+# The function `\`, invokes a polyalgorithm to solve the linear system
+# `A*x = b` for `x`.
+# Warning: while `inv(A)` calculates the matrix inverse A^{-1}, it is worse
+# to do `inv(A)*b` than `A\b` for many reasons that we will discuss.
+
+xapprox = A\b
+err = x - xapprox
+
+# We can now use norms to check the backward error, that is, the error in `xapprox`:
+
+norm(err)
+
+# As we learned in class, the most important vector norms are the p-norms.
+# These are implemented with another argument in the function signature.
+# The one-argument `norm` falls back onto the 2-norm.
+
+norm(err, 1)
+
+norm(err, 2)
+
+norm(err, 4)
+
+norm(err, Inf)
+
+# If `y` is a larger vector, then we cannot expect the backward error of
+# `yapprox` to be of the same magnitude as that of `xapprox`. Therefore,
+# numerical analysts are most often interested in the relative backward error:
+
+norm(err, 1)/norm(x, 1)
+
+norm(err, 2)/norm(x, 2)
+
+norm(err, 4)/norm(x, 4)
+
+norm(err, Inf)/norm(x, Inf)
+
+# The residual is the error of `xapprox` in the image of `A`:
+
+res = A*xapprox-b
 
 norm(res)
-
-# calculates the `2-norm` of the vector of residuals.
-# ? is Julia help. With another argument:
-
-norm(res,1),norm(res,2),norm(res,4),norm(res,Inf)
-
-# `norm` calculates the `p-norm` of a vector.
-# It also calculates the induced matrix norms:
-
-norm(A)
-
-norm(A,1),norm(A,2),norm(A,Inf)
 
 # The norm of the residual divided by the norm of the approximate solution `x`
 # is bounded by the condition number times `ulp`:
@@ -126,19 +176,43 @@ norm(res)/norm(x) ≤ cond(A)*eps()
 norm(res,1)/norm(x,1) ≤ cond(A,1)*eps()
 norm(res,Inf)/norm(x,Inf) ≤ cond(A,Inf)*eps()
 
-# We can also check the dot-product of `x` and `b`:
+# Induced matrix norms are also computed by a similar function:
 
+opnorm(A)
+
+# whereas the component-wise matrix norms are computed by the same function:
+
+norm(A) # Frobenius norm
+
+# The matrix we described visually in class was:
+
+A = [1.0 2.0; 0.0 2.0]
+
+opnorm(A, 1)
+
+opnorm(A, 2)
+
+opnorm(A, Inf)
+
+# It's easy to manipulate vectors and matrices. For example:
+
+A += 1e-3rand(2, 2)
+
+# Similarly, suppose `b` were slightly different:
+
+b[3] = sum(b)
+b[8] = -9
+
+# We can also check the inner-product (dot product) of `x` and `b`:
+
+x'b
+dot(x, b)
 x⋅b
-dot(x,b)
-
-# It's equivalent to `x'*b`, except that it returns a number rather than an Array.
-
-x'*b
 
 # We can also concatenate vectors:
 
 y = [x;b]
-y == vcat(x,b)
+y == vcat(x, b)
 
 # We can extend this idea of concatenation to construction:
 
@@ -149,89 +223,118 @@ x = A\b
 
 # Unfortunately, this matrix is singular:
 
-det(A) == 0
+det(A) == 0 # Note, not exactly 0 on all platforms
 
 # and we got an appropriate warning.
 
-## Types and multiple dispatch
+# Some built-in functions help us with floating-point arithmetic.
 
-#
-# In Julia, we can create objects and define their behaviour by how they
-# interact with eachother and with functions. Objects in Julia are instances
-# of `type`s.
-#
+x = floatmin()
 
-type Point2D
-    x::Float64
-    y::Float64
-end
+colorbitstring(x)
 
-type Point3D
-    x::Float64
-    y::Float64
-    z::Float64
-end
+x/2
 
-# Here, the `::` notation is a type-assertion: x,y(, and z) must be floating-point numbers.
+colorbitstring(x/2)
 
-p = Point2D(1.0,2.0)
-q = Point2D(3.0,4.0)
-r = Point3D(1.5,2.5,3.5)
-s = Point3D(-2.0,3.0,0.5)
+x/2^52
 
-# Julia functions support `multiple dispatch`: this means that we can define new methods
-# of a function which only get called when the specific argument signature is present.
+colorbitstring(x/2^52)
 
-dist(p::Point2D,q::Point2D) = sqrt((p.x-q.x)^2+(p.y-q.y)^2)
-dist(p::Point3D,q::Point3D) = sqrt((p.x-q.x)^2+(p.y-q.y)^2+(p.z-q.z)^2)
+(x/2^52)/2
 
-dist(p,q)
-dist(r,s)
+x = floatmax()
 
-dist(p,s)
+colorbitstring(x)
 
-# It looks like a method is missing from the function `dist`. Let's add it:
+colorbitstring(2x)
 
-dist(p::Point2D,q::Point3D) = sqrt((p.x-q.x)^2+(p.y-q.y)^2+q.z^2)
+colorbitstring(2*(2x))
 
-# Great! but what about:
+2x
 
-dist(r,q)
+# eps() is the relative unit of least precision. eps(1.0) == eps(),
+# but eps(1500.0) > eps()
 
-# Methods can call other methods:
+eps()
 
-dist(p::Point3D,q::Point2D) = dist(q,p)
+eps(1500.0) ≠ 1500eps()
 
-dist(r,q)
+# `eps(x)`` returns the spacing between `x` and the next
+# representable floating-point number.
 
+nextfloat(1500.0) - 1500
 
 ## Complex Numbers
 
-# In Julia, complex numbers are just `types` with two fields to store the real
+# In Julia, complex numbers are just types with two fields to store the real
 # and imaginary parts. The imaginary unit is `im`.
 
-w = 1+2im
-z = 3+4im
-w*z
+z = 1 + 2im
 
-abs(z)
 z.re
 z.im
 
-conj(z)
+abs(z)
+
+abs2(z)
+
+z*conj(z)
+
+w = 3 + 4im
+
+w*z
 
 # Let's try vectors with complex entries:
 
 w = [-0.5+3im;2+2im]
 z = [1.0+2im;3+4im]
 
-dot(w,z)
-norm(z) == sqrt(abs(dot(z,z)))
+dot(w, z)
 
-norm(z,1),norm(z,2),norm(z,Inf)
+norm(z) == sqrt(abs(z'z))
+
+norm(z, 1)
+
+norm(z, 2)
+
+norm(z, Inf)
+
+# Functions of a complex variable are similar to complex numbers. They can be
+# represented as the sum of two separate functions as the purely real and purely
+# imaginary parts. The exponential function of a purely imaginary number is
+# particularly nice:
+
+f = y -> exp(im*y)
+
+g = y -> cos(y) + im*sin(y)
+
+f(1)
+
+g(1)
+
+# There is an absolutely beautiful formula in mathematics
+# that relates the five most important constants:
+
+ℯ^(im*π) + 1
+
+# Note that this italicized ℯ is obtained by \euler<TAB>
+
+# For the exponential of a complex number,
+#
+# ℯ^z = ℯ^{x+iy} = ℯ^x(cos(y) + i sin(y))
+#
+
+f = z -> exp(z)
+
+g = z -> exp(real(z))*(cos(imag(z)) + im*sin(imag(z)))
+
+f(2+3im)
+
+g(2+3im)
 
 
-## Defining our own matrix operations:
+## Defining our own matrix operations couldn't be easier:
 
 function matvec(A::Matrix, x::Vector)
     m, n = size(A)
@@ -247,19 +350,137 @@ function matvec(A::Matrix, x::Vector)
     b
 end
 
+# They perform almost as fast as the base library!
 
-# They perform almost as fast as the base library! (In how many dynamic programming
-# languages is this type of performance even possible?!?!)
-
-A = rand(1000,100)
+A = rand(1000, 100)
 x = rand(100)
 
 @time A*x;
-@time matvec(A,x);
+@time matvec(A, x);
 
 # Wait, first @time includes compile time.
 
 @time A*x;
-@time matvec(A,x);
+@time matvec(A, x);
 
-# Ahh, much better.
+# Ahh, much better. The second @time only includes run time.
+
+# Functions are also useful in creating matrices,
+# such as the Hilbert matrix in the assignment:
+
+function hilbert(n)
+    H = zeros(n, n)
+    for j = 1:n
+        for i = 1:n
+            H[i,j] = inv(i+j-1)
+        end
+    end
+    H
+end
+
+hilbert(15)
+
+## Types and multiple dispatch
+
+#
+# In Julia, we can create objects and define their behaviour by how they
+# interact with eachother and with functions. Objects in Julia are instances
+# of (mutable) structs.
+#
+
+mutable struct Point2D
+    x::Float64
+    y::Float64
+end
+
+mutable struct Point3D
+    x::Float64
+    y::Float64
+    z::Float64
+end
+
+# Here, the `::` notation is a type-assertion: x,y(, and z) must be floating-point numbers.
+
+p = Point2D(1.0, 2.0)
+q = Point2D(3.0, 4.0)
+r = Point3D(1.5, 2.5, 3.5)
+s = Point3D(-2.0, 3.0, 0.5)
+
+# `p`, `q`, `r`, and `s` are now instances of the Julia structs `Point2D` and `Point3D`.
+# To access the fields, that is the coordinates, we follow the instance by a dot
+# and the field in question:
+
+p.x
+
+# Julia functions support multiple dispatch: this means that we can define new methods
+# of a function which only get called when a specific signature is present.
+
+dist(p::Point2D, q::Point2D) = sqrt((p.x-q.x)^2+(p.y-q.y)^2)
+dist(p::Point3D, q::Point3D) = sqrt((p.x-q.x)^2+(p.y-q.y)^2+(p.z-q.z)^2)
+
+dist(p, q)
+dist(r, s)
+
+dist(p, s)
+
+# It looks like a method is missing from the function `dist`. Let's add it:
+
+dist(p::Point2D, q::Point3D) = sqrt((p.x-q.x)^2+(p.y-q.y)^2+q.z^2)
+
+# Great! but what about:
+
+dist(r, q)
+
+# Methods can call other methods:
+
+dist(p::Point3D, q::Point2D) = dist(q, p)
+
+dist(r, q)
+
+# Here is another example of a type for the Maclaurin series of a function.
+
+struct Maclaurin{T}
+    coefficients::Vector{T}
+end
+
+ncoefficients(M::Maclaurin) = length(M.coefficients)
+
+# We could use Horner's rule to evaluate the polynomial.
+
+function horner(c::Vector, x)
+    if isempty(c)
+        return zero(x)
+    end
+
+    ret = zero(promote_type(eltype(c), eltype(x)))
+    for k in length(c):-1:1
+        ret = x*ret + c[k]
+    end
+
+    ret
+end
+
+(M::Maclaurin)(x) = horner(M.coefficients, x)
+
+# Next, we construct a Maclaurin series to e^x. The syntax [... for i = 0:16]
+# creates a comprehension. It's another shorthand for creating an array.
+
+f = Maclaurin([1/factorial(i) for i = 0:16])
+
+f(1) - exp(1)
+
+f(-1) - exp(-1)
+
+#
+# To get access to Julia in Terminal from any folder on a mac,
+# first check that you have a `.bash_profile`:
+#
+# cd ~
+# ls -all
+#
+# If you do, execute this line:
+#
+# echo 'export PATH="$(pwd):/Applications/Julia-0.7.app/Contents/Resources/julia/bin:$PATH"' >> .bash_profile
+#
+# If you don't, create a .bash_profile and execute the above.
+#

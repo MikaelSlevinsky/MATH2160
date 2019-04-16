@@ -19,7 +19,7 @@ module LinearProgramming
         objective::T
         idxB::Vector{Int64}
         idxN::Vector{Int64}
-        function LinearProgram(A::Matrix{T}, b::Vector{T}, c::Vector{T}, objective::T, idxB::Vector{Int64}, idxN::Vector{Int64})
+        function LinearProgram{T}(A::Matrix{T}, b::Vector{T}, c::Vector{T}, objective::T, idxB::Vector{Int64}, idxN::Vector{Int64}) where T
             m, n = size(A)
             @assert length(b) == m
             @assert length(c) == n

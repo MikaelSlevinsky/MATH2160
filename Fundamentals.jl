@@ -386,7 +386,7 @@ function bisection2(a, b, f, tol)
     elseif fb == 0
         return b
     end
-    nmax = round(Int, log(2, abs(b-a)/tol))
+    nmax = ceil(Int, log2(abs(b-a)/tol))
     c = (a+b)/2
     for n = 1:nmax
         c = (a+b)/2
@@ -394,9 +394,11 @@ function bisection2(a, b, f, tol)
         if fa*fc > 0
            a = c
            fa = fc
-        else
+        elseif fa*fc < 0
            b = c
            fb = fc
+        else
+           return c
         end
     end
     return c

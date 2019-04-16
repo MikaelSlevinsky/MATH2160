@@ -15,9 +15,9 @@
 \hline
 Problems & Solutions\\
 \hline
-How do I interpolate a periodic function and preserve the periodicity? & There are two scenarios that are related by a variable transformation. If $f$ is a function of a complex variable $z$, then the orthogonal polynomials with respect to $L^2(\U,\ud z)$ are the integer powers $\{z^k\}_{k=-\infty}^{+\infty}$. Both the function $f$ and the basis $z^k$ are periodic on the unit circle $\U$, because $\U$ has no beginning and no end. This allows us to project $f$ onto its {\em Laurent series}:
+How do I interpolate a periodic function and preserve the periodicity? & There are two scenarios that are related by a variable transformation. If $f$ is a function of a complex variable $z$, then the orthogonal polynomials with respect to $L^2(\U,\ud z/(\i z))$ are the integer powers $\{z^k\}_{k=-\infty}^{+\infty}$. Both the function $f$ and the basis $z^k$ are periodic on the unit circle $\U$, because $\U$ has no beginning and no end. This allows us to project $f$ onto its {\em Laurent series}:
 \[
-f(z) \sim \sum_{k=-\infty}^{+\infty} f_k z^k,
+f(z) = \sum_{k=-\infty}^{+\infty} f_k z^k,
 \]
 where the coefficients are given by:
 \[
@@ -25,7 +25,7 @@ f_k = \dfrac{1}{2\pi\i}\int_\U \dfrac{f(z)}{z^{k+1}}\ud z.
 \]
 If $f$ is periodic on $[0,2\pi)$, then we may represent it as a {\em Fourier series}:
 \[
-f(\theta) \sim \sum_{k=-\infty}^{+\infty} c_k e^{\i k\theta},
+f(\theta) = \sum_{k=-\infty}^{+\infty} c_k e^{\i k\theta},
 \]
 where the coefficients are given by:
 \[
@@ -33,7 +33,7 @@ c_k = \dfrac{1}{2\pi}\int_0^{2\pi} f(\theta) e^{-\i k\theta}\ud\theta.
 \]\\
 I thought a Fourier series was given in terms of sines and cosines. & Indeed, yet another alternative representation gives:
 \[
-f(\theta) \sim \dfrac{a_0}{2} + \sum_{k=1}^\infty \left\{ a_k\cos k\theta + b_k\sin k\theta\right\},
+f(\theta) = \dfrac{a_0}{2} + \sum_{k=1}^\infty \left\{ a_k\cos k\theta + b_k\sin k\theta\right\},
 \]
 where the coefficients are:
 \[
@@ -41,7 +41,7 @@ a_k = c_k+c_{-k},\quad b_k = \i(c_k-c_{-k}).
 \]
 \\
 \hline
-OK, but all these coefficients are given by integrals. How should we approximate them {\em numerically}? & As we saw in our chapter on numerical differentiation and integration, the composite trapezoidal rule worked {\em exceptionally well} on integrands with periodicity. This is precisely because it {\em is the Gaussian quadrature rule} on $L^2(\U,\ud z)$. This leads us to the DFT matrix and its inverse.\\
+OK, but all these coefficients are given by integrals. How should we approximate them {\em numerically}? & As we saw in our chapter on numerical differentiation and integration, the composite trapezoidal rule worked {\em exceptionally well} on integrands with periodicity. This is precisely because it {\em is the Gaussian quadrature rule} on $L^2(\U,\ud z/(\i z))$. This leads us to the DFT matrix and its inverse.\\
 \hline
 What is the DFT matrix? & The {\em discrete Fourier transform} (DFT) matrix represents the transformation from $N$ equispaced function samples on the unit circle to $N$ approximate Maclaurin coefficients $\hat{f}_k$, for $k=0,\ldots,N-1$. From a signal processor's point of view, function samples are a ``signal'' and Maclaurin coefficients represent the energy at ``certain frequencies'':
 \[
@@ -156,7 +156,7 @@ We have two polynomial bases $T_k$ and $U_k$. When should we use which one? & It
 
 \item If we have the Laurent expansion of a function $f(z)$, then we may easily calculate its $2$-norm only in terms of the coefficients. What is the expression for:
 \[
-\norm{f}_2^2 = \abs{\int_\U \abs{f(z)}^2\ud z} ?
+\norm{f}_2^2 = \abs{\int_\U \abs{f(z)}^2\frac{\ud z}{\i z}} ?
 \]
 Alternatively, when $f(\theta)$ is a periodic function on $[0,2\pi)$, what is the expression for:
 \[

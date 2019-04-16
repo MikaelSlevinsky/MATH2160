@@ -189,7 +189,7 @@ U_{1,1} & U_{1,2} & \cdots & U_{1,n}\\
 A lower (upper) triangular matrix is {\em strictly lower (upper) triangular} if the diagonal entries are zero. Any matrix that is simultaneously upper and lower triangular is {\em diagonal}.
 \end{definition}
 
-Triangular matrices have a many properties that make them convenient to work with. For example, the (conjugate) transpose of a lower (upper) triangular matrix is an upper (lower) triangular matrix. As well, recall that the determinant of a triangular matrix is the product of the diagonal entries of the matrix. Similarly, the diagonal entries of a triangular matrix are the eigenvalues of the matrix.
+Triangular matrices have many properties that make them convenient to work with. For example, the (conjugate) transpose of a lower (upper) triangular matrix is an upper (lower) triangular matrix. As well, recall that the determinant of a triangular matrix is the product of the diagonal entries of the matrix. Similarly, the diagonal entries of a triangular matrix are the eigenvalues of the matrix.
 
 \begin{algorithm}[Forward substitution]
 Let $L\in\C^{n\times n}$ be a lower triangular matrix, and let $y,b\in\C^n$. If $Ly = b$, then:
@@ -523,7 +523,7 @@ G(n-1,n)A = \begin{bmatrix}
 A_{1,1} & A_{1,2} & \cdots & A_{1,n}\\
 A_{2,1} & A_{2,2} & \cdots & A_{2,n}\\
 \vdots & \vdots & \ddots & \vdots\\
-\sqrt{A_{n-1,1}^2+A_{n,n}^2} & \times & \cdots & \times\\
+\sqrt{A_{n-1,1}^2+A_{n,1}^2} & \times & \cdots & \times\\
 0 & \times & \cdots & \times\\
 \end{bmatrix},
 \]
@@ -533,7 +533,7 @@ G(n-2,n-1)G(n-1,n)A = \begin{bmatrix}
 A_{1,1} & A_{1,2} & \cdots & A_{1,n}\\
 A_{2,1} & A_{2,2} & \cdots & A_{2,n}\\
 \vdots & \vdots & \ddots & \vdots\\
-\sqrt{A_{n-2,1}^2+A_{n-1,1}^2+A_{n,n}^2} & \times & \cdots & \times\\
+\sqrt{A_{n-2,1}^2+A_{n-1,1}^2+A_{n,1}^2} & \times & \cdots & \times\\
 0 & \times & \cdots & \times\\
 0 & \times & \cdots & \times\\
 \end{bmatrix}.
@@ -561,7 +561,7 @@ say, where $\alpha = \pm\sqrt{\langle u,u\rangle}$.
 Let $w = \gamma(u-v)$ where $\gamma\ne0$. Recall that $\langle u,u\rangle = \langle v,v\rangle$. Thus:
 \begin{align*}
 w^\top w & = \gamma^2(u-v)^\top(u-v) = \gamma^2(u^\top u - u^\top v - v^\top u + v^\top v),\\
-& = \gamma^2(2u^\top u -2u^\top v) = 2\gamma^2u^\top(u-v) = 2\gamma u^\top w = 2\gamma w^\top u.
+& = \gamma^2(2u^\top u -2v^\top u) = 2\gamma^2(u-v)^\top u = 2\gamma w^\top u.
 \end{align*}
 Let us apply $H(w)$ to $u$:
 \begin{align*}
@@ -578,7 +578,7 @@ Now, if $u$ is the first column of the $n$-by-$n$ matrix $A$, then let:
 \[
 H(w_1)A = \left[\begin{array}{c|ccc} \alpha & \times & \cdots & \times\\ \hline 0 & \multicolumn{3}{c}{\multirow{3}{*}{$B$}}\\ \vdots\\0\\ \end{array}\right].
 \]
-The resulting matrix has zeros introduced below the first entry, which is now $\alpha$, $\times$ denotes a general entry of the matrix, and where $B\in\R^{n-1\times n-1}$. Similarly for $B$, we can find $\hat{w}\in\R^{n-1}$ such that:
+The resulting matrix has zeros introduced below the first entry, which is now $\alpha$, $\times$ denotes a general entry of the matrix, and where $B\in\R^{(n-1)\times(n-1)}$. Similarly for $B$, we can find $\hat{w}\in\R^{n-1}$ such that:
 \[
 H(\hat{w})B = \left[\begin{array}{c|ccc} \beta & \times & \cdots & \times\\ \hline 0 & \multicolumn{3}{c}{\multirow{3}{*}{$C$}}\\ \vdots\\0\\ \end{array}\right].
 \]
@@ -864,11 +864,11 @@ Given the linear system $Ax=b$, let $B$ be any non-singular matrix. The system i
 \begin{equation}\label{eq:IterationEquivalentSystem}
 x = (I-B^{-1}A)x + B^{-1}b.
 \end{equation}
-Base on this equation, it is natural to define an iterative method as:
+Based on this equation, it is natural to define an iterative method as:
 \begin{equation}\label{eq:IterativeMethod}
 x^{(k+1)} = G x^{(k)} + B^{-1}b,
 \end{equation}
-where the matrix $G := I-B^{-1}A$ is called the {\em iteration matrix}. For an efficient iterative method, $B$ should be easy to invert and should be as ``close'' to $A$ as possible such that $\norm{G}$ is small. Unfortunately, these two criteria are conflicting. Considering one extreme scenario where $B=A$, then $I-B^{-1}A = 0$ and only one iteration is necessary to compute the exact solution. However, in that iteration, we solved to original linear system! At the other extreme, if we choose $B=I$, linear solves involving $B$ are trivial, but $I-B^{-1}A = I-A$, is in general the same size as $A$ and the iteration may not converge.
+where the matrix $G := I-B^{-1}A$ is called the {\em iteration matrix}. For an efficient iterative method, $B$ should be easy to invert and should be as ``close'' to $A$ as possible such that $\norm{G}$ is small. Unfortunately, these two criteria are conflicting. Considering one extreme scenario where $B=A$, then $I-B^{-1}A = 0$ and only one iteration is necessary to compute the exact solution. However, in that iteration, we solved the original linear system! At the other extreme, if we choose $B=I$, linear solves involving $B$ are trivial, but $I-B^{-1}A = I-A$, is in general the same size as $A$ and the iteration may not converge.
 
 Let $e^{(k)} := x^{(k)} - x$ and let $\rho(G)$ denote the {\em spectral radius} of the matrix $G$:
 \[
@@ -880,16 +880,14 @@ where $\lambda_i$ are the eigenvalues of $G$.
 Let $G$ be a diagonalizable matrix, $G = V\Lambda V^{-1}$. Let $x^{(0)}\in\R^n$ be any initial iterate. Then $e^{(k)}\to 0$ iff $\rho(G)<1$.
 \end{theorem}
 \begin{proof}
-Subtracting~\eqref{eq:IterativeMethod} from~\eqref{eq:IterationEquivalentSystem}, we have $e^{(k+1)} = Ge^{(k)}$, or $e^{(k)} = G^ke^{(0)}$. If $\rho(G)\ge1$, let $e^{(0)}$ be a normalized eigenvector of $G$ with eigenvalue of magnitude $\rho(G)$. Clearly, $e^{(k)}$ does not converge to $0$.
-
-On the other hand, suppose $\rho(G)<1$. Then $G^k = V\Lambda^kV^{-1}$. Since every eigenvalue of $\Lambda$ has magnitude less than one, $\Lambda^k\to0$ and hence $G^k\to0$ which implies that $e^{(k)}\to0$.
+Since $G$ is diagonalizable, $G^k = V\Lambda^kV^{-1}$. Subtracting~\eqref{eq:IterationEquivalentSystem} from~\eqref{eq:IterativeMethod}, we have $e^{(k+1)} = Ge^{(k)}$, or $e^{(k)} = G^ke^{(0)} = V\Lambda^kV^{-1} e^{(0)}$. If $\rho(G)\ge1$, let $e^{(0)}$ be a normalized eigenvector of $G$ with eigenvalue of magnitude $\rho(G)$. Clearly, $e^{(k)}$ does not converge to $0$. On the other hand, suppose $\rho(G)<1$. Since every eigenvalue of $\Lambda$ has magnitude less than one, $\Lambda^k\to0$ and hence $G^k\to0$ which implies that $e^{(k)}\to0$.
 \end{proof}
 
 We are now prepared to discuss two classical iterative methods. Suppose the matrix $A = L+D+U$ is decomposed into a diagonal matrix $D$, and $L$ and $U$ are strictly lower and upper triangular matrices\footnote{These $L$ and $U$ should not be confused with the factors in the $LU$ factorization of $A$.} with entries corresponding to $A$.
 
 The {\em Jacobi} iteration takes $B=D$ and thus:
 \[
-x^{(k+1)} = -D^{-1}(L+U)x^{(k)} + D^{-1}b.
+x^{(k+1)} = -D^{-1}(L+U)x^{(k)} + D^{-1}b = D^{-1}(b-(L+U)x^{(k)}).
 \]
 Suppose $x^{(k)}$ is known. Applying $L+U$ to $x^{(k)}$ requires $\OO(n^2)$ operations generically, and applying $D^{-1}$ requires $\OO(n)$ operations, requiring $\OO(n^2)$ operations per iteration, generically:
 \[
@@ -898,7 +896,7 @@ x_i^{(k+1)} = \dfrac{1}{A_{i,i}}\left(b_i-\sum_{j\ne i}A_{i,j}x_j^{(k)}\right),\
 
 The {\em Gauss--Seidel} iteration takes $B=L+D$ and thus:
 \[
-x^{(k+1)} = -(L+D)^{-1}Ux^{(k)} + (L+D)^{-1} = (L+D)^{-1}(b-Ux^{(k)}).
+x^{(k+1)} = -(L+D)^{-1}Ux^{(k)} + (L+D)^{-1}b = (L+D)^{-1}(b-Ux^{(k)}).
 \]
 This scheme is similar to the Jacobi iteration except that the most up-to-date components are used as one sweeps from the first equation to the last equation. Since matrix-vector multiplication and solution of triangular linear systems is required, the complexity is again $\OO(n^2)$ operations per iteration, generically:
 \[

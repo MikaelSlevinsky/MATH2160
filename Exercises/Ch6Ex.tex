@@ -23,6 +23,7 @@ Wow, I knew we took advantage of nature, but I never thought of it {\em mathemat
 \hline
 How should I find the global minimum/maximum of a linear program? & We learned about the simplex algorithm, which is based on the observation that the optimal value is located at a vertex of the feasible region.\\
 Why is it called the simplex algorithm? & A simplex is a higher-dimensional version of a triangle or tetrahedron. The simplex algorithm moves from one vertex to the next in a consistent way, ending up at the global optimum.\\
+I can use any elementary row operations I want, right? & Well, almost. Everything is legal except that the first row representing the cost function cannot be replaced with its negative (no row operations like $r_1\leftarrow ar_j - r_1$ for any $a\in\R$ and $j>1$). Even the trivial row operation $r_1\leftarrow -r_1$ changes the problem from standard form to a maximization problem.\\
 \hline
 \end{longtable}
 

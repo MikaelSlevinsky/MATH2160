@@ -42,9 +42,15 @@ What happens when $A$ is large? & The main lessons of this chapter are to take a
 
 \item Suppose $A\in\R^{m\times n}$ and $B\in\R^{n\times m}$ is the matrix obtained by rotating $A$ clockwise $90^{\circ}$. Do $A$ and $B$ have the same singular values? Prove that the answer is yes or give a counterexample.
 
+\item The matrix:
+\[
+A = \frac{1}{2}\begin{bmatrix} 1 & 1\\ & \ddots & \ddots\\ & & 1 & 1\\ 1 & & & 1\\\end{bmatrix} = \frac{1}{2}(I_n+S_n)\in\R^{n\times n}
+\]
+represents the averaging of the coordinates of an $n$-sided polygon in a plane. Here, $I_n$ is the identity matrix and $S_n$ is the right-circular shift matrix. Although $A$ is not symmetric, it does have a spectral decomposition. Can you find it?
+
 \item Consider the matrix:
 \[
-A = \begin{bmatrix} 1 & 2\\ & 1 & 2\\ & & \ddots & \ddots\\ & & & 1 & 2\\ & & & & 1\end{bmatrix} \in \R^{n\times n}.
+A = \begin{bmatrix} 1 & 2\\ & \ddots & \ddots\\ & & 1 & 2\\ & & & 1\end{bmatrix} \in \R^{n\times n}.
 \]
 \begin{enumerate}
 \item What are the eigenvalues and determinant of $A$?

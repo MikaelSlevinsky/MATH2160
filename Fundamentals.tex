@@ -82,7 +82,7 @@ One can also generalize the idea of weighted norms by allowing $W$ to be an arbi
 
 The most important norms in this book are the unweighted $2$-norm and its induced matrix norm.
 
-The concept of the $p$-norms can be extended to the case of vector spaces containing infinitely many elements. Such spaces are called sequence spaces, and the following spaces describe sequence spaces that have finite norm.
+The concept of the $p$-norms can be extended to the case of infinite-dimensional vector spaces. An example of such spaces are sequence spaces, and the following spaces describe sequence spaces that have finite norm.
 
 \begin{definition}
 Let $1\le p\le\infty$. The space $\ell^p$ contains the set of all vectors $x\in V$ with finite $p$-norm:
@@ -130,7 +130,7 @@ The functions:
 
 The analytic functions $A(\C)$ are so smooth that they are further denoted as {\em entire} functions.
 
-The notion of a vector $p$-norm extends readily to functions that are Lebesgue integrable. For $1\le p < \infty$:
+The notion of a vector $p$-norm extends readily to functions that are Lebesgue measurable. For $1\le p < \infty$:
 \begin{equation}
 \|f\|_p := \left(\int_D\abs{f(x)}^p\ud x\right)^{\frac{1}{p}},
 \end{equation}
@@ -206,7 +206,7 @@ We can see that of the normed vector spaces described so far, $\ell^p$ spaces ar
 
 The following inequality, known as the Cauchy--Schwarz inequality, is a useful inequality we will require further on.
 \begin{theorem}
-Let $u,v$ be arbitrary elements in an inner product space. Then, the following inequality holds:
+For any vectors $u,v$ in an inner product space, the following inequality holds:
 \begin{equation}
 \abs{\langle u,v\rangle} \le \norm{u}_2\norm{v}_2.
 \end{equation}
@@ -248,9 +248,9 @@ Given a vector $p$-norm $\norm{\cdot}_p$, the induced matrix norm $\norm{A}_p$ i
 \end{equation}
 In other words, $\norm{A}_p$ is the supremum of the ratios $\norm{Ax}_p/\norm{x}_p$ over all vectors $x\in\C^n$--the maximum factor by which $A$ can ``stretch'' a vector $x$. We say that $\norm{\cdot}_p$ is the matrix norm induced by $\norm{\cdot}_p$.
 
-Because of condition 3.~of Definition~\ref{definition:norm} the action of $A$ is determined by its action on unit vectors. Therefore, the matrix norm can be defined equivalently in terms of the images of the unit vectors under $A$:
+Due to condition 3.~of Definition~\ref{definition:norm} the action of $A$ is determined by its action on unit vectors. Therefore, the matrix norm can be defined equivalently in terms of the images of the unit vectors under $A$:
 \begin{equation}
-\norm{A}_p = \sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{Ax}_p}{\norm{x}_p} = \max_{\substack{x\in\C^n\\ \norm{x}_p = 1}}\norm{Ax}_p.
+\norm{A}_p = \sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{Ax}_p}{\norm{x}_p} = \sup_{\substack{x\in\C^n\\x\ne0}}\dfrac{\norm{x}_p\norm{A\frac{x}{\norm{x}_p}}_p}{\norm{x}_p} = \max_{\substack{x\in\C^n\\ \norm{x}_p = 1}}\norm{Ax}_p.
 \end{equation}
 This form of the definition can be convenient for visualizing induced matrix norms.
 
@@ -263,7 +263,7 @@ A = \begin{bmatrix}
 \end{equation}
 maps $\C^2$ to $\C^2$. It also maps $\R^2$ to $\R^2$, which is more convenient if we want to draw pictures and also (it can be shown) sufficient for determining matrix $p$-norms, since the coefficients of $A$ are real.
 
-Figure~\ref{figure:InducedNorms} depicts the action of $A$ on the unit balls of $\R^2$ defined by the $1$-, $2$-, and $\infty$-norms. From this figure, one can see a graphical interpretation of these three norms of $A$. Regardless of the norm, $A$ maps $e_1 = (1,0)^\top$ to the first column of $A$, namely $e_1$ itself, and $e_1=(0,1)^\top$ to the second column of $A$, namely, $(2,2)^\top$. In the $1$-norm, the unit vector $x$ that is amplified most by $A$ is $(0,1)^\top$ (or its negative), and the amplification factor is $4$. In the $\infty$-norm, the unit vector $x$ that is amplified most by $A$ is $(1,1)^\top$ (or its negative), and the amplification factor is $3$. In the $2$-norm, the unit vector that is amplified most by $A$ is the vector indicated by the dashed line in the figure (or its negative), and the amplification factor is approximately $2.9208$. (Note that it must be at least $\sqrt{8}\approx 2.8284$, since $(0,1)^\top$ maps to $(2,2)^\top$.) We shall consider how to calculate such $2$-norm results in Chapter~\ref{chapter:LinearSystems}.
+Figure~\ref{figure:InducedNorms} depicts the action of $A$ on the unit balls of $\R^2$ defined by the $1$-, $2$-, and $\infty$-norms. From this figure, one can see a graphical interpretation of these three norms of $A$. Regardless of the norm, $A$ maps $e_1 = (1,0)^\top$ to the first column of $A$, namely $e_1$ itself, and $e_2=(0,1)^\top$ to the second column of $A$, namely, $(2,2)^\top$. In the $1$-norm, the unit vector $x$ that is amplified most by $A$ is $(0,1)^\top$ (or its negative), and the amplification factor is $4$. In the $\infty$-norm, the unit vector $x$ that is amplified most by $A$ is $(1,1)^\top$ (or its negative), and the amplification factor is $3$. In the $2$-norm, the unit vector that is amplified most by $A$ is the vector indicated by the dashed line in the figure (or its negative), and the amplification factor is approximately $2.9208$. (Note that it must be at least $\sqrt{8}\approx 2.8284$, since $(0,1)^\top$ maps to $(2,2)^\top$.) We shall consider how to calculate such $2$-norm results in Chapter~\ref{chapter:LinearSystems}.
 
 \begin{figure}[htbp]
 \begin{center}
@@ -308,7 +308,7 @@ A = \begin{bmatrix} a_1 & \Bigg| & \cdots & \Bigg| & a_n\end{bmatrix},
 \end{equation}
 where each $a_j$ is an $m$-vector. Consider the diamond-shaped $1$-norm unit ball in $\C^n$, illustrated in Figure~\ref{figure:InducedNorms}. This is the set $\{x\in\C^n:\sum_{j=1}^n\abs{x_j} \le 1\}$. Any vector $Ax$ in the image of this set satisfies:
 \begin{equation}
-\norm{Ax}_1 = \norm{\sum_{j=1}^nx_ja_j}_1 \le \sum_{j=1}^n\abs{x_j}\norm{a_j}_1 \le \max_{1\le j\le n}\norm{a_j}_1.
+\norm{Ax}_1 = \norm{\sum_{j=1}^nx_ja_j}_1 \le \sum_{j=1}^n\abs{x_j}\norm{a_j}_1 \le \max_{1\le j\le n}\norm{a_j}_1\times \sum_{j=1}^n\abs{x_j} \le \max_{1\le j\le n}\norm{a_j}_1.
 \end{equation}
 Therefore, the induced matrix $1$-norm satisfies $\norm{A}_1 \le \max_{1\le j\le n}\norm{a_j}_1$. By choosing $x=e_j$, where $j$ maximizes $\norm{a_j}_1$, we attain this bound, and thus the matrix norm is:
 \begin{equation}
@@ -484,7 +484,7 @@ which is accurately computed in double precision.
 \end{example}
 
 \begin{example}
-Consider evaluation of $f(x) = \dfrac{\log(1+x)}{x}$ in a neighbourhood of $x=0$. By l'H\^opital's rule, $f(0)=1$. The na\"ive way to evaluate $f$ suffers from serious cancellation error near $x=0$. In floating-point arithmetic, a better way is the following:
+Consider evaluation of $f(x) = \dfrac{\log(1+x)}{x}$ in a neighbourhood of $x=0$. By l'H\^opital's rule, $\displaystyle\lim_{x\to0}f(x)=1$. The na\"ive way to evaluate $f$ suffers from serious cancellation error near $x=0$. In floating-point arithmetic, a better way is the following:
 \[
 \left\{ \begin{array}{ccc}
 \dfrac{\log(\fl(1+x))}{\fl(\fl(1+x)-1)}, & \for & \fl(1+x)\ne 1,\\
@@ -858,11 +858,11 @@ while abs(b-a) > absbma*tol
     if fa*fc > 0 # f(a) and f(c) have the same sign
         a = c
         fa = fc
-    elseif fa*fc < 0 # f(a) = f(c) have opposite sign
+    elseif fa*fc < 0 # f(a) and f(c) have opposite sign
         b = c
         fb = fc
     else # fa*fc == 0 which means f(c) == 0.
-    	return c
+        return c
     end
 end
 c = (a+b)/2

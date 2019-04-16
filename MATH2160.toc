@@ -61,30 +61,30 @@
 \contentsline {subsection}{\numberline {3.2.3}The Best Choice of Interpolation Nodes on $\mathbb {I}$}{69}
 \contentsline {section}{\numberline {3.3}Spline Approximation}{70}
 \contentsline {section}{\numberline {3.4}Problems}{72}
-\contentsline {chapter}{\numberline {4}Numerical Differentiation and Integration}{74}
-\contentsline {section}{\numberline {4.1}Finite Differences}{74}
-\contentsline {subsection}{\numberline {4.1.1}Complex Differences}{75}
-\contentsline {subsection}{\numberline {4.1.2}Dual Numbers and Forward-Mode Automatic Differentiation}{76}
-\contentsline {section}{\numberline {4.2}Newton--Cotes Quadrature}{78}
-\contentsline {subsection}{\numberline {4.2.1}Composite Formul\ae }{80}
-\contentsline {section}{\numberline {4.3}Richardson Extrapolation}{81}
-\contentsline {section}{\numberline {4.4}Gaussian Quadrature}{83}
-\contentsline {section}{\numberline {4.5}Monte Carlo Integration}{88}
-\contentsline {section}{\numberline {4.6}Problems}{88}
-\contentsline {chapter}{\numberline {5}Fourier Analysis}{90}
-\contentsline {section}{\numberline {5.1}The Discrete Fourier Transform}{90}
-\contentsline {subsection}{\numberline {5.1.1}The Inverse Discrete Fourier Transform}{91}
-\contentsline {subsection}{\numberline {5.1.2}The Fast Fourier Transform}{91}
-\contentsline {subsection}{\numberline {5.1.3}Aliasing}{93}
-\contentsline {section}{\numberline {5.2}The Discrete Cosine Transform}{94}
-\contentsline {subsection}{\numberline {5.2.1}The Inverse Discrete Cosine Transform}{95}
-\contentsline {section}{\numberline {5.3}The Discrete Sine Transform}{95}
-\contentsline {subsection}{\numberline {5.3.1}The Inverse Discrete Sine Transform}{97}
-\contentsline {section}{\numberline {5.4}Conversion, Differentiation, and Integration}{97}
-\contentsline {subsection}{\numberline {5.4.1}Conversion}{98}
-\contentsline {subsection}{\numberline {5.4.2}Differentiation}{99}
-\contentsline {subsection}{\numberline {5.4.3}Integration}{100}
-\contentsline {subsubsection}{Clenshaw--Curtis Quadrature}{100}
+\contentsline {chapter}{\numberline {4}Numerical Differentiation and Integration}{75}
+\contentsline {section}{\numberline {4.1}Finite Differences}{75}
+\contentsline {subsection}{\numberline {4.1.1}Complex Differences}{76}
+\contentsline {subsection}{\numberline {4.1.2}Dual Numbers and Forward-Mode Automatic Differentiation}{77}
+\contentsline {section}{\numberline {4.2}Newton--Cotes Quadrature}{79}
+\contentsline {subsection}{\numberline {4.2.1}Composite Formul\ae }{81}
+\contentsline {section}{\numberline {4.3}Richardson Extrapolation}{82}
+\contentsline {section}{\numberline {4.4}Gaussian Quadrature}{84}
+\contentsline {section}{\numberline {4.5}Monte Carlo Integration}{89}
+\contentsline {section}{\numberline {4.6}Problems}{89}
+\contentsline {chapter}{\numberline {5}Fourier Analysis}{91}
+\contentsline {section}{\numberline {5.1}The Discrete Fourier Transform}{91}
+\contentsline {subsection}{\numberline {5.1.1}The Inverse Discrete Fourier Transform}{92}
+\contentsline {subsection}{\numberline {5.1.2}The Fast Fourier Transform}{92}
+\contentsline {subsection}{\numberline {5.1.3}Aliasing}{94}
+\contentsline {section}{\numberline {5.2}The Discrete Cosine Transform}{95}
+\contentsline {subsection}{\numberline {5.2.1}The Inverse Discrete Cosine Transform}{96}
+\contentsline {section}{\numberline {5.3}The Discrete Sine Transform}{96}
+\contentsline {subsection}{\numberline {5.3.1}The Inverse Discrete Sine Transform}{98}
+\contentsline {section}{\numberline {5.4}Conversion, Differentiation, and Integration}{98}
+\contentsline {subsection}{\numberline {5.4.1}Conversion}{99}
+\contentsline {subsection}{\numberline {5.4.2}Differentiation}{100}
+\contentsline {subsection}{\numberline {5.4.3}Integration}{101}
+\contentsline {subsubsection}{Clenshaw--Curtis Quadrature}{101}
 \contentsline {section}{\numberline {5.5}Problems}{101}
 \contentsline {chapter}{\numberline {6}Mathematical Programming}{103}
 \contentsline {section}{\numberline {6.1}Nonlinear Programming}{103}

@@ -37,7 +37,7 @@ Given $f\in L^p(D,\ud\mu(x))$, what is its best polynomial approximation? & Hard
 
 Given $f\in L^2(D,\ud\mu(x))$, what is its best polynomial approximation? & Beautiful theory of orthogonal polynomials. We prove the fact that the best polynomial approximant to $f$ is orthogonal to all polynomials of lower degree. Therefore, we seek solutions as expansions in {\em orthogonal polynomials}: $\displaystyle f(x) \sim p_n(x) = \sum_{k=0}^n \dfrac{\langle \pi_k, f\rangle}{\langle \pi_k,\pi_k\rangle}\pi_k(x)$.\\
 
-Given $f\in L^\infty([a,b])$, what is its best polynomial approximation? & We characterize best polynomial approximants in the supremum norm as polynomials whose error ($f-p_n$) {\em equioscillates} at least $n+2$ times. This characterization allows us to develop the Remez exchange algorithm (by iteratively seeking such polynomials whose error equioscillates), and it will also allow us to prove that the Chebyshev points are the best points in which to interpolate a function.\\
+Given $f\in C([a,b])\subset L^\infty([a,b])$, what is its best polynomial approximation? & We characterize best polynomial approximants in the supremum norm as polynomials whose error ($f-p_n$) {\em equioscillates} at least $n+2$ times. This characterization allows us to develop the Remez exchange algorithm (by iteratively seeking such polynomials whose error equioscillates), and it will also allow us to prove that the Chebyshev points are the best points in which to interpolate a function.\\
 
 Notation & Wherever you see the following: $\pi_n$ are orthogonal polynomials with any normalization (the normalization is not pertinent to the discussion), $\hat{\pi}_n$ are monic orthogonal polynomials, $\tilde{\pi}_n$ are orthonormal polynomials.\\
 
@@ -78,7 +78,7 @@ We investigate the linear case, and show that the cubic (higher order generally)
 \norm{h}_1 & \norm{h}_2 & \norm{h}_\infty\\
 \end{array}.
 \]
-\item Let $D=[-1,1]$ and let $\ud\mu(x) = \ud\arcsin(x) = \dfrac{\ud \arcsin(x)}{\ud x}\ud x = \dfrac{\ud x}{\sqrt{1-x^2}}$. Write down the integral representation, but do not evaluate:
+\item Let $D=[-1,1]$ and let $\ud\mu(x) = \ud\arccos(x) = \dfrac{\ud \arccos(x)}{\ud x}\ud x = -\dfrac{\ud x}{\sqrt{1-x^2}}$. Write down the integral representation, but do not evaluate:
 \[
 \begin{array}{ccc}
 \norm{f}_{2,\mu} & \norm{g}_{2,\mu} & \norm{h}_{2,\mu}\\
@@ -132,16 +132,16 @@ Use the same identity to derive:
 \[
 2T_m(x)T_n(x) = T_{m+n}(x) + T_{\abs{m-n}}(x).
 \]
-Chebyshev polynomials (and expansions therein) are so important that we will have an entire chapter devoted to them. The basic reason is that, due to their connection with trigonometric polynomials, they are {\em extremely easy} to work with on a computer, even though the measure $\ud\mu(x) = \ud \arcsin(x)$ may seem daunting at first sight. In fact, this weight also makes Chebyshev polynomials {\em near best} polynomial approximants in $L^\infty([-1,1])$. That is, within a very small factor, they are close to the best polynomial approximants in the infinity-norm.
-\item\,\! [Hard but satisfying] Laurent polynomials are the orthogonal polynomials on the unit circle in the complex plane. That is, expansions in Laurent polynomials provide best polynomial approximants in $L^2(\U,\ud z)$. Here we use $\ud z$ to stick with the convention that $z$ is a complex number. The Laurent polynomials are very simple, just $z^n$, but this time the index $n$ ranges over {\em all integers} rather than starting from $0$: $n\in\Z = \{\ldots,-2,-1,0,1,2,\ldots\}$. Using the variable substitution $z = e^{i\theta}$, recover the trigonometric functions $\cos(n\theta)$ and $\sin(n\theta)$ as appropriate linear combinations of Laurent polynomials such as:
+Chebyshev polynomials (and expansions therein) are so important that we will have an entire chapter devoted to them. The basic reason is that, due to their connection with trigonometric polynomials, they are {\em extremely easy} to work with on a computer, even though the measure $\ud\mu(x) = \ud \arccos(x)$ may seem daunting at first sight. In fact, this weight also makes Chebyshev polynomials {\em near best} polynomial approximants in $L^\infty([-1,1])$. That is, within a very small factor, they are close to the best polynomial approximants in the infinity-norm.
+\item\,\! [Hard but satisfying] Laurent polynomials are the orthogonal polynomials on the unit circle in the complex plane. That is, expansions in Laurent polynomials provide best polynomial approximants in $L^2(\U,\ud z/(\i z))$. Here we use $\ud z$ to stick with the convention that $z$ is a complex number. The Laurent polynomials are very simple, just $z^n$, but this time the index $n$ ranges over {\em all integers} rather than starting from $0$: $n\in\Z = \{\ldots,-2,-1,0,1,2,\ldots\}$. Using the variable substitution $z = e^{i\theta}$, recover the trigonometric functions $\cos(n\theta)$ and $\sin(n\theta)$ as appropriate linear combinations of Laurent polynomials such as:
 \[
 \dfrac{z^{n}+z^{-n}}{2},\quad{\rm and}\quad\dfrac{z^{n}-z^{-n}}{2\i}.
 \]
-There is a slight subtlety about the Laurent polynomials. Due to the change of variables to bring them into trigonometric form, show that they instead satisfy the orthogonality:
+Due to the change of variables to bring them into trigonometric form, show that they instead satisfy the orthogonality:
 \[
-\langle z^{m+1}, z^n\rangle = \int_\U \conj{z^{m+1}}z^n\ud z = 2\pi\i\delta_{m,n} = \left\{\begin{array}{ccc} 2\pi\i & \for & m = n,\\ 0 & \for & m \ne n,\end{array}\right.
+\langle z^m, z^n\rangle = \int_\U \conj{z^m}z^n\frac{\ud z}{\i z} = 2\pi\delta_{m,n} = \left\{\begin{array}{ccc} 2\pi & \for & m = n,\\ 0 & \for & m \ne n.\end{array}\right.
 \]
-which is slightly different from the classical orthogonal polynomials. Show that on the unit circle, $\conj{z} \equiv z^{-1}$, and therefore:
+Show that on the unit circle, $\conj{z} \equiv z^{-1}$, and therefore:
 \[
 f(z) \sim \sum_{n=-\infty}^\infty f_n z^n,\quad{\rm where}\quad f_n = \dfrac{1}{2\pi\i}\int_\U \dfrac{f(z)}{z^{n+1}}\ud z.
 \]

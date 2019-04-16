@@ -90,10 +90,10 @@ rsqBF(t) = xdBF(t).^2+ydBF(t).^2
 [trap(rsqBF,big(0),2big(π),2^i)/2 for i in 1:10]
 [simpson(rsqBF,big(0),2big(π),2^i)/2 for i in 1:10]
 
-function divideddiff(f::Vector,x::Vector)
+function divideddiff(f::Vector, x::Vector)
     @assert length(f) == length(x)
     T, n = promote_type(eltype(f), eltype(x)), length(x)
-    df = zeros(T,n)
+    df = zeros(T, n)
     for i=1:n
         df[i] = f[i]
     end
@@ -103,13 +103,13 @@ function divideddiff(f::Vector,x::Vector)
     df
 end
 
-richardson(a::Vector,h::Vector) = divideddiff(a./h,h)./divideddiff(1./h,h)
+richardson(a::Vector, h::Vector) = divideddiff(a ./ h, h)./divideddiff(1 ./ h, h)
 
-function computecn(n::Int)
-    c = zeros(Float64,n)
+function computecn(::Type{T}, n::Int) where T
+    c = zeros(T, n)
     c[1] = 2
-    sqrttwo = sqrt(2)
-    twoi = 1.0
+    sqrttwo = sqrt(T(2))
+    twoi = T(1)
     for i=1:n-1
         twoi *= 2
         c[i+1] = c[i]sqrttwo/sqrt(1+sqrt(1-(c[i]/twoi)^2))
@@ -117,8 +117,8 @@ function computecn(n::Int)
     c
 end
 
-c = computecn(16)
-h = 1./(2.^(2:length(c)+1)).^2
+c = computecn(Float64, 16)
+h = 1 ./ (2 .^ (2:length(c)+1)) .^ 2
 rex = richardson(c,h)
 for n in eachindex(c)
     println("c[$(lpad(2^n,5))]  =  $(rpad(c[n],18))  and the extrapolant  =  $(rpad(rex[n],18))")
@@ -170,21 +170,21 @@ richardson(retb,h) - e
 
 # Gauss--Legendre
 function gausslegendre(n)
-    sqrtbeta = sqrt.((1:n-1).^2./(4*(1:n-1).^2-1))
-    mu0 = 2.0
-    J = diagm(sqrtbeta,-1) + diagm(sqrtbeta,1)
-    x, Q = eig(J)
-    w = vec(mu0*Q[1,:].^2)
+    sqrtbeta = sqrt.((1:n-1).^2 ./ (4 .* (1:n-1) .^ 2 .- 1))
+    μ0 = 2.0
+    J = diagm(-1 => sqrtbeta, 1 => sqrtbeta)
+    x, Q = eigen(J)
+    w = vec(μ0*Q[1,:].^2)
     x, w
 end
 
 # Gauss--Hermite
 function gausshermite(n)
     sqrtbeta = sqrt.((1:n-1)/2)
-    mu0 = sqrt(pi)
-    J = diagm(sqrtbeta,-1) + diagm(sqrtbeta,1)
-    x, Q = eig(J)
-    w = vec(mu0*Q[1,:].^2)
+    μ0 = sqrt(pi)
+    J = diagm(-1 => sqrtbeta, 1 => sqrtbeta)
+    x, Q = eigen(J)
+    w = vec(μ0*Q[1,:].^2)
     x, w
 end
 

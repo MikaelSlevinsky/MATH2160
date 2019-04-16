@@ -1,7 +1,7 @@
 % !TEX root = ./MATH2160.tex
 \chapter{Interpolation and Approximation}\label{chapter:InterpolationApproximation}
 
-Given data points $(x_0,f_0),\ldots,(x_n,f_n)$ with distinct absciss\ae~($x_i\ne x_j$ $\forall i\ne j$), we wish to find a function which $f(x)$ which interpolates the data points: $f(x_i) = f_i$ for $i=0,\ldots,n$. The simplest functions that satisfy our ability to interpolate the data are degree-$n$ polynomials $p_n(x)$ which interpolate the data points: $p_n(x_i) = f_i$ for $i=0,\ldots,n$.
+Given data points $(x_0,f_0),\ldots,(x_n,f_n)$ with distinct absciss\ae~($x_i\ne x_j$ $\forall i\ne j$), we wish to find a function $f(x)$ which interpolates the data points: $f(x_i) = f_i$ for $i=0,\ldots,n$. The simplest functions that satisfy our ability to interpolate the data are degree-$n$ polynomials $p_n(x)$ which interpolate the data points: $p_n(x_i) = f_i$ for $i=0,\ldots,n$.
 
 Let $\P_n$ denote the space of all polynomials of degree at most $n$.
 
@@ -9,7 +9,7 @@ Let $\P_n$ denote the space of all polynomials of degree at most $n$.
 
 \subsection{Existence and Uniqueness}
 
-\begin{theorem}
+\begin{theorem}\label{theorem:polyexistence}
 There exists a polynomial $p_n\in\P_n$ such that $p_n(x_i) = f_i$ for $i=0,\ldots,n$.
 \end{theorem}
 \begin{proof}
@@ -29,7 +29,7 @@ From~\eqref{eq:LagrangeDelta}, we know that $p_n(x_i) = f_i$ for $i=0,\ldots,n$.
 \end{proof}
 The polynomial~\eqref{eq:LagrangeInterpolatingPolynomial} is the {\bf Lagrange interpolating polynomial}.
 
-\begin{theorem}
+\begin{theorem}\label{theorem:polyuniqueness}
 The interpolating polynomial of degree $\le n$ is unique.
 \end{theorem}
 \begin{proof}
@@ -139,9 +139,9 @@ f[x_i] & := f_i,\quad{\rm for}\quad i=0,\ldots,n;\\
 f[x_i,x_{i+1}] & := \dfrac{f[x_{i+1}]-f[x_i]}{x_{i+1}-x_i},\quad{\rm for}\quad i=0,\ldots,n-1;\\
 f[x_i,x_{i+1},x_{i+2}] & := \dfrac{f[x_{i+1},x_{i+2}]-f[x_i,x_{i+1}]}{x_{i+2}-x_i},\quad{\rm for}\quad i=0,\ldots,n-2;\\
 & \vdots\\
-f[x_i,\ldots,x_j] & := \dfrac{f[x_{i+1},\ldots,x_j]-f[x_i,\ldots,x_{j-1}]}{x_j-x_i},\quad{\rm for}\quad i=0,\ldots,n-j.
+f[x_i,\ldots,x_{i+j}] & := \dfrac{f[x_{i+1},\ldots,x_{i+j}]-f[x_i,\ldots,x_{i+j-1}]}{x_{i+j}-x_i},\quad{\rm for}\quad i=0,\ldots,n-j.
 \end{align*}
-Using these divided differences, we can iteratively construct an polynomial interpolant through $x_0,\ldots,x_n$.
+Using these divided differences, we can iteratively construct a polynomial interpolant through $x_0,\ldots,x_n$.
 \begin{theorem}
 The {\bf Newton interpolating polynomial}:
 \begin{equation}\label{eq:NewtonInterpolatingPolynomial}
@@ -625,7 +625,7 @@ Every $f\in C([a,b])$ has a unique best approximation $p_n\in\P_n$. If $f$ is re
 \begin{proof}
 We partition the proof.
 \begin{description}
-\item[Existence] We note that $\|f-q\|_\infty$ is a continuous function of $q\in\P_n$. Since one candidate approximation is the zero function, we know that if $p_n$ exists, it lies in $\{q\in\P_n : \|f-q\|_\infty \le \|f\|_\infty\}$. This is a closed and bounded subset of a finite-dimensional space, hence compact (the Bolzano-Weierstrass property), and thus the minimum is attained.
+\item[Existence] We note that $\|f-q\|_\infty$ is a continuous function of $q\in\P_n$. Since one candidate approximation is the zero function, we know that if $p_n$ exists, it lies in $\{q\in\P_n : \|f-q\|_\infty \le \|f\|_\infty\}$. This is a closed and bounded subset of a finite-dimensional space, hence compact (the Heine--Borel theorem), and thus the minimum is attained.
 \item[Equioscillation $\Longrightarrow$ optimality] Suppose $f$ and $p$ are real and $(f-p)(x)$ takes equal extreme values with alternating signs at $n+2$ points $x_0<\cdots<x_{n+1}$, and suppose $\|f-q\|_\infty < \|f-p\|_\infty$ for some real polynomial $q\in\P_n$. Then $p-q$ must take nonzero values with alternating signs at the equisocillation points, implying that it takes the value zero in at least $n+1$ points in between. This implies that $p-q\equiv0$, which is a contradiction.
 \item[Optimality $\Longrightarrow$ equioscillation] Suppose $f-p$ equioscillates at fewer than $n+2$ points, and set $e = \|f-p\|_\infty$. Without loss of generality, suppose the leftmost extremum is one where $f-p = -e$. Then there are numbers $a < x_1 < \cdots < x_k < b$ with $k\le n$ such that $(f-p)(x) < e$ for $x\in[a,x_1]\cup[x_2,x_3]\cup[x_4,x_5]\cup\cdots\cup$ and $(f-p)(x)>-e$ for $x\in[x_1,x_2]\cup[x_3,x_4]\cup\cdots\cup$. If we define $\delta p(x) := (x_1-x)(x_2-x)\cdots(x_k-x)$, then $(p-\varepsilon\delta p)(x)$ will be a better approximation than $p$ to $f$ for all sufficiently small $\varepsilon>0$.
 \item[Uniqueness] Suppose $p$ is a best approximation with equioscillation extrema $x_0<x_1<\cdots<x_{n+1}$, and suppose $\|f-q\|_\infty \le \|f-p\|_\infty$ for some real polynomial $q\in\P_n$. Then, without loss of generality, $(p-q)(x)$ must be nonpositive at $x_0,x_2,x_4,\ldots,$ and nonnegative at $x_1,x_3,x_5,\ldots.$ This implies that $p-q$ has roots in each of the $n+1$ closed intervals $[x_0,x_1], [x_1,x_2],\ldots,[x_n,x_{n+1}]$. We wish to conclude that $p-q$ has at least $n+1$ roots in total, counted with multiplicity, implying that $p=q$. To make the argument we prove by induction that $p-q$ has at least $k$ roots in $[x_0,x_k]$ for each $k$. The case $k=1$ is immediate. For the general case, suppose that $p-q$ has at least $j$ roots in $[x_0,x_j]$ for each $j\le k-1$ but only $k-1$ roots in $[x_0,x_k]$. Then there must be a simple root at $x_{k-1}$. By the induction hypothesis, $p-q$ must have exactly $k-2$ roots in $[x_0,x_{k-2}]$ with a simple root at $x_{k-2}$, $k-3$ roots in $[x_0,x_{k-3}]$ with a simple root at $x_{k-3}$, and so on down to one root in $[x_0,x_1]$, with a simple root at $x_1$. It follows that $p-q$ must be nonzero at $x_0$ and at $x_k$, and since the sign of $p-q$ changes at each of the simple roots $x_1,\ldots,x_{k-1},$ the signs at $x_0$ and $x_k$ must be the same if $k$ is odd and opposite if $k$ is even. On the other hand, from the original alternation condition, we know that $p-q$ must take the same signs at $x_0$ and at $x_k$ if $k$ is even and opposite signs if $k$ is odd.
@@ -648,7 +648,7 @@ and expect $x_0=a$ and $x_{n+1}=b$.
 \item Define $z_i := |f(\bar{x}_i)-p_n(\bar{x}_i)|$ for $i=0,\ldots,n+1$. Then with $z_{\min} := \min\{z_i\}$ and $z_{\max} := \max\{z_i\}$ as lower and upper bounds for the best approximation errors, iterate until $z_{\min} \approx z_{\max}$ in the working precision.
 \end{enumerate}
 \end{algorithm}
-The best polynomial approximation is represented in the basis of the Chebyshev polynomials of the first kind so as to render the system as well-conditioned as possible. As simple variable transformation allows for the algorithm to be applied to the general interval $[a,b]$. The Chebyshev nodes are a common choice for the initial set of points because Chebyshev polynomial interpolants give near-best polynomial approximants in $L^\infty([-1,1])$.
+The best polynomial approximation is represented in the basis of the Chebyshev polynomials of the first kind so as to render the system as well-conditioned as possible. A simple variable transformation allows for the algorithm to be applied to the general interval $[a,b]$. The Chebyshev nodes are a common choice for the initial set of points because Chebyshev polynomial interpolants give near-best polynomial approximants in $L^\infty([-1,1])$.
 
 Figure~\ref{figure:Remez} shows the approximants generated by the Remez algorithm to the continuous function $f(x) = |x+\tfrac{1}{2}|$.
 
@@ -677,17 +677,18 @@ In an effort to obtain uniformly convergent interpolating polynomials, one may a
 \]
 This question is answered by the following theorem.
 \begin{theorem}
-The Chebyshev points of the first kind (i.e. the roots of $T_n(x)$) infimize the norm $\|\ell\|_\infty$ on $\I$.
+The Chebyshev points of the first kind (i.e. the roots of $T_{n+1}(x)$) infimize $\|\ell\|_\infty$ on $\I$.
 \end{theorem}
 \begin{proof}
-From~\eqref{eq:Tn}, it is clear that the Chebyshev polynomials of the first kind have unit uniform norm, $\|T_n\|_\infty = 1$. Furthermore, they {\em equioscillate} between their $n+1$ extrema. Invoking Theorem~\ref{theorem:Equioscillation}, we now see that $T_n$ are the errors associated with {\em best polynomial approximations} (to wit $f(x) = x^n$ and $p_n(x) = x^n-T_n(x)$), and thus infimize the norm. Since $\ell(x)$ is monic, and since the coefficient of $x^n$ in $T_n$ is $2^{n-1}$ (using induction on the recurrence relations), then:
+From~\eqref{eq:Tn}, it is clear that the Chebyshev polynomials of the first kind have unit uniform norm, $\|T_{n+1}\|_\infty = 1$. Furthermore, they {\em equioscillate} between their $n+2$ extrema. Invoking Theorem~\ref{theorem:Equioscillation}, we now see that $T_{n+1}$ are the errors associated with {\em best polynomial approximations} (for example, $f(x) = x^{n+1}$ and $p_n(x) = x^{n+1}-2^{-n}T_{n+1}(x)$), and thus infimize the norm. Since $\ell(x)$ is monic, and since the coefficient of $x^{n+1}$ in $T_{n+1}$ is $2^n$ (using induction on the recurrence relations), then:
 \[
 \inf_{(x_0,\ldots,x_n)\in\I}\|\ell\|_\infty = \|2^{-n}T_{n+1}\|_\infty = 2^{-n},
 \]
-and the points $x_0,\ldots,x_n$ are the roots of $T_{n+1}(x)$:
+and the points:
 \[
 x_k = \cos\left(\dfrac{k+\frac{1}{2}}{n+1}\pi\right),\quad{\rm for}\quad k=0,\ldots,n.
 \]
+are the roots of $T_{n+1}(x)$.
 \end{proof}
 Using the Chebyshev points of the first kind as interpolation points leads to the drastic improvement of Figure~\ref{figure:RungeFixed}, and furthermore the uniform approximation bound:
 \[
@@ -739,11 +740,11 @@ Note that we can take either the value of $s_i$ or $s_{i+1}$ at the knot $x_i$ s
 
 It may occur that we would like to construct piecewise polynomial interpolants with higher polynomial degree on each subinterval. It is clear that we will want our splines to continue to be interpolatory in nature, thus we will have $2n$ interpolation conditions. With piecewise linear splines, we had $2n$ unknown coefficients and these coefficients are uniquely determined. But if we use piecewise {\em quadratic} splines, then we would have $3n$ unknown coefficients and still only $2n$ interpolation conditions, and generally $(m+1)n$ unknown coefficients with piecewise splines of degree-$m$ and only $2n$ interpolation conditions.
 
-Instead, the added unknowns in piecewise splines of higher degree allow us to enforce continuity of the interpolant, and as many of its higher order derivatives in proportion to the degree. Thus, piecewise quadratics allow for continuity of the first derivative, piecewise cubics allow for continuity of the second derivative, and so on and so forth. These continuity conditions are only applicable at the interior knots $x_1,\ldots,x_{n-1}$, and thus these conditions only give $(m-1)(n-2)$ additional conditions, where $(m-1)$ is the number of derivatives of the spline that are continuous.
+Instead, the added unknowns in piecewise splines of higher degree allow us to enforce continuity of the interpolant, and as many of its higher order derivatives in proportion to the degree. Thus, piecewise quadratics allow for continuity of the first derivative, piecewise cubics allow for continuity of the second derivative, and so on and so forth. These continuity conditions are only applicable at the interior knots $x_1,\ldots,x_{n-1}$, and thus these conditions only give $(m-1)(n-1)$ additional conditions, where $(m-1)$ is the number of derivatives of the spline that are continuous.
 
 Numerous methods have been proposed to add the extra conditions required to ensure that:
 \[
-\underbrace{(2n)}_{\hbox{interpolation}} + \underbrace{(m-1)(n-2)}_{\hbox{continuity}} + \underbrace{2(m-1)}_{\hbox{extra}} = \underbrace{(m+1)n.}_{\hbox{\# degrees of freedom}}
+\underbrace{(2n)}_{\hbox{interpolation}} + \underbrace{(m-1)(n-1)}_{\hbox{continuity}} + \underbrace{(m-1)}_{\hbox{extra}} = \underbrace{(m+1)n.}_{\hbox{\# degrees of freedom}}
 \]
 
 \begin{example}
@@ -800,11 +801,37 @@ B_{2,3}(x) = \left\{\begin{array}{ccc}
 
 \section{Problems}
 \begin{enumerate}
+\item Theorems~\ref{theorem:polyexistence} and~\ref{theorem:polyuniqueness} establish existence and uniqueness of polynomial interpolants with distinct absciss\ae~via Lagrange interpolating polynomials and the Fundamental Theorem of Algebra. An alternative proof relies on expressing any polynomial in the monomial basis:
+\[
+p_n(x) = \sum_{k=0}^n c_k x^k.
+\]
+Then, since any interpolating polynomial must satisfy the linear system $Ac = f$:
+\begin{equation}\label{eq:Aceqf}
+\begin{bmatrix}
+1 & x_0 & x_0^2 & \cdots & x_0^n\\
+1 & x_1 & x_1^2 & \cdots & x_1^n\\
+1 & x_2 & x_2^2 & \cdots & x_2^n\\
+\vdots & \vdots & \vdots & \ddots & \vdots\\
+1 & x_n & x_n^2 & \cdots & x_n^n\\
+\end{bmatrix}
+\begin{bmatrix}
+c_0\\c_1\\c_2\\\vdots\\c_n
+\end{bmatrix}
+=
+\begin{bmatrix}
+f_0\\f_2\\f_3\\\vdots\\f_n
+\end{bmatrix},
+\end{equation}
+for the existence and uniqueness of $p_n$ it suffices to show that $\det(A)\ne0$. Prove that:
+\[
+\det(A) = \prod_{i=1}^n\prod_{j=0}^{i-1} (x_i-x_j).
+\]
+
 \item Na\"ively, one might expect to obtain a formula for the error of the derivative of the Lagrange interpolating polynomial $f'-p_n'$. However, it is not clear that $\xi = \xi(x)$ in Theorem~\ref{theorem:LagrangeInterpolatingRemainder} is even differentiable. An alternative approach leads to the following formula. Prove (and state conditions) that there exist distinct points $z_i\in(x_i,x_{i+1})$ for $i=0,\ldots,n-1$ such that:
 \[
 \rho_n(x) := f'(x) - p_n'(x) = \dfrac{f^{(n+1)}(\eta)}{n!}\prod_{i=0}^{n-1}(x-z_i),
 \]
-for some $\eta\in(a,b)$ and for each $x\in[a,b]$. {\em Hint: take the error formula $r(x)$ in Theorem~\ref{theorem:LagrangeInterpolatingRemainder}, and apply the Intermediate Value Theorem on each sub-interval $(x_i,x_{i+1})$ for $i=0,\ldots,n-1$. This gives you the $n$ points $z_i$ where $f'(z_i) - p_n'(z_i) = 0$.}
+for some $\eta\in(a,b)$ and for each $x\in[a,b]$. {\em Hint: take the error formula $r(x)$ in Theorem~\ref{theorem:LagrangeInterpolatingRemainder}, and apply the Mean Value Theorem on each sub-interval $[x_i,x_{i+1}]$ for $i=0,\ldots,n-1$. This gives you the $n$ points $z_i$ where $f'(z_i) - p_n'(z_i) = 0$.}
 \item It is sometimes possible to obtain explicit formul\ae~for the barycentric weights $\lambda_k$. Show that for the equispaced nodes in $[-1,1]$, $x_k = -1 + 2k/n$ for $k=0,\ldots,n$, the barycentric weights are:
 \[
 \lambda_k = \dfrac{(-\tfrac{n}{2})^n}{n!}\binom{n}{k}(-1)^k.
