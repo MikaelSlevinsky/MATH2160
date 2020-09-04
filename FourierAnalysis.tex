@@ -196,7 +196,7 @@ z = exp.(2*pi*im*(0:N-1)/N)
 [real(fft(exp.(z))/N) 1 ./ gamma.(1:N)]
 \end{verbatim}
 The resulting output is shown in Table~\ref{table:TaylorExponential}.
-\begin{table}[htdp]
+\begin{table}[htp]
 \caption{The Taylor coefficients of $e^x$ computed using the FFT and the analytical result.}
 \begin{center}
 \begin{tabular}{rrr}
@@ -318,7 +318,7 @@ ftrueT = besseli.(0:N-1,1); ftrueT[2:end] *= 2;
 @show [fhatT ftrueT]
 \end{verbatim}
 The resulting output is shown in Table~\ref{table:ChebyshevTExponential}.
-\begin{table}[htdp]
+\begin{table}[htp]
 \caption{The Chebyshev-$T$ coefficients of $e^x$ computed using the DCT and the analytical result (where $I_k(x)$ is a Bessel function.}
 \begin{center}
 \begin{tabular}{rrr}
@@ -408,7 +408,7 @@ wr = sinpi.((1:N)/(N+1))
 fhatU = FFTW.r2r(wr.*exp.(x), FFTW.RODFT00)/(N+1)
 \end{verbatim}
 The resulting output is shown in Table~\ref{table:ChebyshevTExponential}.
-\begin{table}[htdp]
+\begin{table}[htp]
 \caption{The Chebyshev-$U$ coefficients of $e^x$ computed using the DST and the exact result.}
 \begin{center}
 \begin{tabular}{rrr}
