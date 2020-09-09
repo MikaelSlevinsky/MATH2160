@@ -39,6 +39,10 @@ function myabs(x)
     end
 end
 
+myabs(4)
+
+myabs(-3.0)
+
 #
 # Another important set of structures are loops. Loops allow us to repeat a
 # task programmatically.
@@ -56,6 +60,8 @@ function myjourney(x)
     end
 end
 
+# Try `myjourney("it")`. To kill it, use `Ctrl+c`.
+
 for k = 1:100
     println("This is k: ",k)
 end
@@ -70,11 +76,13 @@ function myshorterjourney(x,k)
     println(" oooon. Strangers...")
 end
 
+# Try `myshorterjourney("it", 30)`
+
 #
-# Julia has full access to LAPACK, and thus can perform linear algebra very efficiently.
-# In Julia, vectors and matrices are `subtypes` of the same abstract supertype: `Array`.
-# An array is just like how it sounds: it is an indexable container for instances of
-# a certain type. Let's give it a go.
+# Julia has full access to LAPACK (Linear Algebra PACKage), and thus can perform
+# linear algebra very efficiently. In Julia, vectors and matrices are `subtypes`
+# of the same abstract supertype: `Array`. An array is just like how it sounds:
+# it is an indexable container for instances of a certain type. Let's give it a go.
 #
 
 using LinearAlgebra
@@ -117,7 +125,6 @@ function colorbitstring(x::Float64)
     println("\"")
 end
 
-
 colorbitstring.(b);
 
 # As they are terminating binary representations, we have reasonable evidence
@@ -134,6 +141,9 @@ err = x - xapprox
 # We can now use norms to check the backward error, that is, the error in `xapprox`:
 
 norm(err)
+
+# To check a function for any documentation, type `?` to go into help mode.
+# Then you can type the name of the function and press enter to check the docs.
 
 # As we learned in class, the most important vector norms are the p-norms.
 # These are implemented with another argument in the function signature.
@@ -399,7 +409,7 @@ mutable struct Point3D
     z::Float64
 end
 
-# Here, the `::` notation is a type-assertion: x,y(, and z) must be floating-point numbers.
+# Here, the `::` notation is a type-assertion: x,y(, and z) must be 64-bit floating-point numbers.
 
 p = Point2D(1.0, 2.0)
 q = Point2D(3.0, 4.0)
@@ -480,7 +490,7 @@ f(-1) - exp(-1)
 #
 # If you do, execute this line:
 #
-# echo 'export PATH="$(pwd):/Applications/Julia-0.7.app/Contents/Resources/julia/bin:$PATH"' >> .bash_profile
+# echo 'export PATH="$(pwd):/Applications/Julia-1.5.app/Contents/Resources/julia/bin:$PATH"' >> .bash_profile
 #
-# If you don't, create a .bash_profile and execute the above.
+# If you don't, create a `.bash_profile` via `touch .bash_profile` and execute the above.
 #
