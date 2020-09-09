@@ -1,0 +1,213 @@
+% from ROASS.SyllabusTemplateSample-1.0-20160713.doc
+\documentclass[12pt]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\UNIVERSITY}{University of Manitoba}
+\newcommand{\FACULTY}{Faculty of Science}
+\newcommand{\DEPARTMENT}{Department of Mathematics}
+\newcommand{\COURSE}{MATH 2160 A01: Numerical Analysis 1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\usepackage[hmargin=2cm,
+                vmargin=2cm,
+                letterpaper]{geometry}
+\usepackage[colorlinks=true,	% use false if for printing black & white
+            pdfstartview=FitV,
+            linkcolor=blue,
+            %citecolor=black,
+            urlcolor=blue,
+            bookmarks=false,
+            bookmarksopen=false,
+            backref=false,
+            pdfpagelabels=false]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{charter}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{varioref}
+\usepackage[export]{adjustbox}	% allows valign=t in \includegraphics
+%\usepackage{datenumber}
+%\usepackage{ifthen}
+%\usepackage{boolexpr}
+%\usepackage{pdftexcmds}
+%\usepackage{xstring}
+\usepackage{xfrac}
+
+\newlength{\infoTableSpace}
+\setlength{\infoTableSpace}{1em plus 1em minus 0.5em}
+
+
+\lhead{\COURSE}
+\chead{}
+\rhead{Page \thepage}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\pagestyle{fancy}
+
+
+
+\begin{document}
+
+\hspace*{-\tabcolsep}%
+\begin{tabular}{l@{\hspace{0.15\linewidth}}l}
+\includegraphics[height=10ex,valign=t]{uofm} &
+\begin{minipage}[t]{0.5\textwidth}
+	\bf\large
+	
+	\UNIVERSITY
+	
+	\FACULTY
+	
+	\DEPARTMENT
+\end{minipage}
+\end{tabular}
+
+
+
+%\tableofcontents
+
+
+\section{Course Details}
+
+\noindent
+\begin{tabular*}{\linewidth}{r@{\hspace{\infoTableSpace}}l}
+	\toprule
+	\textbf{Course Title \& Number} 				& \COURSE	\\
+	\textbf{Number of Credit Hours} 				& 3	\\
+	\textbf{Lecture Times \& Days of Week} 			& 8:30 am\,--\,9:45 am TR 	\\
+	\textbf{Location for lectures}	&  Zoom/Crowdmark\\
+	\textbf{Lab Times \& Days of Week} 			& B01: 3:30 pm\,--\,4:20 pm W\\ & B02: 4:30 pm\,--\,5:20 pm W\\
+	\textbf{Location for labs}	&  Zoom/Crowdmark\\
+	\textbf{Pre-Requisites} 						& [MATH 1232 (C) or MATH 1690 (C) or MATH 1700 (B)\\
+	 & or MATH 1701 (B) or MATH 1710 (B)] and \\
+	 & [MATH 1220 (C) or MATH 1300 (B) or MATH 1301 (B)] \\
+	 \textbf{Not to be held with} & MATH 2120 (Eng) \\
+	\bottomrule
+\end{tabular*}
+
+
+\section{Instructor Contact Information}
+
+\noindent
+\begin{tabular*}{\linewidth}{r@{\hspace{\infoTableSpace}}l}
+	\toprule
+	\textbf{Instructor(s) Name} 			& Richard Mika\"el Slevinsky 	\\ 
+	%\textbf{Preferred Form of Address} 		& 	\\
+	\textbf{Office Location}				& 464 Machray Hall	\\
+	\textbf{Office Hours or Availability} & 1:00\,--\,2:00 pm TWF or by appointment or walk-in.\\
+	\textbf{Office Phone Number} 			& 204-474-6647	\\
+	\textbf{Cell Phone Number} 			& 431-334-9330 (mathematical emergencies) \\
+	\textbf{E-mail}	& \begin{minipage}[t]{0.65\linewidth}	
+			\href{mailto:Richard.Slevinsky@umanitoba.ca}{\texttt{Richard.Slevinsky@umanitoba.ca}}
+			All e-mail communication must conform to the 
+			\href{http://umanitoba.ca/admin/governance/media/Electronic_Communication_with_Students_Policy_-_2014_06_05.pdf}{Communicating with Students} university policy. E-mail inquiries will be answered as soon as possible.			
+		\end{minipage} \\
+	\bottomrule
+\end{tabular*}
+
+
+\section{Course material}
+
+The course is entirely based on course notes and other materials that are available online at
+
+\href{https://github.com/MikaelSlevinsky/MATH2160}{https://github.com/MikaelSlevinsky/MATH2160}
+
+For a second opinion, it is recommended that you have a textbook, such as
+
+K. Atkinson and W. Han, {\em Elementary Numerical Analysis}, third edition, 2003.
+
+A copy of {\sc Julia-1.5}, available from \href{https://julialang.org/downloads/}{https://julialang.org/downloads/}.
+
+\section{Course Outline}
+
+Elementary techniques of numerical solution of mathematical problems: solution of equations, linear systems of equations, nonlinear equations; finite and divided differences, interpolation; numerical differentiation and integration.
+
+\section{Course Evaluation Methods}
+
+Students will be assessed using lab quizzes and a final examination.
+
+\begin{center}
+\begin{tabular}[t]{p{0.3\linewidth}p{0.4\linewidth}p{0.2\linewidth}}
+\toprule
+\mbox{}\newline \textbf{Date} &	\mbox{}\newline\textbf{Assessment Tool}	& \textbf{Value of \newline Final Grade} \\
+\midrule
+Weekly & Lab quizzes & 50\% \\
+TBA & Final examination & 50\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Grading}
+
+We will use the following scheme, subject to adjustments due to overall class performance.
+
+\begin{center}
+\begin{tabular}[t]{lcc}
+\toprule
+Letter Grade & Minimum percentage to guarantee & Final Grade Point  \\
+\midrule
+A+ & 95 & 4.5 \\
+A & 86 & 4.0 \\
+B+ & 80 & 3.5 \\
+B & 72 &  3.0 \\
+C+ & 65  & 2.5 \\
+C & 60 & 2.0 \\
+D & 50 & 1.0  \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Grading Expectations}
+
+Normally, students can expect quizzes and the final examination to be graded and returned within one week. Feedback will include a numerical grade and any comments that may be helpful for the students and/or that may be helpful for the justification of the grade.
+
+\section{Schedule of quizzes}
+
+The quizzes will be scheduled for distribution via Crowdmark on Monday mornings at 8:00 am and they will be due on Friday evenings at 5:00 pm. The labs themselves on Wednesdays afternoons will give you a chance to interface with the TAs and they may guide you to successfully solve the weekly quizzes.
+
+At the end of every chapter, there is a list of suggested problems. They are {\bf optional} and not for marks, although it is strongly recommended that you try to solve the problems. I am happy to review your work, if you wish.
+
+\section{Policy on missed quizzes and final examination}
+
+No missed quizzes will be accepted; however, if a student reports an absence to the instructor within two days of the due date, then this quiz will not be counted to their quiz average.
+
+If a student misses half or more of the lab quizzes, they may be asked to withdraw from the course.
+
+If a student misses the final examination, they may be eligible for deferral. They must contact an advisor in their faculty of registration for a deferral request.
+
+\section{Course Technology}
+
+It is the general University of Manitoba policy that all technology resources are to be used in a responsible, efficient, ethical and legal manner. The student can use all technology in classroom setting only for educational purposes approved by instructor and/or the University of Manitoba Student Accessibility Services. Student should not participate in personal direct electronic messaging / posting activities (e-mail, texting, video or voice chat, wikis, blogs, social networking (e.g. Facebook) online and offline ``gaming'' during scheduled class time.
+
+We will use Zoom, Crowdmark, {\sc Julia}, UM Learn and e-mail communication as the primary technologies and transmission of information.
+
+\section{Recording Class Lectures}
+
+Richard Mika\"el Slevinsky holds copyright over the course material, presentations, and lectures which form part of this course. Audio or video recording of lectures, labs, and/or presentations is allowed in any format, openly or surreptitiously, in whole or in part so long as they are only used for the participant's private study and research.
+
+\section{Student Accessibility Services}
+
+If you are a student with a disability, please contact SAS for academic accommodation supports and services such as note-taking, interpreting, assistive technology and exam accommodations. Students who have, or think they may have, a disability (e.g. mental illness, learning, medical, hearing, injury-related, visual) are invited to contact SAS to arrange a confidential consultation. 
+
+\begin{quote}
+Student Accessibility Services \url{http://umanitoba.ca/student/saa/accessibility/} \\
+520 University Centre \\
+204-474-7423 \\
+\href{mailto:Student_accessibility@umanitoba.ca}{\texttt{Student\_accessibility@umanitoba.ca}}
+\end{quote}
+
+\section{Academic Integrity}
+
+All assessments are {\bf open everything}. In particular, students may collaborate only with other students enrolled in MATH 2160, but they must submit their own written quizzes and exams.
+
+I request that students do the honourable thing and write a statement such as, "I collaborated with Stefan Banach and Emmy Noether on questions 1, 3, and 5." This will have no effect on the grading; it is just a way to encourage good practice.
+
+\end{document}
