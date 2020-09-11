@@ -17,4 +17,4 @@ For a short YouTube video that shows these steps, please see [here](https://m.yo
 Our Pluto notebooks can also be viewed *statically* by downloading the PDF file or by using `GitHub`'s [HTML preview
 ](https://htmlpreview.github.io):
 
-- [Introduction.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/Notebooks/Introduction.jl.html)
+- [Introduction.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Introduction.jl.html)
