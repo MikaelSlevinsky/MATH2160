@@ -4,6 +4,6 @@ cardinalbary.pdf
 *.log
 *.gz
 *.blg
-Exams/*
+exams/*
 other/*
-Solutions/*
+solutions/*
