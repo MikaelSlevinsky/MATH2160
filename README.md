@@ -8,3 +8,4 @@ Important documents:
 - [Course notes](https://github.com/MikaelSlevinsky/MATH2160/blob/master/tex/MATH2160.pdf)
 - [Pluto notebooks](https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/)
 - [Chapter summaries and exercises](https://github.com/MikaelSlevinsky/MATH2160/blob/master/exercises/)
+- [Lab quizzes](https://crowdmark.com)
