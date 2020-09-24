@@ -58,7 +58,7 @@ Rational
 # ╔═╡ 03997c50-f6a9-11ea-0195-1bd12117c044
 md"""Mathematically, it's not inconceivable that would wish to work with a rational number type. There are a few problems with this when it comes to arithmetic on a computer. The main issue is that of overflow and underflow. Take, for example, the Hilbert matrix:
 
-$$H_n = \begin{bmatrix} 1 & \frac{1}{2} & \frac{1}{3} & \cdots & \frac{1}{n}\\ \frac{1}{2} & \frac{1}{3} & \frac{1}{4} & \cdots & \frac{1}{n+1}\\ \tfrac{1}{3} & \frac{1}{4} & \frac{1}{6} & \cdots & \frac{1}{n+2}\\ \vdots & \vdots & \vdots & \ddots\\\frac{1}{n} & \frac{1}{n+1} & \frac{1}{n+2} & \cdots & \frac{1}{2n-1}\end{bmatrix}.$$
+$$H_n = \begin{bmatrix} 1 & \frac{1}{2} & \frac{1}{3} & \cdots & \frac{1}{n}\\ \frac{1}{2} & \frac{1}{3} & \frac{1}{4} & \cdots & \frac{1}{n+1}\\ \tfrac{1}{3} & \frac{1}{4} & \frac{1}{5} & \cdots & \frac{1}{n+2}\\ \vdots & \vdots & \vdots & \ddots\\\frac{1}{n} & \frac{1}{n+1} & \frac{1}{n+2} & \cdots & \frac{1}{2n-1}\end{bmatrix}.$$
 
 This matrix is easy enough to create. Julia even allows us to find its inverse with rationals. The catch is that if $n$ is too large, this seemingly innocent-looking matrix's inverse is no longer representable as a ratio of two $64$-bit integers. It could be done with arbitrary precision, but this comes at a significant computational expense.
 """
