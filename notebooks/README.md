@@ -21,3 +21,4 @@ Our Pluto notebooks can also be viewed *statically* by downloading the PDF file 
 - [Numbers.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Numbers.jl.html)
 - [Conditioning.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Conditioning.jl.html)
 - [Complexity.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Complexity.jl.html)
+- [RandomPolygons.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/RandomPolygons.jl.html)
