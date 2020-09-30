@@ -41,9 +41,9 @@ begin
 end
 
 # ╔═╡ c3cfdd5e-01f6-11eb-0c11-7f10d33c40f1
-md"""**Observation 1:** they averaged polygons converge to a point, the centroid:
+md"""**Observation 1:** the averaged polygons converge to a point, the centroid:
 
-$$\bar{x} = \frac{1}{n}\sum_{i=1}^nx_i,\quad{\rm and}\quad \bar{y} = \frac{1}{n}\sum_{i=1}^n x_i.$$
+$$\bar{x} = \frac{1}{n}\sum_{i=1}^nx_i,\quad{\rm and}\quad \bar{y} = \frac{1}{n}\sum_{i=1}^n y_i.$$
 """
 
 # ╔═╡ 8199ca4e-01fb-11eb-079a-cfbddc175166
