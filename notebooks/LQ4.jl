@@ -54,7 +54,6 @@ A = HalfIdentityPlusCircularShift{Float64}(11)
 md"""The array interface gives us a lot of functionality for *free*, even if it is not the most efficient implementation. In the next block, check that you can compute:
  - the square of the matrix, $A^2$;
  - the product $A^\top A$;
- - the determinant, $\det(A)$;
  - the trace, ${\rm tr}(A)$; and,
  - the eigenvalues of $A$ (by `eigvals`).
 Do not change the names of the variables.
@@ -66,9 +65,6 @@ A2 = A # Wrong! Fix me.
 # ╔═╡ c4484bde-038d-11eb-291b-cff93ef45ab7
 AtA = A # Wrong! Fix me.
 
-# ╔═╡ c40be342-038d-11eb-2275-7524e55afe10
-detA = 0.0 # Wrong! Fix me.
-
 # ╔═╡ c3c6fdcc-038d-11eb-1292-8b0b6626261c
 trA = 0.0 # Wrong! Fix me.
 
@@ -76,12 +72,11 @@ trA = 0.0 # Wrong! Fix me.
 λ = ones(10) # Wrong! Fix me.
 
 # ╔═╡ b5409dd0-035b-11eb-2762-edce74db7f48
-if !(@isdefined A2) || !(@isdefined AtA) || !(@isdefined detA) || !(@isdefined trA) || !(@isdefined λ)
+if !(@isdefined A2) || !(@isdefined AtA) || !(@isdefined trA) || !(@isdefined λ)
 	md"""Do not change the name of the variables - write your answer as
 ```
 A2 = "..."
 AtA = "..."
-detA = "..."
 trA = "..."
 λ = "..."
 ```
@@ -90,7 +85,7 @@ end
 
 # ╔═╡ 67383d4a-0352-11eb-3199-0deba4ad424b
 let A = Matrix{Float64}(HalfIdentityPlusCircularShift{Float64}(11))
-	if A2 ≈ A^2 && AtA ≈ A'A && detA ≈ det(A) && trA ≈ tr(A) && λ ≈ eigvals(A)
+	if A2 ≈ A^2 && AtA ≈ A'A && trA ≈ tr(A) && λ ≈ eigvals(A)
 		md"""
 !!! correct
     Well done!
@@ -248,7 +243,6 @@ hint(md"To reset $x\leftarrow A^{-1}x$ with an $LU$ factorization of $A$, first 
 # ╟─f5ac075c-0350-11eb-30bf-4beb7284a156
 # ╠═c489d446-038d-11eb-041b-076c0c62bd3e
 # ╠═c4484bde-038d-11eb-291b-cff93ef45ab7
-# ╠═c40be342-038d-11eb-2275-7524e55afe10
 # ╠═c3c6fdcc-038d-11eb-1292-8b0b6626261c
 # ╠═c329ef5a-038d-11eb-27f3-e7db3593d808
 # ╟─b5409dd0-035b-11eb-2762-edce74db7f48
