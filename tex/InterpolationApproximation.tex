@@ -33,7 +33,7 @@ The polynomial~\eqref{eq:LagrangeInterpolatingPolynomial} is the {\bf Lagrange i
 The interpolating polynomial of degree $\le n$ is unique.
 \end{theorem}
 \begin{proof}
-Consider two interpolating polynomials $p_n,q_n\in\P_n$. Their difference $d_n=p_n-q_n\in\P_n$ satisfies $d_n(x_k) = 0$ for $k=0,\ldots,n$. In other words, $d_n$ is a polynomial of degree at most $n$ but has at least $n+1$ distinct roots. The Fundamental Theorem of Algebra states that $d_n\equiv 0\Rightarrow p_n=q_n$.
+Consider two interpolating polynomials $p_n,q_n\in\P_n$. Their difference $d_n=p_n-q_n\in\P_n$ satisfies $d_n(x_k) = 0$ for $k=0,\ldots,n$. In other words, $d_n$ is a polynomial of degree at most $n$ but has at least $n+1$ distinct roots. The Fundamental Theorem of Algebra states that $d_n\equiv 0\Rightarrow p_n=q_n$, a contradiction.
 \end{proof}
 
 Suppose that $f\in C^{n+1}(x_0,x_n)$. Let $f_k = f(x_k)$ for $k=0,\ldots,n$, and let $p_n$ be the Lagrange interpolating polynomial for the data $(x_k,f_k)$ for $k=0,\ldots,n$. How large can the error $f(x)-p_n(x)$ be on the interval $[x_0,x_n]$? Let:
@@ -156,7 +156,7 @@ p_n(x) = q_{n-1}(x) + \dfrac{x-x_0}{x_n-x_0}(r_{n-1}(x)-q_{n-1}(x)).
 \end{equation}
 Clearly, $p_n(x_0) = q_{n-1}(x_0) = f_0$ and $p_n(x_n) = q_{n-1}(x_n) + r_{n-1}(x_n) - q_{n-1}(x_n) = r_{n-1}(x_n) = f_n$. For $i = 1,\ldots,n-1$:
 \[
-p_n(x_i) = q(x_i) + \dfrac{x_i-x_0}{x_n-x_0}(r_{n-1}(x_i)-q_{n-1}(x_i)) = q_{n-1}(x_i) = f_i
+p_n(x_i) = q_{n-1}(x_i) + \dfrac{x_i-x_0}{x_n-x_0}(r_{n-1}(x_i)-q_{n-1}(x_i)) = q_{n-1}(x_i) = f_i
 \]
 Therefore, $p_n(x_i)$ is the unique degree-$n$ interpolant through $x_0,\ldots,x_n$. Now, the coefficient of $x^n$ in $p_n(x)$ must be the same as that of the expression on the right of~\eqref{eq:NewtonRecursiveConstruction}. That is:
 \[
@@ -258,14 +258,14 @@ Supposing $p_n$ has the form $p_n(x) = \sum_{i=0}^n \alpha_i x^i$ then results i
 \]
 The unique minimizer can be found from the (linear) system:
 \[
-\dfrac{\partial}{\partial\alpha_k}\int_D \abs{f(x)-\sum_{i=0}^n \alpha_i x^i}^2\ud\mu(x),\quad\hbox{for each}\quad k=0,\ldots,n.
+\dfrac{\partial}{\partial\alpha_k}\int_D \abs{f(x)-\sum_{i=0}^n \alpha_i x^i}^2\ud\mu(x) = 0,\quad\hbox{for each}\quad k=0,\ldots,n.
 \]
 But there is some additional structure that we will exploit rather than solving this system of equations.
 
 \begin{theorem}
 If $f\in L^2(D,\ud\mu(x))$ and $p_n\in\P_n$ is such that:
 \begin{equation}\label{eq:L2assumption}
-\langle r,f-p_n\rangle = 0,\quad \forall r\in\P_n,
+\langle q,f-p_n\rangle = 0,\quad \forall q\in\P_n,
 \end{equation}
 then:
 \begin{equation}
@@ -278,7 +278,7 @@ i.e. $p_n$ is a best (weighted) least-squares approximation to $f$ on $D$.
 \|f-p_n\|_2^2 & = \abs{\langle f-p_n,f-p_n\rangle}\\
 & = \abs{\langle f-r,f-p_n\rangle + \langle r-p_n,f-p_n\rangle},\quad \forall r\in\P_n.
 \end{align*}
-Since $r-p_n\in\P_n$, the assumption~\eqref{eq:L2assumption} implies that:
+Since $r-p_n=q\in\P_n$, the assumption~\eqref{eq:L2assumption} implies that:
 \begin{align*}
 \|f-p_n\|_2^2 & = \abs{\langle f-r,f-p_n\rangle}\\
 & \le \|f-r\|_2\|f-p_n\|_2,
@@ -297,7 +297,7 @@ Rearranging these equations, we have:
 \begin{equation}
 \sum_{i=0}^n\left(\int_D\conj{x^k}x^i\ud\mu(x)\right)\alpha_i = \int_D \conj{x^k}f(x)\ud\mu(x),\quad{\rm for}\quad k=0,\ldots,n,
 \end{equation}
-which is the component-wise statement of the matrix equation:
+which is the component-wise statement of the linear system:
 \begin{equation}\label{eq:normalequations}
 A\alpha = \varphi,
 \end{equation}
@@ -305,7 +305,7 @@ to determine the coefficients $\alpha = \pr(\alpha_0,\ldots,\alpha_n)^\top$ from
 \begin{equation}
 A_{k,i} = \int_D \conj{x^k}x^i\ud\mu(x),\quad{\rm and}\quad \varphi_k = \int_D \conj{x^k}f(x)\ud\mu(x).
 \end{equation}
-The system~\eqref{eq:normalequations} are called the {\bf normal equations}.
+The equations in the system~\eqref{eq:normalequations} are called the {\bf normal equations}.
 
 \begin{example}
 We wish to find the best least-squares approximation to $e^x$ on $[0,1]$ from $\P_1$. We must solve:
@@ -339,7 +339,7 @@ The matrix $A$ in~\eqref{eq:normalequations} is nonsingular.
 \begin{proof}
 Suppose $A$ {\em is} singular, i.e. $\exists \alpha\ne 0$ such that $A\alpha = 0$ implying $\alpha^* A\alpha = 0$. This is:
 \begin{equation}
-\sum_{k=0}^n\conj{\alpha_k}(A\alpha)_k \Longleftrightarrow \sum_{k=0}^n\conj{\alpha_k}\sum_{i=0}^nA_{k,i}\alpha_i = 0.
+\sum_{k=0}^n\conj{\alpha_k}(A\alpha)_k = 0, \Longleftrightarrow \sum_{k=0}^n\conj{\alpha_k}\sum_{i=0}^nA_{k,i}\alpha_i = 0.
 \end{equation}
 Since, by definition $A_{k,i} = \int_D \conj{x^k}x^i\ud\mu(x)$, we find:
 \begin{equation}
@@ -349,7 +349,7 @@ Rearranging gives:
 \begin{equation}
 \int_D\conj{\pr(\sum_{k=0}^n \alpha_kx^k)}\pr(\sum_{i=0}^n \alpha_ix^i)\ud\mu(x) = 0,\quad{\rm or}\quad \left\|\sum_{i=0}^n \alpha_i x^i\right\|_2^2 = 0.
 \end{equation}
-But this last equality implies that $\sum_{i=0}^n\alpha_ix^i\equiv0$ and thus $\alpha_i\equiv0$ for $i=0,\ldots,n$. We have arrived at a contradiction.
+But this last equality implies that $\sum_{i=0}^n\alpha_ix^i\equiv0$ and thus $\alpha_i\equiv0$ for $i=0,\ldots,n$, a contradiction.
 \end{proof}
 Invertibility of the matrix $A$ establishes existence and uniqueness of the best polynomial approximation in $L^2(D,\ud\mu(x))$. It does not, however, imply that the normal equations are well-conditioned. To find a well-conditioned solution to this problem, we use our knowledge of the QR factorization for matrices to construct degree-graded polynomial bases that behave significantly better than the monomials.
 
@@ -403,7 +403,7 @@ For any $j=0,\ldots,k$,
 
 \begin{remark}
 \begin{enumerate}
-\item The Gram--Schmidt procedure constructs orthogonal polynomials inductively starting from $\pi_0(x) = 1$. $\pi_k(x)$ is always of exact degree $k$, so $\{\pi_0,\ldots,\pi_k\}$ is a basis for $\P_k$, $\forall k\in\N_0$. The orthogonal polynomials can be normalized to be {\bf orthonormal}, i.e. $\langle\pi_k,\pi_k\rangle = 1$, to be {\bf monic}, i.e. $\hat{\pi}_k(x) = x^k + \cdots +$, or even have other normalizations such as $\pi_k(1)=1$.
+\item The Gram--Schmidt procedure constructs orthogonal polynomials inductively starting from $\pi_0(x) = 1$. $\pi_k(x)$ is always of exact degree $k$, so $\{\pi_0,\ldots,\pi_k\}$ is a basis for $\P_k$, $\forall k\in\N_0$. The orthogonal polynomials can be normalized to be {\bf orthonormal}, i.e. $\langle\tilde{\pi}_k,\tilde{\pi}_k\rangle = 1$, to be {\bf monic}, i.e. $\hat{\pi}_k(x) = x^k + \cdots +$, or even have other normalizations such as $\pi_k(1)=1$.
 \item The Gram--Schmidt procedure may be organized in a matrix:
 \[
 \begin{bmatrix}
