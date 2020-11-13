@@ -245,7 +245,7 @@ for some $\xi\in(x_0,x_2)$.
 \end{theorem}
 
 \begin{remark}
-The $n$-point Newton--Cotes formul\ae~are exact if $f\in\P_n$ since $f\in\P_n\Longrightarrow p_n \equiv f$. However, in certain cases, such as Simpson's rule, the degree of exactness is even higher: indeed, if $f\in\P_3$, then $f^{({\rm iv})}\equiv0$ and the formula is exact.
+The $(n+1)$-point Newton--Cotes formul\ae~are exact if $f\in\P_n$ since $f\in\P_n\Longrightarrow p_n \equiv f$. However, in certain cases, such as Simpson's rule, the degree of exactness is even higher: indeed, if $f\in\P_3$, then $f^{({\rm iv})}\equiv0$ and the formula is exact.
 \end{remark}
 
 \subsection{Composite Formul\ae}
@@ -385,7 +385,7 @@ so that the rule is exact for polynomials of degree as high as possible. Being o
 The word ``hope'' was used in the previous sentence because these last equations, while linear in the weights, are nonlinear in the nodes. Hence, these might {\em a priori} be complex numbers or even real numbers outside of $(a,b)$. In either case, the quadrature formula would be useless. Fortunately, the following theorem relates the nodes of the Gaussian quadrature formula to the zeros of the orthogonal polynomials, and by construction, it follows that these nodes are located within the interval $(a,b)$.
 
 \begin{theorem}\label{theorem:Gaussnodesandweights}
-Let $w\ge0$ be a non-negative weight function on $[a,b]$ and let $a,b,\in\R$. Then:
+Let $w\ge0$ be a non-negative weight function on $[a,b]$ and let $a,b\in\R$. Then:
 \begin{enumerate}
 \item the nodes of the Gaussian quadrature formula are the zeros of the orthogonal polynomial $\pi_n$ with respect to $L^2([a,b],w(x)\ud x)$;
 \item The formula:

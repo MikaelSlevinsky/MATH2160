@@ -91,11 +91,11 @@ rsqBF(t) = xdBF(t).^2+ydBF(t).^2
 [trap(rsqBF,big(0),2big(π),2^i)/2 for i in 1:10]
 [simpson(rsqBF,big(0),2big(π),2^i)/2 for i in 1:10]
 
-function divideddiff(f::Vector, x::Vector)
+function divideddiff(f::AbstractVector, x::AbstractVector)
     @assert length(f) == length(x)
     T, n = promote_type(eltype(f), eltype(x)), length(x)
     df = zeros(T, n)
-    for i=1:n
+    for i = 1:n
         df[i] = f[i]
     end
     for j = 2:n, i = n:-1:j
@@ -104,7 +104,7 @@ function divideddiff(f::Vector, x::Vector)
     df
 end
 
-richardson(a::Vector, h::Vector) = divideddiff(a ./ h, h)./divideddiff(1 ./ h, h)
+richardson(a::AbstractVector, h::AbstractVector) = divideddiff(a ./ h, h) ./ divideddiff(1 ./ h, h)
 
 function computecn(::Type{T}, n::Int) where T
     c = zeros(T, n)
@@ -130,7 +130,7 @@ n = 1:51
 a = inv.(n.^2)
 c = cumsum(a)
 h = inv.(n)
-richardson(c[1:5:51],h[1:5:51]) .- π^2/6
+richardson(c[1:5:51], h[1:5:51]) .- π^2/6
 
 
 function forwardeuler(f,y0,n,a,b)
