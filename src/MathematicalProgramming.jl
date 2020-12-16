@@ -2,9 +2,9 @@ const math2160 = joinpath(dirname(@__DIR__), "figures")
 
 import Pkg
 
-Pkg.add("PyPlot")
+Pkg.add(["PyPlot", "Makie"])
 
-using LinearAlgebra, PyPlot, Random, Statistics
+using LinearAlgebra, PyPlot, Makie, Random, Statistics
 
 import PyPlot: semilogy, contourf, surf
 
@@ -318,3 +318,19 @@ while norm(grad(x)) > log(eps(x[1]))^2*eps(x[1])
     println("x = [parse(BigFloat, \"",x[1],"\");")
     println("parse(BigFloat, \"",x[2],"\")]")
 end
+
+f = (x, y) -> exp(sin(50x)) + sin(60exp(y)) + sin(70sin(x)) + sin(sin(80y)) - sin(10*(x+y)) + (x^2 + y^2)/4
+
+x = -10:0.01:10
+y = -10:0.01:10
+scene = Scene(resolution = (2000, 2000))
+surface!(scene, x, y, f, colormap = :seismic)
+scale!(scene, 2, 2, 1)
+save(math2160*"/MathematicalProgrammingf1_Makie.png", scene)
+
+x = -1:0.005:1
+y = -1:0.005:1
+scene = Scene(resolution = (2000, 2000))
+surface!(scene, x, y, f, colormap = :seismic)
+scale!(scene, 15, 15, 1)
+save(math2160*"/MathematicalProgrammingf2_Makie.png", scene)

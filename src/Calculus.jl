@@ -132,6 +132,43 @@ c = cumsum(a)
 h = inv.(n)
 richardson(c[1:5:51], h[1:5:51]) .- π^2/6
 
+n = 1:10
+h1 = inv.(n)
+a1 = (1 .+ h1) .^ n
+r1 = richardson(a1, h1)
+h2 = inv.(2 .^ n)
+a2 = (1 .+ h2) .^ (2 .^ n)
+r2 = richardson(a2, h2)
+l = 19
+for n in n
+    str = "$(rpad(h1[n], l)) & $(rpad(a1[n], l)) & $(rpad(r1[n], l)) & "
+    str *= "$(rpad(h2[n], l)) & $(rpad(a2[n], l)) & $(rpad(r2[n], l))\\\\"
+    println(str)
+end
+
+n = 1:10
+h3 = n.^2 .- 5
+a3 = n
+r3 = richardson(a3, h3)
+l = 19
+for n in n
+    println("$(rpad(h3[n], 3)) & $(rpad(a3[n], 3)) & $(rpad(r3[n], l))\\\\")
+end
+
+y = [2,3,5,7,11,13,17,19,23,29]
+z = [5,7,12,16,25,30,39,43,52,65]
+x = z.^2 .- 5 .* y.^2
+h4 = x./y.^2
+a4 = z./y
+r4 = richardson(a4, h4)
+l = 19
+for n in n
+    str = "$(rpad(y[n], 3)) & $(rpad(5*y[n]^2, 5)) & $(rpad(z[n]^2, 5)) & "
+    str *= "$(rpad(z[n], 3)) & $(rpad(x[n], 3)) & $(rpad(h4[n], l)) & "
+    str *= "$(rpad(a4[n], l)) & $(rpad(r4[n], l))\\\\"
+    println(str)
+end
+
 
 function forwardeuler(f,y0,n,a,b)
     h = (b-a)/(n-1)
@@ -196,6 +233,75 @@ end
 x1, w1 = mygausshermite(10)
 x, w = gausshermite(10) # from FastGaussQuadrature
 hypot(norm(x-x1), norm(w-w1)) < hypot(norm(x), norm(w))
+
+
+l = 19
+for n in 1:12
+    x, w = gausslegendre(n)
+    str = "n = $(lpad(n, 2)), and the integral is approximately: "
+    str *= "$(rpad(sum(w.*exp.(-x.^2)), l))"
+    println(str)
+end
+for n in 1:12
+    x, w = gausschebyshev(n)
+    str = "n = $(lpad(n, 2)), and the integral is approximately: "
+    str *= "$(rpad(sum(w./sqrt.(5 .- x.^2)), l))"
+    println(str)
+end
+for n in 1:12
+    x, w = gaussjacobi(n, 1/3, 1/3)
+    str = "n = $(lpad(n, 2)), and the integral is approximately: "
+    str *= "$(rpad(sum(w.*cbrt.(3 .- x))/4, l))"
+    println(str)
+end
+for n in 2 .^ (4:24)
+    x, w = gausslegendre(n)
+    str = "n = $(lpad(n, 8)), and the integral is approximately: "
+    str *= "$(rpad(sum(w.*(sin.(2020*11/2 .* (x .+ 1)) .^ 27))*11/2, l))"
+    println(str)
+end
+for n in 1:20:201
+    x, w = gausslaguerre(n)
+    str = "n = $(lpad(n, 3)), and the integral is approximately: "
+    str *= "$(rpad(sum(w./sqrt.(1 .+ x)), l))"
+    println(str)
+end
+for n in 1:10:81
+    x, w = gausslaguerre(n, 1/2)
+    f = sqrt.(expm1.(log1p.(x) .* 2 ./ 3)./x)./cbrt.(1 .+ x)
+    str = "n = $(lpad(n, 2)), and the integral is approximately: "
+    str *= "$(rpad(2/3/exp(1)*sum(w.*f), l))"
+    println(str)
+end
+function hermite(n, x)
+    if n == 0
+        return one(x)
+    elseif n == 1
+        return 2*x
+    else
+        Hkm1 = one(x)
+        Hk = 2*x
+        for k in 1:n-1
+            Hk, Hkm1 = 2*x*Hk-2*k*Hkm1, Hk
+        end
+        return Hk
+    end
+end
+for n in 9:11
+    x, w = gausshermite(n)
+    H5 = hermite.(5, x)
+    H6 = hermite.(6, x)
+    H7 = hermite.(7, x)
+    str = "n = $(lpad(n, 2)), and the integral is approximately: "
+    str *= "$(rpad(sum(w.*H5.*H6.*H7), l))"
+    println(str)
+end
+for n in 1:25:151
+    x, w = gausshermite(n)
+    str = "n = $(lpad(n, 3)), and the integral is approximately: "
+    str *= "$(rpad(sum(w.*exp.(2 .* x)./(1 .+ x.^2)), l))"
+    println(str)
+end
 
 
 function montecarlo(f,d,N)
