@@ -16,11 +16,11 @@ For a short YouTube video that shows these steps, please see [here](https://m.yo
 
 Our Pluto notebooks can also be viewed *statically* by downloading the PDF file or by using `GitHub`'s [HTML preview](https://htmlpreview.github.io):
 
-- [Introduction.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Introduction.jl.html)
-- [Norms.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Norms.jl.html)
-- [Numbers.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Numbers.jl.html)
-- [Conditioning.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Conditioning.jl.html)
-- [Complexity.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Complexity.jl.html)
-- [RandomPolygons.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/RandomPolygons.jl.html)
-- [Svd.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Svd.jl.html)
-- [OrthogonalPolynomials.jl](https://htmlpreview.github.io/?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/OrthogonalPolynomials.jl.html)
+- [Introduction.jl](https://htmlview.glitch.me?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Introduction.jl.html)
+- [Norms.jl](https://htmlview.glitch.me?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Norms.jl.html)
+- [Numbers.jl](https://htmlview.glitch.me?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Numbers.jl.html)
+- [Conditioning.jl](https://htmlview.glitch.me?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Conditioning.jl.html)
+- [Complexity.jl](https://htmlview.glitch.me?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Complexity.jl.html)
+- [RandomPolygons.jl](https://htmlview.glitch.me?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/RandomPolygons.jl.html)
+- [Svd.jl](https://htmlview.glitch.me?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/Svd.jl.html)
+- [OrthogonalPolynomials.jl](https://htmlview.glitch.me?https://github.com/MikaelSlevinsky/MATH2160/blob/master/notebooks/OrthogonalPolynomials.jl.html)
