@@ -78,6 +78,7 @@ end
 
 # Try `myshorterjourney("it", 30)`
 
+## Linear Algebra
 #
 # Julia has full access to LAPACK (Linear Algebra PACKage), and thus can perform
 # linear algebra very efficiently. In Julia, vectors and matrices are `subtypes`
@@ -483,14 +484,14 @@ f(-1) - exp(-1)
 
 #
 # To get access to Julia in Terminal from any folder on a mac,
-# first check that you have a `.bash_profile`:
+# first check that you have a `.zprofile`:
 #
 # cd ~
 # ls -all
 #
 # If you do, execute this line:
 #
-# echo 'export PATH="$(pwd):/Applications/Julia-1.5.app/Contents/Resources/julia/bin:$PATH"' >> .bash_profile
+# echo 'export PATH="$(pwd):/Applications/Julia-1.6.app/Contents/Resources/julia/bin:$PATH"' >> .zprofile
 #
-# If you don't, create a `.bash_profile` via `touch .bash_profile` and execute the above.
+# If you don't, create a `.zprofile` via `touch .zprofile` and execute the above.
 #
