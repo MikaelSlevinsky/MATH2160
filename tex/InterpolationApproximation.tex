@@ -752,7 +752,7 @@ Piecewise cubic interpolating splines enforce continuity in the first and second
 \begin{enumerate}
 \item specify $s'(x_0)=f'(x_0)$ and $s'(x_n) = f'(x_n)$ if derivative information is available;
 \item specify $s''(x_0) = 0 = s''(x_n)$, which gives {\em natural} cubic splines; or,
-\item enforce continuity of $s'''$ at $x_1$ and $x_n$, which is usually described at the ``not-a-knot'' condition\footnote{This can be reasoned because the continuity of $s'''$ implies that the first two pieces are the same cubic spline on $[x_0,x_2]$, thus $x_1$ is not a knot, and a similar argument for $x_{n-1}$.}.
+\item enforce continuity of $s'''$ at $x_1$ and $x_{n-1}$, which is usually described at the ``not-a-knot'' condition\footnote{This can be reasoned because the continuity of $s'''$ implies that the first two pieces are the same cubic spline on $[x_0,x_2]$, thus $x_1$ is not a knot, and a similar argument for $x_{n-1}$.}.
 \end{enumerate}
 \end{example}
 
