@@ -89,19 +89,62 @@ Let $f(x) = x^2$. Then evaluation at the dual number $x=a+b\varepsilon$ is:
 f(a+b\varepsilon) = (a+b\varepsilon)^2 = a^2 + 2ab\varepsilon.
 \]
 \end{example}
-Dual numbers can be interpreted as evaluation at the matrix:
-\[
+Dual numbers can be interpreted as evaluation at the matrix $\begin{bmatrix}a & b\\0 & a\end{bmatrix}$, since this matrix satisfies the addition and multiplication rules of $\D$:
+\begin{align*}
 \begin{bmatrix}
 a & b\\
 0 & a\\
-\end{bmatrix},
-\]
-since this matrix satisfies the addition and multiplication rules of $\D$.
-\begin{example}
-Let $f(x) = e^x$. The evaluation at the dual number $x=a+b\varepsilon$ can be achieved via the matrix exponential. Since $A:=\diag(a,a)$ and $B:=\begin{bmatrix} 0 & b\\0 & 0\\\end{bmatrix}$ commute, i.e. $AB=BA$, using the property $e^{A+B} = e^Ae^B$, we find:
+\end{bmatrix} + \begin{bmatrix}
+c & d\\
+0 & c\\
+\end{bmatrix}
+& =
+\begin{bmatrix}
+a+c & b+d\\
+0 & a+c\\
+\end{bmatrix}\\
+\begin{bmatrix}
+a & b\\
+0 & a\\
+\end{bmatrix}
+\begin{bmatrix}
+c & d\\
+0 & c\\
+\end{bmatrix}
+& =
+\begin{bmatrix}
+ac & ad+bc\\
+0 & ac\\
+\end{bmatrix}
+\end{align*}
+\begin{lemma}
+Let $f$ be a continuously differentiable function in an open neighbourhood of $x=a$. Let $B = \begin{bmatrix} 0 & b\\0 & 0\\\end{bmatrix}$. Then:
 \[
-e^{a+b\varepsilon} = e^{A+B} = e^Ae^B = \begin{bmatrix}e^a & 0\\ 0 & e^a\\\end{bmatrix}\begin{bmatrix}1 & b\\ 0 & 1\\\end{bmatrix} = \begin{bmatrix}e^a & be^a\\ 0 & e^a\\\end{bmatrix} = e^a(1+b\varepsilon).
+f(aI+B) = f(a)I + f'(a)B.
 \]
+\end{lemma}
+\begin{proof}
+Using the Peano form of the remainder in Taylor's theorem:
+\[
+f(x) = f(a) + f'(a)(x-a) + r_1(x),
+\]
+where $\displaystyle\lim_{x\to a}\frac{r_1(x)}{x-a} = 0$. Then:
+\[
+f(aI+B) = f(a)I + f'(a)B + r_1(aI+B).
+\]
+Now, since $r_1(x)$ goes to zero faster than $x-a$ at $a$, we may write $r_1(x) = (x-a)s_1(x-a)$, for some function satisfying $s_1(0) = 0$. Since any matrix function of a strictly upper triangular matrix is also strictly upper triangular\footnote{This can be rigorously proved by the fact that any function of a matrix must commute with the same matrix, $Af(A) = f(A)A$.}, there exists a $c\in\F$ such that:
+\[
+r_1(aI+B) = Bs_1(B) = \begin{bmatrix} 0 & b\\ 0 & 0\end{bmatrix}\begin{bmatrix} 0 & c\\ 0 & 0\end{bmatrix} = 0.
+\]
+\end{proof}
+From this lemma, it follows that $f(a+b\varepsilon) = f(a)+f'(a)b\varepsilon$.
+
+\begin{example}
+Let $f(x) = e^x$. The evaluation at the dual number $x=a+b\varepsilon$ can be achieved via the matrix exponential. For $B = \begin{bmatrix} 0 & b\\0 & 0\\\end{bmatrix}$, it follows that:
+\[
+e^{aI+B} = e^a(I + B) = \begin{bmatrix}e^a & be^a\\ 0 & e^a\\\end{bmatrix}.
+\]
+We conclude that $e^{a+b\varepsilon} = e^a(1+b\varepsilon)$.
 \end{example}
 
 These simple examples motivate the following definition for evaluation of a function at a dual number.
